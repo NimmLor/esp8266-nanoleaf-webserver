@@ -77,6 +77,19 @@ $("#inputColor").change(function() {
   delaySetColor(rgb);
 });
 
+$(".btn-color").click(function() {
+  if(ignoreColorChange) return;
+
+  var rgb = $(this).css('backgroundColor');
+  var components = rgbToComponents(rgb);
+  delaySetColor(components);
+
+  var hexString = rgbToHex(components.r, components.g, components.b);
+  ignoreColorChange = true;
+  $("#inputColor").minicolors('value', hexString);
+  ignoreColorChange = false;
+});
+
 function getAll() {
   $.get(urlBase + "all", function(data) {
     allData = data;
@@ -163,3 +176,14 @@ function componentToHex(c) {
 function rgbToHex(r, g, b) {
     return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
+
+function rgbToComponents(rgb){
+  var components = {};
+
+   rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+   components.r = parseInt(rgb[1]);
+   components.g = parseInt(rgb[2]);
+   components.b = parseInt(rgb[3]);
+
+   return components;
+ }

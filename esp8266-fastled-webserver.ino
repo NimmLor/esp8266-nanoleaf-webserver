@@ -63,28 +63,6 @@ uint8_t brightnessMap[brightnessCount] = { 16, 32, 64, 128, 255 };
 int brightnessIndex = 0;
 uint8_t brightness = brightnessMap[brightnessIndex];
 
-typedef void (*Pattern)();
-typedef Pattern PatternList[];
-typedef struct {
-  Pattern pattern;
-  String name;
-} PatternAndName;
-typedef PatternAndName PatternAndNameList[];
-
-// List of patterns to cycle through.  Each is defined as a separate function below.
-PatternAndNameList patterns = {
-  { colorwaves, "Color Waves" },
-  { palettetest, "Palette Test" },
-  { pride, "Pride" },
-  { rainbow, "Rainbow" },
-  { rainbowWithGlitter, "Rainbow With Glitter" },
-  { confetti, "Confetti" },
-  { sinelon, "Sinelon" },
-  { juggle, "Juggle" },
-  { bpm, "BPM" },
-  { showSolidColor, "Solid Color" },
-};
-
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
 
 // ten seconds per color palette makes a good demo
@@ -105,7 +83,6 @@ uint8_t gCurrentPaletteNumber = 0;
 CRGBPalette16 gCurrentPalette( CRGB::Black);
 CRGBPalette16 gTargetPalette( gGradientPalettes[0] );
 
-const uint8_t patternCount = ARRAY_SIZE(patterns);
 uint8_t currentPatternIndex = 0; // Index number of which pattern is current
 bool autoplayEnabled = false;
 
@@ -280,6 +257,30 @@ void setup(void) {
 
   autoPlayTimeout = millis() + (autoPlayDurationSeconds * 1000);
 }
+
+typedef void (*Pattern)();
+typedef Pattern PatternList[];
+typedef struct {
+  Pattern pattern;
+  String name;
+} PatternAndName;
+typedef PatternAndName PatternAndNameList[];
+
+// List of patterns to cycle through.  Each is defined as a separate function below.
+PatternAndNameList patterns = {
+  { colorwaves, "Color Waves" },
+  { palettetest, "Palette Test" },
+  { pride, "Pride" },
+  { rainbow, "Rainbow" },
+  { rainbowWithGlitter, "Rainbow With Glitter" },
+  { confetti, "Confetti" },
+  { sinelon, "Sinelon" },
+  { juggle, "Juggle" },
+  { bpm, "BPM" },
+  { showSolidColor, "Solid Color" },
+};
+
+const uint8_t patternCount = ARRAY_SIZE(patterns);
 
 void loop(void) {
   // Add entropy to random number generator; we use a lot of it.
