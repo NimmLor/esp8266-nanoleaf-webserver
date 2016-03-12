@@ -28,7 +28,6 @@ extern "C" {
 #include <FS.h>
 #include <EEPROM.h>
 #include <IRremoteESP8266.h>
-#include "AudioLogic.h"
 #include "GradientPalettes.h"
 
 #define RECV_PIN 12
@@ -44,7 +43,6 @@ const char WiFiAPPSK[] = "";
 // Wi-Fi network to connect to (if not in AP mode)
 const char* ssid = "";
 const char* password = "";
-const char* host = "esp8266";
 
 ESP8266WebServer server(80);
 
@@ -84,7 +82,6 @@ PatternAndNameList patterns = {
   { sinelon, "Sinelon" },
   { juggle, "Juggle" },
   { bpm, "BPM" },
-  { audio, "Audio" },
   { showSolidColor, "Solid Color" },
 };
 
@@ -138,8 +135,6 @@ void setup(void) {
   loadSettings();
 
   irReceiver.enableIRIn(); // Start the receiver
-
-  initializeAudio();
 
   Serial.println();
   Serial.print( F("Heap: ") ); Serial.println(system_get_free_heap_size());
@@ -299,10 +294,6 @@ void loop(void) {
     FastLED.show();
     FastLED.delay(15);
     return;
-  }
-
-  EVERY_N_MILLISECONDS(30) {
-    readAudio();
   }
 
   // EVERY_N_SECONDS(10) {
@@ -887,24 +878,5 @@ void palettetest()
   static uint8_t startindex = 0;
   startindex--;
   fill_palette( leds, NUM_LEDS, startindex, (256 / NUM_LEDS) + 1, gCurrentPalette, 255, LINEARBLEND);
-}
-
-void audio() {
-  fill_solid(leds, NUM_LEDS, CRGB::Black);
-
-  uint32_t total = 0;
-  
-  for (uint8_t i = 0; i < bandCount; i++)
-  {
-    total += levels[i];
-  }
-
-  uint16_t level = total / bandCount; // 0 - 256
-
-  uint8_t scaled = level / 10;
-
-  for(uint8_t i = 0; i < scaled && i < NUM_LEDS; i++) {
-    leds[i] = CHSV(level, 255, 255);
-  }
 }
 
