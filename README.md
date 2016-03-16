@@ -34,6 +34,14 @@ The web app is a single page app with separate files for js and css, using [jQue
 
 The only drawback to SPIFFS that I've found so far is uploading the files is extremely slow, requiring several minutes, regardless of how large the files are.  It's so slow that I've been just developing the web app and debugging locally on my desktop (with a hard-coded IP for the ESP8266), before uploading to SPIFFS and testing on the ESP8266.
 
+
+Installing
+-----------
+
+The web app needs to be uploaded to the ESP8266's SPIFFS.  You can do this within the Arduino IDE after installing the [Arduino ESP8266FS tool](https://github.com/esp8266/Arduino/blob/master/doc/filesystem.md#uploading-files-to-file-system).
+
+With ESP8266FS installed run the sketch and then upload the web app using `ESP8266 Sketch Data Upload` command in the Arduino Tools menu.
+
 Compression
 -----------
 
