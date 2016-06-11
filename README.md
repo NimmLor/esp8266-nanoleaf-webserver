@@ -8,7 +8,7 @@ Hardware
 
 An ESP8266 development board, such as the [Adafruit HUZZAH ESP8266 Breakout]:
 
-[![Adafruit HUZZAH ESP8266 Breakout](https://www.adafruit.com/images/145x109/2471-09.jpg)](https://www.adafruit.com/products/2471)
+[![Adafruit HUZZAH ESP8266 Breakout](https://cdn-shop.adafruit.com/310x233/2471-10.jpg)](https://www.adafruit.com/products/2471)
 
 Addressable LED strip, such as the [Adafruit NeoPixel Ring]:
 
