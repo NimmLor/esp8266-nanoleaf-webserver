@@ -315,7 +315,7 @@ void loop(void) {
   EVERY_N_MILLISECONDS(40) {
     nblendPaletteTowardPalette( gCurrentPalette, gTargetPalette, 16);
   }
-  
+
   if (autoplayEnabled && millis() > autoPlayTimeout) {
     adjustPattern(true);
     autoPlayTimeout = millis() + (autoPlayDurationSeconds * 1000);
@@ -642,8 +642,8 @@ void setSolidColor(uint8_t r, uint8_t g, uint8_t b)
   solidColor = CRGB(r, g, b);
 
   EEPROM.write(2, r);
-  EEPROM.write(3, r);
-  EEPROM.write(4, r);
+  EEPROM.write(3, g);
+  EEPROM.write(4, b);
 
   setPattern(patternCount - 1);
 }
