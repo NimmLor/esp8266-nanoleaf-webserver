@@ -161,6 +161,7 @@ void setup(void) {
   }
   else
   {
+    WiFi.mode(WIFI_STA);
     Serial.printf("Connecting to %s\n", ssid);
     if (String(WiFi.SSID()) != String(ssid)) {
       WiFi.begin(ssid, password);
