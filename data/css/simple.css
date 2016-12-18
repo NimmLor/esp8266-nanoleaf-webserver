@@ -1,0 +1,18 @@
+/*body {
+  padding-bottom: 70px;
+}*/
+
+.grid-item-color {
+  width: 4%;
+  height: 32px;
+  cursor: pointer;
+}
+
+.grid-item-pattern {
+  width: 100px;
+  height: 100px;
+  margin: 5px;
+  padding: 6px;
+  white-space: normal;
+  cursor: pointer;
+}
