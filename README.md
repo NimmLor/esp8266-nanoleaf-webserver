@@ -39,6 +39,8 @@ Installing
 -----------
 These programs are installed via the Arduino IDE which can be [downloaded here](https://www.arduino.cc/en/main/software). The ESP8266 boards will need to be added to the Arduino IDE which is achieved as follows. Click File > Preferences and copy and paste the URL "http://arduino.esp8266.com/stable/package_esp8266com_index.json" into the Additional Boards Manager URLs field. Click OK. Click Tools > Boards: ... > Boards Manager. Find and click on ESP8266 (using the Search function may expedite this). Click on Install. After installation, click on Close and then select your ESP8266 board from the Tools > Board: ... menu.
 
+These programs depend on the FastLED LED animation library and the IRremoteESP8266 library. The FastLED library can be [downloaded from GitHub](https://github.com/FastLED/FastLED/releases) and placed in the Arduino 'libraries' folder or alternatively installed as [described here](https://www.arduino.cc/en/Guide/Libraries) by typing 'fastled' in the search filter box. The IRremoteESP8266 must be insalled manually by [downloading](https://github.com/markszabo/IRremoteESP8266) and placing the uncompressed folder in the Arduino 'libraries' folder.
+
 Download the programs from GitHub using the green Clone or Download button from [the GitHub project main page](https://github.com/jasoncoon/esp8266-fastled-webserver) and click Download ZIP. Decompress the ZIP file in your Arduino sketch folder.
 
 The web app needs to be uploaded to the ESP8266's SPIFFS.  You can do this within the Arduino IDE after installing the [Arduino ESP8266FS tool](https://github.com/esp8266/Arduino/blob/master/doc/filesystem.md#uploading-files-to-file-system).
