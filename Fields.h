@@ -57,6 +57,22 @@ String getPatterns() {
   return json;
 }
 
+String getPalette() {
+  return String(currentPaletteIndex);
+}
+
+String getPalettes() {
+  String json = "";
+
+  for (uint8_t i = 0; i < paletteCount; i++) {
+    json += "\"" + paletteNames[i] + "\"";
+    if (i < paletteCount - 1)
+      json += ",";
+  }
+
+  return json;
+}
+
 String getAutoplay() {
   return String(autoplay);
 }
@@ -93,6 +109,7 @@ FieldList fields = {
   { "power", "Power", BooleanFieldType, 0, 1, getPower },
   { "brightness", "Brightness", NumberFieldType, 1, 255, getBrightness },
   { "pattern", "Pattern", SelectFieldType, 0, patternCount, getPattern, getPatterns },
+  { "palette", "Palette", SelectFieldType, 0, paletteCount, getPalette, getPalettes },
   { "speed", "Speed", NumberFieldType, 1, 255, getSpeed },
   { "autoplay", "Autoplay", SectionFieldType },
   { "autoplay", "Autoplay", BooleanFieldType, 0, 1, getAutoplay },

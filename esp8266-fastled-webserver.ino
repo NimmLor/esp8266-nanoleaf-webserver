@@ -59,17 +59,15 @@ ESP8266HTTPUpdateServer httpUpdateServer;
 
 #include "FSBrowser.h"
 
-#define DATA_PIN      D7
+#define DATA_PIN      D8
 #define LED_TYPE      WS2811
-#define COLOR_ORDER   RGB
+#define COLOR_ORDER   GRB
 #define NUM_LEDS      24
 
 #define MILLI_AMPS         2000     // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
 #define FRAMES_PER_SECOND  120 // here you can control the speed. With the Access Point / Web Server the animations run a bit slower.
 
 CRGB leds[NUM_LEDS];
-
-uint8_t patternIndex = 0;
 
 const uint8_t brightnessCount = 5;
 uint8_t brightnessMap[brightnessCount] = { 16, 32, 64, 128, 255 };
@@ -110,6 +108,8 @@ uint8_t autoplay = 0;
 
 uint8_t autoplayDuration = 10;
 unsigned long autoPlayTimeout = 0;
+
+uint8_t currentPaletteIndex = 0;
 
 uint8_t gHue = 0; // rotating "base color" used by many of the patterns
 
@@ -176,6 +176,36 @@ PatternAndNameList patterns = {
 };
 
 const uint8_t patternCount = ARRAY_SIZE(patterns);
+
+typedef struct {
+  CRGBPalette16 palette;
+   String name;
+ } PaletteAndName;
+typedef PaletteAndName PaletteAndNameList[];
+
+const CRGBPalette16 palettes[] = {
+  RainbowColors_p,
+  RainbowStripeColors_p,
+  CloudColors_p,
+  LavaColors_p,
+  OceanColors_p,
+  ForestColors_p,
+  PartyColors_p,
+  HeatColors_p
+};
+
+const uint8_t paletteCount = ARRAY_SIZE(palettes);
+
+const String paletteNames[paletteCount] = {
+  "Rainbow",
+  "Rainbow Stripe",
+  "Cloud",
+  "Lava",
+  "Ocean",
+   "Forest",
+  "Party",
+   "Heat",
+ };
 
 #include "Fields.h"
 
@@ -359,6 +389,18 @@ void setup() {
     sendInt(currentPatternIndex);
   });
 
+  webServer.on("/palette", HTTP_POST, []() {
+    String value = webServer.arg("value");
+    setPalette(value.toInt());
+    sendInt(currentPaletteIndex);
+  });
+
+  webServer.on("/paletteName", HTTP_POST, []() {
+    String value = webServer.arg("value");
+    setPaletteName(value);
+    sendInt(currentPaletteIndex);
+  });
+
   webServer.on("/brightness", HTTP_POST, []() {
     String value = webServer.arg("value");
     setBrightness(value.toInt());
@@ -451,15 +493,11 @@ void loop() {
   EVERY_N_SECONDS( secondsPerPalette ) {
     gCurrentPaletteNumber = addmod8( gCurrentPaletteNumber, 1, gGradientPaletteCount);
     gTargetPalette = gGradientPalettes[ gCurrentPaletteNumber ];
-
-//    paletteIndex = addmod8( paletteIndex, 1, paletteCount);
-//    targetPalette = palettes[paletteIndex];
   }
 
   EVERY_N_MILLISECONDS(40) {
     // slowly blend the current palette to the next
     nblendPaletteTowardPalette( gCurrentPalette, gTargetPalette, 8);
-//    nblendPaletteTowardPalette(currentPalette, targetPalette, 16);
     gHue++;  // slowly cycle the "base color" through the rainbow
   }
 
@@ -747,6 +785,12 @@ void loadSettings()
 
   autoplay = EEPROM.read(6);
   autoplayDuration = EEPROM.read(7);
+
+  currentPaletteIndex = EEPROM.read(1);
+  if (currentPaletteIndex < 0)
+    currentPaletteIndex = 0;
+  else if (currentPaletteIndex >= paletteCount)
+    currentPaletteIndex = paletteCount - 1;
 }
 
 void setPower(uint8_t value)
@@ -814,8 +858,10 @@ void adjustPattern(bool up)
   if (currentPatternIndex >= patternCount)
     currentPatternIndex = 0;
 
-  EEPROM.write(1, currentPatternIndex);
-  EEPROM.commit();
+  if (autoplay == 0) {
+    EEPROM.write(1, currentPatternIndex);
+    EEPROM.commit();
+  }
 
   broadcastInt("pattern", currentPatternIndex);
 }
@@ -827,8 +873,10 @@ void setPattern(uint8_t value)
 
   currentPatternIndex = value;
 
-  EEPROM.write(1, currentPatternIndex);
-  EEPROM.commit();
+  if (autoplay == 0) {
+    EEPROM.write(1, currentPatternIndex);
+    EEPROM.commit();
+  }
 
   broadcastInt("pattern", currentPatternIndex);
 }
@@ -838,6 +886,29 @@ void setPatternName(String name)
   for(uint8_t i = 0; i < patternCount; i++) {
     if(patterns[i].name == name) {
       setPattern(i);
+      break;
+    }
+  }
+}
+
+void setPalette(uint8_t value)
+{
+  if (value >= paletteCount)
+    value = paletteCount - 1;
+
+  currentPaletteIndex = value;
+
+  EEPROM.write(1, currentPaletteIndex);
+  EEPROM.commit();
+
+  broadcastInt("palette", currentPaletteIndex);
+}
+
+void setPaletteName(String name)
+{
+  for(uint8_t i = 0; i < paletteCount; i++) {
+    if(paletteNames[i] == name) {
+      setPalette(i);
       break;
     }
   }
@@ -922,7 +993,8 @@ void confetti()
   // random colored speckles that blink in and fade smoothly
   fadeToBlackBy( leds, NUM_LEDS, 10);
   int pos = random16(NUM_LEDS);
-  leds[pos] += CHSV( gHue + random8(64), 200, 255);
+  // leds[pos] += CHSV( gHue + random8(64), 200, 255);
+  leds[pos] += ColorFromPalette(palettes[currentPaletteIndex], gHue + random8(64));
 }
 
 void sinelon()
@@ -931,10 +1003,11 @@ void sinelon()
   fadeToBlackBy( leds, NUM_LEDS, 20);
   int pos = beatsin16(speed, 0, NUM_LEDS);
   static int prevpos = 0;
+  CRGB color = ColorFromPalette(palettes[currentPaletteIndex], gHue, 255);
   if( pos < prevpos ) {
-    fill_solid( leds+pos, (prevpos-pos)+1, CHSV(gHue,220,255));
+    fill_solid( leds+pos, (prevpos-pos)+1, color);
   } else {
-    fill_solid( leds+prevpos, (pos-prevpos)+1, CHSV( gHue,220,255));
+    fill_solid( leds+prevpos, (pos-prevpos)+1, color);
   }
   prevpos = pos;
 }
@@ -943,8 +1016,9 @@ void bpm()
 {
   // colored stripes pulsing at a defined Beats-Per-Minute (BPM)
   uint8_t beat = beatsin8( speed, 64, 255);
+  CRGBPalette16 palette = palettes[currentPaletteIndex];
   for ( int i = 0; i < NUM_LEDS; i++) {
-    leds[i] = ColorFromPalette(gCurrentPalette, gHue + (i * 2), beat - gHue + (i * 10));
+    leds[i] = ColorFromPalette(palette, gHue + (i * 2), beat - gHue + (i * 10));
   }
 }
 
@@ -988,9 +1062,9 @@ void fire()
 }
 
 void water()
-  {
+{
   heatMap(IceColors_p, false);
-  }
+}
 
 // Pride2015 by Mark Kriegsman: https://gist.github.com/kriegsman/964de772d64c502760e5
 // This function draws rainbows with an ever-changing,
