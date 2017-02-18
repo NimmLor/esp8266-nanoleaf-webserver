@@ -1,20 +1,20 @@
 /*
- * ESP8266 + FastLED + IR Remote + MSGEQ7: https://github.com/jasoncoon/esp8266-fastled-webserver
- * Copyright (C) 2015 Jason Coon
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+   ESP8266 + FastLED + IR Remote + MSGEQ7: https://github.com/jasoncoon/esp8266-fastled-webserver
+   Copyright (C) 2015 Jason Coon
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #include "FastLED.h"
 FASTLED_USING_NAMESPACE
@@ -46,7 +46,7 @@ const char* password = "";
 
 ESP8266WebServer server(80);
 
-#define DATA_PIN      13     // for Huzzah: Pins w/o special function:  #4, #5, #12, #13, #14; // #16 does not work :(
+#define DATA_PIN      D8     // for Huzzah: Pins w/o special function:  #4, #5, #12, #13, #14; // #16 does not work :(
 #define LED_TYPE      WS2812
 #define COLOR_ORDER   GRB
 #define NUM_LEDS      24
@@ -88,6 +88,8 @@ bool autoplayEnabled = false;
 
 uint8_t autoPlayDurationSeconds = 10;
 unsigned int autoPlayTimeout = 0;
+
+uint8_t currentPaletteIndex = 0;
 
 uint8_t gHue = 0; // rotating "base color" used by many of the patterns
 
@@ -245,6 +247,16 @@ void setup(void) {
     sendBrightness();
   });
 
+  server.on("/palette", HTTP_GET, []() {
+    sendPalette();
+  });
+
+  server.on("/palette", HTTP_POST, []() {
+    String value = server.arg("value");
+    setPalette(value.toInt());
+    sendPalette();
+  });
+
   server.serveStatic("/index.htm", SPIFFS, "/index.htm");
   server.serveStatic("/fonts", SPIFFS, "/fonts", "max-age=86400");
   server.serveStatic("/js", SPIFFS, "/js");
@@ -260,7 +272,6 @@ void setup(void) {
 }
 
 typedef void (*Pattern)();
-typedef Pattern PatternList[];
 typedef struct {
   Pattern pattern;
   String name;
@@ -282,6 +293,36 @@ PatternAndNameList patterns = {
 };
 
 const uint8_t patternCount = ARRAY_SIZE(patterns);
+
+typedef struct {
+  CRGBPalette16 palette;
+  String name;
+} PaletteAndName;
+typedef PaletteAndName PaletteAndNameList[];
+
+const CRGBPalette16 palettes[] = {
+  RainbowColors_p,
+  RainbowStripeColors_p,
+  CloudColors_p,
+  LavaColors_p,
+  OceanColors_p,
+  ForestColors_p,
+  PartyColors_p,
+  HeatColors_p
+};
+
+const uint8_t paletteCount = ARRAY_SIZE(palettes);
+
+const String paletteNames[paletteCount] = {
+  "Rainbow",
+  "Rainbow Stripe",
+  "Cloud",
+  "Lava",
+  "Ocean",
+  "Forest",
+  "Party",
+  "Heat",
+};
 
 void loop(void) {
   // Add entropy to random number generator; we use a lot of it.
@@ -559,6 +600,12 @@ void loadSettings()
   {
     solidColor = CRGB(r, g, b);
   }
+
+  currentPaletteIndex = EEPROM.read(5);
+  if (currentPaletteIndex < 0)
+    currentPaletteIndex = 0;
+  else if (currentPaletteIndex >= paletteCount)
+    currentPaletteIndex = paletteCount - 1;
 }
 
 void sendAll()
@@ -572,6 +619,10 @@ void sendAll()
   json += "\"index\":" + String(currentPatternIndex);
   json += ",\"name\":\"" + patterns[currentPatternIndex].name + "\"}";
 
+  json += ",\"currentPalette\":{";
+  json += "\"index\":" + String(currentPaletteIndex);
+  json += ",\"name\":\"" + paletteNames[currentPaletteIndex] + "\"}";
+
   json += ",\"solidColor\":{";
   json += "\"r\":" + String(solidColor.r);
   json += ",\"g\":" + String(solidColor.g);
@@ -583,6 +634,15 @@ void sendAll()
   {
     json += "\"" + patterns[i].name + "\"";
     if (i < patternCount - 1)
+      json += ",";
+  }
+  json += "]";
+
+  json += ",\"palettes\":[";
+  for (uint8_t i = 0; i < paletteCount; i++)
+  {
+    json += "\"" + paletteNames[i] + "\"";
+    if (i < paletteCount - 1)
       json += ",";
   }
   json += "]";
@@ -605,6 +665,16 @@ void sendPattern()
   String json = "{";
   json += "\"index\":" + String(currentPatternIndex);
   json += ",\"name\":\"" + patterns[currentPatternIndex].name + "\"";
+  json += "}";
+  server.send(200, "text/json", json);
+  json = String();
+}
+
+void sendPalette()
+{
+  String json = "{";
+  json += "\"index\":" + String(currentPaletteIndex);
+  json += ",\"name\":\"" + paletteNames[currentPaletteIndex] + "\"";
   json += "}";
   server.send(200, "text/json", json);
   json = String();
@@ -663,8 +733,10 @@ void adjustPattern(bool up)
   if (currentPatternIndex >= patternCount)
     currentPatternIndex = 0;
 
-  EEPROM.write(1, currentPatternIndex);
-  EEPROM.commit();
+  if (autoplay == 0) {
+    EEPROM.write(1, currentPatternIndex);
+    EEPROM.commit();
+  }
 }
 
 void setPattern(int value)
@@ -677,7 +749,23 @@ void setPattern(int value)
 
   currentPatternIndex = value;
 
-  EEPROM.write(1, currentPatternIndex);
+  if (autoplay == 0) {
+    EEPROM.write(1, currentPatternIndex);
+    EEPROM.commit();
+  }
+}
+
+void setPalette(int value)
+{
+  // don't wrap around at the ends
+  if (value < 0)
+    value = 0;
+  else if (value >= paletteCount)
+    value = paletteCount - 1;
+
+  currentPaletteIndex = value;
+
+  EEPROM.write(5, currentPaletteIndex);
   EEPROM.commit();
 }
 
@@ -748,7 +836,8 @@ void confetti()
   // random colored speckles that blink in and fade smoothly
   fadeToBlackBy( leds, NUM_LEDS, 10);
   int pos = random16(NUM_LEDS);
-  leds[pos] += CHSV( gHue + random8(64), 200, 255);
+  //  leds[pos] += CHSV( gHue + random8(64), 200, 255);
+  leds[pos] += ColorFromPalette(palettes[currentPaletteIndex], gHue + random8(64));
 }
 
 void sinelon()
@@ -756,14 +845,15 @@ void sinelon()
   // a colored dot sweeping back and forth, with fading trails
   fadeToBlackBy( leds, NUM_LEDS, 20);
   int pos = beatsin16(13, 0, NUM_LEDS - 1);
-  leds[pos] += CHSV( gHue, 255, 192);
+  //  leds[pos] += CHSV( gHue, 255, 192);
+  leds[pos] += ColorFromPalette(palettes[currentPaletteIndex], gHue, 192);
 }
 
 void bpm()
 {
   // colored stripes pulsing at a defined Beats-Per-Minute (BPM)
   uint8_t BeatsPerMinute = 62;
-  CRGBPalette16 palette = PartyColors_p;
+  CRGBPalette16 palette = palettes[currentPaletteIndex];
   uint8_t beat = beatsin8( BeatsPerMinute, 64, 255);
   for ( int i = 0; i < NUM_LEDS; i++) { //9948
     leds[i] = ColorFromPalette(palette, gHue + (i * 2), beat - gHue + (i * 10));
@@ -777,7 +867,8 @@ void juggle()
   byte dothue = 0;
   for ( int i = 0; i < 8; i++)
   {
-    leds[beatsin16(i + 7, 0, NUM_LEDS)] |= CHSV(dothue, 200, 255);
+    //    leds[beatsin16(i + 7, 0, NUM_LEDS)] |= CHSV(dothue, 200, 255);
+    leds[beatsin16(i + 7, 0, NUM_LEDS)] |= ColorFromPalette(palettes[currentPaletteIndex], dothue);
     dothue += 32;
   }
 }

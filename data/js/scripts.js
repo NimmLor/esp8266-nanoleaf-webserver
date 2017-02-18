@@ -70,6 +70,10 @@ $("#inputPattern").change(function() {
    setPattern($("#inputPattern option:selected").index());
 });
 
+$("#inputPalette").change(function() {
+   setPalette($("#inputPalette option:selected").index());
+});
+
 $("#inputColor").change(function() {
   if(ignoreColorChange) return;
 
@@ -105,14 +109,29 @@ function getAll() {
 
     updatePowerButtons(data.power);
 
+    // clear pattern list
     $("#inputPattern").find("option").remove();
 
+    // load pattern list
     for(var i = 0; i < data.patterns.length; i++) {
       var pattern = data.patterns[i];
       $("#inputPattern").append("<option value='" + i + "'>" + pattern + "</option>");
     }
 
+    // select the current pattern
     $("#inputPattern").val(data.currentPattern.index);
+
+    // clear palette list
+    $("#inputPalette").find("option").remove();
+
+    // load palette list
+    for(var i = 0; i < data.palettes.length; i++) {
+      var palette = data.palettes[i];
+      $("#inputPalette").append("<option value='" + i + "'>" + palette + "</option>");
+    }
+
+    // select the current palette
+    $("#inputPalette").val(data.currentPalette.index);
 
     $("#status").html("Ready");
   });
@@ -151,6 +170,12 @@ function setBrightness(value) {
 function setPattern(value) {
   $.post(urlBase + "pattern?value=" + value, function(data) {
     $("#status").html("Set Pattern: " + data.name);
+  });
+}
+
+function setPalette(value) {
+  $.post(urlBase + "palette?value=" + value, function(data) {
+    $("#status").html("Set Palette: " + data.name);
   });
 }
 
