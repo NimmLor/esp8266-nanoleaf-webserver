@@ -786,7 +786,7 @@ void loadSettings()
   autoplay = EEPROM.read(6);
   autoplayDuration = EEPROM.read(7);
 
-  currentPaletteIndex = EEPROM.read(1);
+  currentPaletteIndex = EEPROM.read(8);
   if (currentPaletteIndex < 0)
     currentPaletteIndex = 0;
   else if (currentPaletteIndex >= paletteCount)
@@ -898,7 +898,7 @@ void setPalette(uint8_t value)
 
   currentPaletteIndex = value;
 
-  EEPROM.write(1, currentPaletteIndex);
+  EEPROM.write(8, currentPaletteIndex);
   EEPROM.commit();
 
   broadcastInt("palette", currentPaletteIndex);
