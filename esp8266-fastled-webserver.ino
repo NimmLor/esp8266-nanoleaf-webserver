@@ -733,7 +733,7 @@ void adjustPattern(bool up)
   if (currentPatternIndex >= patternCount)
     currentPatternIndex = 0;
 
-  if (autoplay == 0) {
+  if (autoplayEnabled) {
     EEPROM.write(1, currentPatternIndex);
     EEPROM.commit();
   }
@@ -749,7 +749,7 @@ void setPattern(int value)
 
   currentPatternIndex = value;
 
-  if (autoplay == 0) {
+  if (autoplayEnabled == 0) {
     EEPROM.write(1, currentPatternIndex);
     EEPROM.commit();
   }
