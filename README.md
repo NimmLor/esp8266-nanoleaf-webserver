@@ -3,6 +3,10 @@ Ultim8x8 RGB LED Panel + FastLED + ESP8266 Web Server
 
 Control an [ULTiM8x8 RGB LED Panel] with an ESP8266 via a web browser.
 
+[Demo Video](https://www.youtube.com/watch?v=xigy7J_K7Aw):
+
+[![Demo Video](http://img.youtube.com/vi/xigy7J_K7Aw/0.jpg)](http://www.youtube.com/watch?v=xigy7J_K7Aw)
+
 Hardware
 --------
 
