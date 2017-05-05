@@ -1,22 +1,22 @@
-FastLED + ESP8266 Web Server
+Ultim8x8 RGB LED Panel + FastLED + ESP8266 Web Server
 =========
 
-Control an addressable LED strip with an ESP8266 via a web browser or infrared remote control.
+Control an [ULTiM8x8 RGB LED Panel] with an ESP8266 via a web browser.
 
 Hardware
 --------
 
-An ESP8266 development board, such as the [Adafruit HUZZAH ESP8266 Breakout]:
+[Adafruit Feather HUZZAH with ESP8266 WiFi]
 
-[![Adafruit HUZZAH ESP8266 Breakout](https://cdn-shop.adafruit.com/310x233/2471-10.jpg)](https://www.adafruit.com/products/2471)
+[![Adafruit Feather HUZZAH with ESP8266 WiFi](https://cdn-shop.adafruit.com/310x233/2821-01.jpg)](https://www.adafruit.com/products/2821)
 
-Addressable LED strip, such as the [Adafruit NeoPixel Ring]:
+[ULTiM8x8 RGB LED Panel]
 
-[![Adafruit NeoPixel Ring](https://www.adafruit.com/images/145x109/1586-00.jpg)](https://www.adafruit.com/product/1586)
+[![ULTiM8x8 RGB LED Panel](https://www.crowdsupply.com/img/7d3e/ultim8x8-bothboards_jpg_project-body.jpg)](https://www.crowdsupply.com/maniacal-labs-wyolum/ultim8x8)
 
 Features
 --------
-* Turn the NeoPixel Ring on and off
+* Turn the LEDs on and off
 * Adjust the brightness
 * Change the display pattern
 * Adjust the color
@@ -31,9 +31,6 @@ Patterns are requested by the app from the ESP8266, so as new patterns are added
 The web app is stored in SPIFFS (on-board flash memory).
 
 The web app is a single page app with separate files for js and css, using [jQuery](https://jquery.com) and [Bootstrap](http://getbootstrap.com).  It has buttons for On/Off, a slider for brightness, a pattern selector, and a color picker (using [jQuery MiniColors](http://labs.abeautifulsite.net/jquery-minicolors)).  Event handlers for the controls are wired up, so you don't have to click a 'Send' button after making changes.  The brightness slider and the color picker use a delayed event handler, to prevent from flooding the ESP8266 web server with too many requests too quickly.
-
-The only drawback to SPIFFS that I've found so far is uploading the files is extremely slow, requiring several minutes, regardless of how large the files are.  It's so slow that I've been just developing the web app and debugging locally on my desktop (with a hard-coded IP for the ESP8266), before uploading to SPIFFS and testing on the ESP8266.
-
 
 Installing
 -----------
@@ -58,10 +55,5 @@ REST Web services
 
 The firmware implements basic [RESTful web services](https://en.wikipedia.org/wiki/Representational_state_transfer) using the ESP8266WebServer library.  Current values are requested with HTTP GETs, and values are set with POSTs using query string parameters.  It can run in connected or standalone access point modes.
 
-Infrared Remote Control
------------------------
-
-Control via infrared remote control is also supported, via the [ESP8266 port of the IRremote library](https://github.com/markszabo/IRremoteESP8266).
-
-[Adafruit NeoPixel Ring]:https://www.adafruit.com/product/1586
-[Adafruit HUZZAH ESP8266 Breakout]:https://www.adafruit.com/products/2471
+[ULTiM8x8 RGB LED Panel]:https://www.crowdsupply.com/maniacal-labs-wyolum/ultim8x8
+[Adafruit Feather HUZZAH with ESP8266 WiFi]:https://www.adafruit.com/products/2471
