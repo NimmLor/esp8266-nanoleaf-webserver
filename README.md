@@ -60,4 +60,4 @@ REST Web services
 The firmware implements basic [RESTful web services](https://en.wikipedia.org/wiki/Representational_state_transfer) using the ESP8266WebServer library.  Current values are requested with HTTP GETs, and values are set with POSTs using query string parameters.  It can run in connected or standalone access point modes.
 
 [ULTiM8x8 RGB LED Panel]:https://www.crowdsupply.com/maniacal-labs-wyolum/ultim8x8
-[Adafruit Feather HUZZAH with ESP8266 WiFi]:https://www.adafruit.com/products/2471
+[Adafruit Feather HUZZAH with ESP8266 WiFi]:https://www.adafruit.com/products/2821
