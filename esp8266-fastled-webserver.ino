@@ -113,6 +113,8 @@ void setup(void) {
   EEPROM.begin(512);
   loadSettings();
 
+  FastLED.setBrightness(brightness);
+
   irReceiver.enableIRIn(); // Start the receiver
 
   Serial.println();
