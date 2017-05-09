@@ -10,13 +10,13 @@ Control an [ULTiM8x8 RGB LED Panel] with an ESP8266 via a web browser.
 Hardware
 --------
 
-[Adafruit Feather HUZZAH with ESP8266 WiFi]
-
-[![Adafruit Feather HUZZAH with ESP8266 WiFi](https://cdn-shop.adafruit.com/310x233/2821-01.jpg)](https://www.adafruit.com/products/2821)
-
-[ULTiM8x8 RGB LED Panel]
+[ULTiM8x8 RGB LED Panel](https://www.crowdsupply.com/maniacal-labs-wyolum/ultim8x8)
 
 [![ULTiM8x8 RGB LED Panel](https://www.crowdsupply.com/img/7d3e/ultim8x8-bothboards_jpg_project-body.jpg)](https://www.crowdsupply.com/maniacal-labs-wyolum/ultim8x8)
+
+[Adafruit Feather HUZZAH with ESP8266 WiFi](https://www.adafruit.com/products/2821)
+
+[![Adafruit Feather HUZZAH with ESP8266 WiFi](https://cdn-shop.adafruit.com/310x233/2821-01.jpg)](https://www.adafruit.com/products/2821)
 
 Features
 --------
