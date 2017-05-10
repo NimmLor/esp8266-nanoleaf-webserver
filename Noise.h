@@ -113,6 +113,36 @@ void drawNoise(CRGBPalette16 palette, uint8_t hueReduce = 0)
   noisez += noisespeedz;
 }
 
+void drawNoise3d(CRGBPalette16 palette, uint8_t hueReduce = 0)
+{
+  for(uint8_t i = 0; i < NUM_LEDS; i++) {
+    uint8_t x = coordsX[i];
+    uint8_t y = coordsY[i];
+    uint8_t z = coordsZ[i];
+   
+    int xoffset = noisescale * x;
+    int yoffset = noisescale * y;
+    int zoffset = noisescale * z;
+
+    uint8_t data = inoise8(x + xoffset + noisex, y + yoffset + noisey, z + zoffset + noisez);
+
+    // The range of the inoise8 function is roughly 16-238.
+    // These two operations expand those values out to roughly 0..255
+    // You can comment them out if you want the raw noise data.
+    data = qsub8(data, 16);
+    data = qadd8(data, scale8(data, 39));
+
+    if(hueReduce > 0 && data >= hueReduce)
+      data -= hueReduce;
+
+    leds[i] = ColorFromPalette(palette, data, 255, LINEARBLEND); 
+  }
+  
+  noisex += noisespeedx;
+  noisey += noisespeedy;
+  noisez += noisespeedz;
+}
+
 void rainbowNoise() {
   noisespeedx = 0;
   noisespeedy = -1;
@@ -120,6 +150,15 @@ void rainbowNoise() {
   noisescale = 24;
   colorLoop = 0;
   drawNoise(RainbowColors_p);
+}
+
+void rainbowNoise3d() {
+  noisespeedx = 0;
+  noisespeedy = 0;
+  noisespeedz = -1;
+  noisescale = 24;
+  colorLoop = 0;
+  drawNoise3d(RainbowColors_p);
 }
 
 void rainbowStripeNoise() {
@@ -131,6 +170,15 @@ void rainbowStripeNoise() {
   drawNoise(RainbowStripeColors_p);
 }
 
+void rainbowStripeNoise3d() {
+  noisespeedx = 0;
+  noisespeedy = 0;
+  noisespeedz = -2;
+  noisescale = 24;
+  colorLoop = 0;
+  drawNoise3d(RainbowStripeColors_p);
+}
+
 void partyNoise() {
   noisespeedx = -9;
   noisespeedy = 0;
@@ -138,6 +186,15 @@ void partyNoise() {
   noisescale = 32;
   colorLoop = 0;
   drawNoise(PartyColors_p);
+}
+
+void partyNoise3d() {
+  noisespeedx = -9;
+  noisespeedy = 0;
+  noisespeedz = 0;
+  noisescale = 32;
+  colorLoop = 0;
+  drawNoise3d(PartyColors_p);
 }
 
 void forestNoise() {
@@ -149,6 +206,15 @@ void forestNoise() {
   drawNoise(ForestColors_p);
 }
 
+void forestNoise3d() {
+  noisespeedx = -9;
+  noisespeedy = 0;
+  noisespeedz = 0;
+  noisescale = 32;
+  colorLoop = 0;
+  drawNoise3d(ForestColors_p);
+}
+
 void cloudNoise() {
   noisespeedx = -2;
   noisespeedy = 0;
@@ -156,6 +222,15 @@ void cloudNoise() {
   noisescale = 24;
   colorLoop = 0;
   drawNoise(CloudColors_p);
+}
+
+void cloudNoise3d() {
+  noisespeedx = -2;
+  noisespeedy = 0;
+  noisespeedz = 0;
+  noisescale = 24;
+  colorLoop = 0;
+  drawNoise3d(CloudColors_p);
 }
 
 void fireNoise() {
@@ -167,6 +242,15 @@ void fireNoise() {
   drawNoise(HeatColors_p, 60);
 }
 
+void fireNoise3d() {
+  noisespeedx = 0;
+  noisespeedy = 0;
+  noisespeedz = 32;
+  noisescale = 64;
+  colorLoop = 0;
+  drawNoise3d(HeatColors_p, 60);
+}
+
 void fireNoise2() {
   noisespeedx = 0;
   noisespeedy = -8;
@@ -174,6 +258,15 @@ void fireNoise2() {
   noisescale = 32;
   colorLoop = 0;
   drawNoise(HeatColors_p);
+}
+
+void fireNoise23d() {
+  noisespeedx = 1;
+  noisespeedy = 3;
+  noisespeedz = 8;
+  noisescale = 32;
+  colorLoop = 0;
+  drawNoise3d(HeatColors_p);
 }
 
 void lavaNoise() {
@@ -185,6 +278,15 @@ void lavaNoise() {
   drawNoise(LavaColors_p);
 }
 
+void lavaNoise3d() {
+  noisespeedx = 1;
+  noisespeedy = 3;
+  noisespeedz = -8;
+  noisescale = 32;
+  colorLoop = 0;
+  drawNoise3d(LavaColors_p);
+}
+
 void oceanNoise() {
   noisespeedx = -2;
   noisespeedy = 0;
@@ -192,6 +294,15 @@ void oceanNoise() {
   noisescale = 24;
   colorLoop = 0;
   drawNoise(OceanColors_p);
+}
+
+void oceanNoise3d() {
+  noisespeedx = -2;
+  noisespeedy = 0;
+  noisespeedz = 4;
+  noisescale = 24;
+  colorLoop = 0;
+  drawNoise3d(OceanColors_p);
 }
 
 void blackAndWhiteNoise() {
@@ -204,6 +315,16 @@ void blackAndWhiteNoise() {
   drawNoise(blackAndWhiteStripedPalette);
 }
 
+void blackAndWhiteNoise3d() {
+  SetupBlackAndWhiteStripedPalette();
+  noisespeedx = -12;
+  noisespeedy = 0;
+  noisespeedz = 0;
+  noisescale = 24;
+  colorLoop = 0;
+  drawNoise3d(blackAndWhiteStripedPalette);
+}
+
 void blackAndBlueNoise() {
   SetupBlackAndBlueStripedPalette();
   noisespeedx = 0;
@@ -212,4 +333,14 @@ void blackAndBlueNoise() {
   noisescale = 32;
   colorLoop = 0;
   drawNoise(blackAndBlueStripedPalette);
+}
+
+void blackAndBlueNoise3d() {
+  SetupBlackAndBlueStripedPalette();
+  noisespeedx = -4;
+  noisespeedy = -4;
+  noisespeedz = -4;
+  noisescale = 32;
+  colorLoop = 0;
+  drawNoise3d(blackAndBlueStripedPalette);
 }
