@@ -1,20 +1,20 @@
 /*
- * ESP8266 + FastLED + IR Remote: https://github.com/jasoncoon/esp8266-fastled-webserver
- * Copyright (C) 2015-2016 Jason Coon
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+   ESP8266 + FastLED + IR Remote: https://github.com/jasoncoon/esp8266-fastled-webserver
+   Copyright (C) 2015-2016 Jason Coon
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #include <FastLED.h>
 FASTLED_USING_NAMESPACE
@@ -39,7 +39,7 @@ extern "C" {
 
 #define HOSTNAME "ESP8266-" ///< Hostname. The setup function adds the Chip ID at the end.
 
-#define RECV_PIN D4
+#define RECV_PIN 1
 IRrecv irReceiver(RECV_PIN);
 
 #include "Commands.h"
@@ -59,10 +59,13 @@ ESP8266HTTPUpdateServer httpUpdateServer;
 
 #include "FSBrowser.h"
 
-#define DATA_PIN      D8
-#define LED_TYPE      WS2811
-#define COLOR_ORDER   GRB
-#define NUM_LEDS      24
+#define DATA_PIN      MOSI
+#define CLK_PIN       SCK
+#define LED_TYPE      APA102
+#define COLOR_ORDER   BGR
+#define MatrixWidth   8 * 3
+#define MatrixHeight  8
+#define NUM_LEDS      MatrixWidth * MatrixHeight
 
 #define MILLI_AMPS         2000     // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
 #define FRAMES_PER_SECOND  120 // here you can control the speed. With the Access Point / Web Server the animations run a bit slower.
@@ -123,6 +126,30 @@ void dimAll(byte value)
   }
 }
 
+const bool MatrixSerpentineLayout = true;
+
+uint16_t XY(uint8_t x, uint8_t y)
+{
+  uint16_t i;
+
+  if ( MatrixSerpentineLayout == false) {
+    i = (y * MatrixWidth) + x;
+  }
+
+  if ( MatrixSerpentineLayout == true) {
+    if ( x & 0x01) {
+      // Odd columns run backwards
+      uint8_t reverseY = (MatrixHeight - 1) - y;
+      i = (x * MatrixHeight) + reverseY;
+    } else {
+      // Even rows run forwards
+      i = (x * MatrixHeight) + y;
+    }
+  }
+
+  return i;
+}
+
 typedef void (*Pattern)();
 typedef Pattern PatternList[];
 typedef struct {
@@ -133,10 +160,12 @@ typedef PatternAndName PatternAndNameList[];
 
 #include "Twinkles.h"
 #include "TwinkleFOX.h"
+#include "Sunrise.h"
 
 // List of patterns to cycle through.  Each is defined as a separate function below.
 
 PatternAndNameList patterns = {
+  { sunrise,                "Sunrise" },
   { pride,                  "Pride" },
   { colorWaves,             "Color Waves" },
 
@@ -179,8 +208,8 @@ const uint8_t patternCount = ARRAY_SIZE(patterns);
 
 typedef struct {
   CRGBPalette16 palette;
-   String name;
- } PaletteAndName;
+  String name;
+} PaletteAndName;
 typedef PaletteAndName PaletteAndNameList[];
 
 const CRGBPalette16 palettes[] = {
@@ -202,10 +231,10 @@ const String paletteNames[paletteCount] = {
   "Cloud",
   "Lava",
   "Ocean",
-   "Forest",
+  "Forest",
   "Party",
-   "Heat",
- };
+  "Heat",
+};
 
 #include "Fields.h"
 
@@ -214,8 +243,8 @@ void setup() {
   delay(100);
   Serial.setDebugOutput(true);
 
-  FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS);         // for WS2812 (Neopixel)
-  //FastLED.addLeds<LED_TYPE,DATA_PIN,CLK_PIN,COLOR_ORDER>(leds, NUM_LEDS); // for APA102 (Dotstar)
+  //  FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS);         // for WS2812 (Neopixel)
+  FastLED.addLeds<LED_TYPE, DATA_PIN, CLK_PIN, COLOR_ORDER>(leds, NUM_LEDS); // for APA102 (Dotstar)
   FastLED.setDither(false);
   FastLED.setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(brightness);
@@ -302,7 +331,7 @@ void setup() {
     if (String(WiFi.SSID()) != String(ssid)) {
       WiFi.begin(ssid, password);
     }
-    }
+  }
 
   httpUpdateServer.setup(&webServer);
 
@@ -354,7 +383,7 @@ void setup() {
   webServer.on("/twinkleSpeed", HTTP_POST, []() {
     String value = webServer.arg("value");
     twinkleSpeed = value.toInt();
-    if(twinkleSpeed < 0) twinkleSpeed = 0;
+    if (twinkleSpeed < 0) twinkleSpeed = 0;
     else if (twinkleSpeed > 8) twinkleSpeed = 8;
     broadcastInt("twinkleSpeed", twinkleSpeed);
     sendInt(twinkleSpeed);
@@ -363,7 +392,7 @@ void setup() {
   webServer.on("/twinkleDensity", HTTP_POST, []() {
     String value = webServer.arg("value");
     twinkleDensity = value.toInt();
-    if(twinkleDensity < 0) twinkleDensity = 0;
+    if (twinkleDensity < 0) twinkleDensity = 0;
     else if (twinkleDensity > 8) twinkleDensity = 8;
     broadcastInt("twinkleDensity", twinkleDensity);
     sendInt(twinkleDensity);
@@ -804,7 +833,7 @@ void setPower(uint8_t value)
 }
 
 void setAutoplay(uint8_t value)
-  {
+{
   autoplay = value == 0 ? 0 : 1;
 
   EEPROM.write(6, autoplay);
@@ -883,8 +912,8 @@ void setPattern(uint8_t value)
 
 void setPatternName(String name)
 {
-  for(uint8_t i = 0; i < patternCount; i++) {
-    if(patterns[i].name == name) {
+  for (uint8_t i = 0; i < patternCount; i++) {
+    if (patterns[i].name == name) {
       setPattern(i);
       break;
     }
@@ -906,8 +935,8 @@ void setPalette(uint8_t value)
 
 void setPaletteName(String name)
 {
-  for(uint8_t i = 0; i < paletteCount; i++) {
-    if(paletteNames[i] == name) {
+  for (uint8_t i = 0; i < paletteCount; i++) {
+    if (paletteNames[i] == name) {
       setPalette(i);
       break;
     }
@@ -1004,10 +1033,10 @@ void sinelon()
   int pos = beatsin16(speed, 0, NUM_LEDS);
   static int prevpos = 0;
   CRGB color = ColorFromPalette(palettes[currentPaletteIndex], gHue, 255);
-  if( pos < prevpos ) {
-    fill_solid( leds+pos, (prevpos-pos)+1, color);
+  if ( pos < prevpos ) {
+    fill_solid( leds + pos, (prevpos - pos) + 1, color);
   } else {
-    fill_solid( leds+prevpos, (pos-prevpos)+1, color);
+    fill_solid( leds + prevpos, (pos - prevpos) + 1, color);
   }
   prevpos = pos;
 }
