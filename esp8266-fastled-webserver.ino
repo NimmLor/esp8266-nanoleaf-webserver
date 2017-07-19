@@ -67,7 +67,7 @@ ESP8266HTTPUpdateServer httpUpdateServer;
 #define MatrixHeight  8
 #define NUM_LEDS      MatrixWidth * MatrixHeight
 
-#define MILLI_AMPS         2000     // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
+#define MILLI_AMPS         500     // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
 #define FRAMES_PER_SECOND  120 // here you can control the speed. With the Access Point / Web Server the animations run a bit slower.
 
 CRGB leds[NUM_LEDS];
@@ -108,6 +108,8 @@ CRGBPalette16 IceColors_p = CRGBPalette16(CRGB::Black, CRGB::Blue, CRGB::Aqua, C
 
 uint8_t currentPatternIndex = 0; // Index number of which pattern is current
 uint8_t autoplay = 0;
+
+bool resetPattern = true;
 
 uint8_t autoplayDuration = 10;
 unsigned long autoPlayTimeout = 0;
@@ -165,7 +167,12 @@ typedef PatternAndName PatternAndNameList[];
 // List of patterns to cycle through.  Each is defined as a separate function below.
 
 PatternAndNameList patterns = {
-  { sunrise,                "Sunrise" },
+  { sunriseStatic,          "Sunrise Static" },
+  { sunriseFlicker,         "Sunrise Flicker" },
+  { sunriseWavesVertical,   "Sunrise Waves Vertical" },
+  { sunriseWavesHorizontal, "Sunrise Waves Horizontal" },
+  { sunriseWavesDiagonal,   "Sunrise Waves Diagonal" },
+  { sunriseWavesRotating,   "Sunrise Waves Rotating" },
   { pride,                  "Pride" },
   { colorWaves,             "Color Waves" },
 
@@ -540,6 +547,8 @@ void loop() {
 
   FastLED.show();
 
+  resetPattern = false;
+
   // insert a delay to keep the framerate modest
   // FastLED.delay(1000 / FRAMES_PER_SECOND);
 }
@@ -908,6 +917,8 @@ void setPattern(uint8_t value)
   }
 
   broadcastInt("pattern", currentPatternIndex);
+  
+  resetPattern = true;
 }
 
 void setPatternName(String name)
