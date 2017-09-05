@@ -3,7 +3,7 @@ var address = location.hostname;
 var urlBase = "";
 
 // used when hosting the site somewhere other than the ESP8266 (handy for testing without waiting forever to upload to SPIFFS)
-// var address = "192.168.1.13";
+// var address = "192.168.86.55";
 // var urlBase = "http://" + address + "/";
 
 var postColorTimer = {};
@@ -14,6 +14,27 @@ var ignoreColorChange = false;
 var patterns = [
   "Pride",
   "Color Waves",
+
+  "X Gradient Palette",
+  "Y Gradient Palette",
+  "Z Gradient Palette",
+
+  "XY Gradient Palette",
+  "XZ Gradient Palette",
+  "YZ Gradient Palette",
+  "XYZ Gradient Palette",
+
+  "Fire Noise",
+  "Fire Noise 2",
+  "Lava Noise",
+  "Rainbow Noise",
+  "Rainbow Stripe Noise",
+  "Party Noise",
+  "Forest Noise",
+  "Cloud Noise",
+  "Ocean Noise",
+  "Black & White Noise",
+  "Black & Blue Noise",
 
   "Rainbow Twinkles",
   "Snow Twinkles",
@@ -35,15 +56,11 @@ var patterns = [
   "Cloud 2 Twinkles",
   "Ocean Twinkles",
 
-  "Rainbow",
-  "Rainbow With Glitter",
   "Solid Rainbow",
   "Confetti",
   "Sinelon",
   "Beat",
   "Juggle",
-  "Fire",
-  "Water"
 ];
 
 var ws = new ReconnectingWebSocket('ws://' + address + ':81/', ['arduino']);
@@ -114,13 +131,13 @@ $(document).ready(function() {
 });
 
 function addColorButtons() {
-  var hues = 25;
+  var hues = 30;
   var hueStep = 360 / hues;
 
-  var levels = 10;
-  var levelStep = 60 / levels;
+  var levels = 25;
+  var levelStep = 50 / levels;
 
-  for(var l = 20; l < 80; l += levelStep) {
+  for(var l = 50; l < 95; l += levelStep) {
     for(var h = 0; h < hues; h++) {
       addColorButton(h * hueStep, 100, l);
     }
@@ -131,24 +148,35 @@ function addColorButtons() {
     layoutMode: 'fitRows'
   });
 
+  $('.grid-color-buttons').isotope({
+    itemSelector: '.grid-item-color-button',
+    layoutMode: 'fitRows'
+  });
+
+  $('.grid-item-color-button').click(colorButtonClick);
 }
 
 var colorButtonIndex = 0;
 
-function addColorButton(h, s, l) {
-  var color = "hsla(" + h + ", " + s + "%, " + l + "%, 1)"
-  var template = $("#colorButtonTemplate").clone();
-  template.attr("id", "color-button-" + colorButtonIndex++);
-  template.css("background-color", color);
-  template.click(function() {
-    var rgb = $(this).css('backgroundColor');
-    var components = rgbToComponents(rgb);
+function colorButtonClick() {
+  var rgb = $(this).css('backgroundColor');
+  var components = rgbToComponents(rgb);
 
-    $(".grid-item-color").css("border", "none");
+  $(".grid-item-color").css("border", "none");
+
+  if($(this).attr("class") === "grid-item-color") {
     $(this).css("border", "1px solid");
+  }
 
-    postColor("solidColor", components);
-  });
+  postColor("solidColor", components);
+}
+
+function addColorButton(h, s, l) {
+  var color = "hsl(" + h + ", " + s + "%, " + l + "%)"
+  var template = $("#colorButtonTemplate").clone();
+  template.css("background-color", color);
+  template.attr("title", template.css("background-color") + "\r\n" + color);
+  template.click(colorButtonClick);
 
   $("#colorButtonsRow").append(template);
 }

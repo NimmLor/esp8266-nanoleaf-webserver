@@ -32,14 +32,14 @@ extern "C" {
 #include <WebSocketsServer.h>
 #include <FS.h>
 #include <EEPROM.h>
-#include <IRremoteESP8266.h>
+//#include <IRremoteESP8266.h>
 #include "GradientPalettes.h"
 
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
 
 #include "Field.h"
 
-#define HOSTNAME "ESP8266-" ///< Hostname. The setup function adds the Chip ID at the end.
+#define HOSTNAME "Cube-ESP8266-" ///< Hostname. The setup function adds the Chip ID at the end.
 
 //#define RECV_PIN D4
 //IRrecv irReceiver(RECV_PIN);
@@ -144,27 +144,27 @@ PatternAndNameList patterns = {
   { pride,                  "Pride" },
   { colorWaves,             "Color Waves" },
 
-  { cubeXGradientPalette,   "Cube X Gradient Palette" },
-  { cubeYGradientPalette,   "Cube Y Gradient Palette" },
-  { cubeZGradientPalette,   "Cube Z Gradient Palette" },
+  { cubeXGradientPalette,   "X Gradient Palette" },
+  { cubeYGradientPalette,   "Y Gradient Palette" },
+  { cubeZGradientPalette,   "Z Gradient Palette" },
   
-  { cubeXYGradientPalette,  "Cube XY Gradient Palette" },
-  { cubeXZGradientPalette,  "Cube XZ Gradient Palette" },
-  { cubeYZGradientPalette,  "Cube YZ Gradient Palette" },
-  { cubeXYZGradientPalette, "Cube XYZ Gradient Palette" },
+  { cubeXYGradientPalette,  "XY Gradient Palette" },
+  { cubeXZGradientPalette,  "XZ Gradient Palette" },
+  { cubeYZGradientPalette,  "YZ Gradient Palette" },
+  { cubeXYZGradientPalette, "XYZ Gradient Palette" },
 
   // 3d noise patterns
-  { fireNoise3d, "Fire Noise 3D" },
-  { fireNoise23d, "Fire Noise 2 3D" },
-  { lavaNoise3d, "Lava Noise 3D" },
-  { rainbowNoise3d, "Rainbow Noise 3D" },
-  { rainbowStripeNoise3d, "Rainbow Stripe Noise 3D" },
-  { partyNoise3d, "Party Noise 3D" },
-  { forestNoise3d, "Forest Noise 3D" },
-  { cloudNoise3d, "Cloud Noise 3D" },
-  { oceanNoise3d, "Ocean Noise 3D" },
-  { blackAndWhiteNoise3d, "Black & White Noise 3D" },
-  { blackAndBlueNoise3d, "Black & Blue Noise 3D" },
+  { fireNoise3d, "Fire Noise" },
+  { fireNoise23d, "Fire Noise 2" },
+  { lavaNoise3d, "Lava Noise" },
+  { rainbowNoise3d, "Rainbow Noise" },
+  { rainbowStripeNoise3d, "Rainbow Stripe Noise" },
+  { partyNoise3d, "Party Noise" },
+  { forestNoise3d, "Forest Noise" },
+  { cloudNoise3d, "Cloud Noise" },
+  { oceanNoise3d, "Ocean Noise" },
+  { blackAndWhiteNoise3d, "Black & White Noise" },
+  { blackAndBlueNoise3d, "Black & Blue Noise" },
   
   // twinkle patterns
   { rainbowTwinkles,        "Rainbow Twinkles" },
@@ -188,15 +188,15 @@ PatternAndNameList patterns = {
   { cloud2Twinkles,         "Cloud 2 Twinkles" },
   { oceanTwinkles,          "Ocean Twinkles" },
 
-  { rainbow,                "Rainbow" },
-  { rainbowWithGlitter,     "Rainbow With Glitter" },
+//  { rainbow,                "Rainbow" },
+//  { rainbowWithGlitter,     "Rainbow With Glitter" },
   { rainbowSolid,           "Solid Rainbow" },
   { confetti,               "Confetti" },
   { sinelon,                "Sinelon" },
   { bpm,                    "Beat" },
   { juggle,                 "Juggle" },
-  { fire,                   "Fire" },
-  { water,                  "Water" },
+//  { fire,                   "Fire" },
+//  { water,                  "Water" },
 
   { showSolidColor,         "Solid Color" }
 };
@@ -1155,7 +1155,7 @@ void heatMap(CRGBPalette16 palette, bool up)
   random16_add_entropy(random(256));
 
   // Array of temperature readings at each simulation cell
-  static byte heat[256];
+  static byte heat[NUM_LEDS];
 
   byte colorindex;
 

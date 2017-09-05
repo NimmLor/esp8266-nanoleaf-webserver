@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ESP8266 + FastLED by Evil Genius Labs</title>
+  <title>Cube by Evil Genius Labs</title>
 
   <!-- request CSS from internet CDN -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -20,14 +20,36 @@
 
 <body>
 
-  <div id="container" class="container">
+  <div id="container" class="container-fluid">
 
     <div style="margin: 5px;">
       <button type="button" class="btn btn-default" id="btnOn">On</button>
       <button type="button" class="btn btn-default" id="btnOff">Off</button>
     </div>
 
+    <h4>Patterns</h4>
+
     <div id="patternGrid" class="grid-pattern"></div>
+
+    <h4>Basic Colors</h4>
+
+    <div class="grid-color-buttons">
+      <button type="button" class="grid-item-color-button" style="background: #FF0000;" title="Red">&nbsp;</button>
+      <button type="button" class="grid-item-color-button" style="background: #FF8000;" title="Orange">&nbsp;</button>
+      <button type="button" class="grid-item-color-button" style="background: #FFFF00;" title="Yellow">&nbsp;</button>
+      <button type="button" class="grid-item-color-button" style="background: #80FF00;" title="Chartreuse">&nbsp;</button>
+      <button type="button" class="grid-item-color-button" style="background: #00FF00;" title="Green">&nbsp;</button>
+      <button type="button" class="grid-item-color-button" style="background: #00FF80;" title="Spring Green">&nbsp;</button>
+      <button type="button" class="grid-item-color-button" style="background: #00FFFF;" title="Cyan">&nbsp;</button>
+      <button type="button" class="grid-item-color-button" style="background: #0080FF;" title="Azure">&nbsp;</button>
+      <button type="button" class="grid-item-color-button" style="background: #0000FF;" title="Blue">&nbsp;</button>
+      <button type="button" class="grid-item-color-button" style="background: #8000FF;" title="Violet">&nbsp;</button>
+      <button type="button" class="grid-item-color-button" style="background: #FF00FF;" title="Magenta">&nbsp;</button>
+      <button type="button" class="grid-item-color-button" style="background: #FF0080;" title="Rose">&nbsp;</button>
+      <button type="button" class="grid-item-color-button" style="background: #FFFFFF; border: 1px solid;" title="White">&nbsp;</button>
+    </div>
+
+    <h4>Color Palette</h4>
 
     <div id="colorButtonsRow" class="grid-color"></div>
 
@@ -35,7 +57,7 @@
 
   <div id="templates" style="display: none">
 
-    <div id="colorButtonTemplate" class="grid-item-color"></div>
+    <button id="colorButtonTemplate" class="grid-item-color"></button>
 
     <button id="patternButtonTemplate" class="grid-item-pattern btn btn-default"></button>
 

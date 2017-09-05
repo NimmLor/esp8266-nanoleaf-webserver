@@ -2,10 +2,20 @@
   padding-bottom: 70px;
 }*/
 
+.grid-item-color-button {
+  border: 0px;
+  width: 7.69%;
+  height: 64px;
+  margin: 0px;
+  padding: 0px;
+}
+
 .grid-item-color {
-  width: 4%;
+  border: none;
+  width: 3.33%;
   height: 32px;
-  cursor: pointer;
+  margin: 0px;
+  padding: 0px;
 }
 
 .grid-item-pattern {
