@@ -1,6 +1,6 @@
 /*
    ESP8266 + FastLED + IR Remote: https://github.com/jasoncoon/esp8266-fastled-webserver
-   Copyright (C) 2015-2016 Jason Coon
+   Copyright (C) 2015-2017 Jason Coon
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -62,8 +62,9 @@ ESP8266HTTPUpdateServer httpUpdateServer;
 #include "FSBrowser.h"
 
 #define DATA_PIN      D5
-#define LED_TYPE      WS2812B
-#define COLOR_ORDER   GRB
+#define CLK_PIN       D6
+#define LED_TYPE      APA102
+#define COLOR_ORDER   BGR
 #define NUM_LEDS      8 * 8 * 6
 
 #define MILLI_AMPS         2000     // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
@@ -198,6 +199,8 @@ PatternAndNameList patterns = {
 //  { fire,                   "Fire" },
 //  { water,                  "Water" },
 
+  { strandTest,             "Strand Test" },
+
   { showSolidColor,         "Solid Color" }
 };
 
@@ -242,8 +245,8 @@ void setup() {
   delay(100);
   Serial.setDebugOutput(true);
 
-  FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS);         // for WS2812 (Neopixel)
-  //FastLED.addLeds<LED_TYPE,DATA_PIN,CLK_PIN,COLOR_ORDER>(leds, NUM_LEDS); // for APA102 (Dotstar)
+//  FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS);         // for WS2812 (Neopixel)
+  FastLED.addLeds<LED_TYPE,DATA_PIN,CLK_PIN,COLOR_ORDER>(leds, NUM_LEDS); // for APA102 (Dotstar)
   FastLED.setDither(false);
   FastLED.setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(brightness);
