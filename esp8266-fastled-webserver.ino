@@ -33,7 +33,6 @@ extern "C" {
 #include <FS.h>
 #include <EEPROM.h>
 //#include <IRremoteESP8266.h>
-#include "GradientPalettes.h"
 
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
 
@@ -114,6 +113,38 @@ unsigned long autoPlayTimeout = 0;
 
 uint8_t currentPaletteIndex = 0;
 
+typedef struct {
+  CRGBPalette16 palette;
+  String name;
+} PaletteAndName;
+typedef PaletteAndName PaletteAndNameList[];
+
+const CRGBPalette16 palettes[] = {
+  RainbowColors_p,
+  RainbowStripeColors_p,
+  CloudColors_p,
+  LavaColors_p,
+  OceanColors_p,
+  ForestColors_p,
+  PartyColors_p,
+  HeatColors_p
+};
+
+const uint8_t paletteCount = ARRAY_SIZE(palettes);
+
+const String paletteNames[paletteCount] = {
+  "Rainbow",
+  "Rainbow Stripe",
+  "Cloud",
+  "Lava",
+  "Ocean",
+  "Forest",
+  "Party",
+  "Heat",
+};
+
+#include "GradientPalettes.h"
+
 uint8_t gHue = 0; // rotating "base color" used by many of the patterns
 
 CRGB solidColor = CRGB::Blue;
@@ -145,14 +176,34 @@ PatternAndNameList patterns = {
   { pride,                  "Pride" },
   { colorWaves,             "Color Waves" },
 
-  { cubeXGradientPalette,   "X Gradient Palette" },
-  { cubeYGradientPalette,   "Y Gradient Palette" },
-  { cubeZGradientPalette,   "Z Gradient Palette" },
+  { rainbowWavesFall, "Rainbow Waves Fall" },
+  { rainbowWavesRise, "Rainbow Waves Rise" },
+
+  { paletteFall, "Palette Fall" },
+  { paletteRise, "Palette Rise" },
+
+  { gradientPaletteFall, "Gradient Palette Fall" },
+  { gradientPaletteRise, "Gradient Palette Rise" },
   
-  { cubeXYGradientPalette,  "XY Gradient Palette" },
-  { cubeXZGradientPalette,  "XZ Gradient Palette" },
-  { cubeYZGradientPalette,  "YZ Gradient Palette" },
-  { cubeXYZGradientPalette, "XYZ Gradient Palette" },
+  { rainbowWavesX, "Rainbow Waves X" },
+  { rainbowWavesY, "Rainbow Waves Y" },
+  { rainbowWavesZ, "Rainbow Waves Z" },
+
+  { cubeXGradientPalette,   "Gradient Palette X" },
+  { cubeYGradientPalette,   "Gradient Palette Y" },
+  { cubeZGradientPalette,   "Gradient Palette Z" },
+  
+  { cubeXYGradientPalette,  "Gradient Palette XY" },
+  { cubeXZGradientPalette,  "Gradient Palette XZ" },
+  { cubeYZGradientPalette,  "Gradient Palette YZ" },
+
+  { cubeXPalette,   "Palette X" },
+  { cubeYPalette,   "Palette Y" },
+  { cubeZPalette,   "Palette Z" },
+
+  { cubeXYPalette,  "Palette XY" },
+  { cubeXZPalette,  "Palette XZ" },
+  { cubeYZPalette,  "Palette YZ" },
 
   // 3d noise patterns
   { fireNoise3d, "Fire Noise" },
@@ -205,36 +256,6 @@ PatternAndNameList patterns = {
 };
 
 const uint8_t patternCount = ARRAY_SIZE(patterns);
-
-typedef struct {
-  CRGBPalette16 palette;
-  String name;
-} PaletteAndName;
-typedef PaletteAndName PaletteAndNameList[];
-
-const CRGBPalette16 palettes[] = {
-  RainbowColors_p,
-  RainbowStripeColors_p,
-  CloudColors_p,
-  LavaColors_p,
-  OceanColors_p,
-  ForestColors_p,
-  PartyColors_p,
-  HeatColors_p
-};
-
-const uint8_t paletteCount = ARRAY_SIZE(palettes);
-
-const String paletteNames[paletteCount] = {
-  "Rainbow",
-  "Rainbow Stripe",
-  "Cloud",
-  "Lava",
-  "Ocean",
-  "Forest",
-  "Party",
-  "Heat",
-};
 
 #include "Fields.h"
 
@@ -1288,3 +1309,254 @@ void palettetest( CRGB* ledarray, uint16_t numleds, const CRGBPalette16& gCurren
   startindex--;
   fill_palette( ledarray, numleds, startindex, (256 / NUM_LEDS) + 1, gCurrentPalette, 255, LINEARBLEND);
 }
+
+void rainbowWavesX()
+{
+  static uint16_t sPseudotime = 0;
+  static uint16_t sLastMillis = 0;
+  static uint16_t sHue16 = 0;
+
+  uint8_t sat8 = beatsin88( 87, 220, 250);
+  uint8_t brightdepth = beatsin88( 341, 96, 224);
+  uint16_t brightnessthetainc16 = beatsin88( 203, (25 * 256), (40 * 256));
+  uint8_t msmultiplier = beatsin88(147, 23, 60);
+
+  uint16_t hue16 = sHue16;//gHue * 256;
+  uint16_t hueinc16 = beatsin88(113, 1, 3000);
+
+  uint16_t ms = millis();
+  uint16_t deltams = ms - sLastMillis ;
+  sLastMillis  = ms;
+  sPseudotime += deltams * msmultiplier;
+  sHue16 += deltams * beatsin88( 400, 5, 9);
+  uint16_t brightnesstheta16 = sPseudotime;
+
+  for ( uint8_t i = 0 ; i < 8; i++) {
+    hue16 += hueinc16;
+    uint8_t hue8 = hue16 / 256;
+
+    brightnesstheta16  += brightnessthetainc16;
+    uint16_t b16 = sin16( brightnesstheta16  ) + 32768;
+
+    uint16_t bri16 = (uint32_t)((uint32_t)b16 * (uint32_t)b16) / 65536;
+    uint8_t bri8 = (uint32_t)(((uint32_t)bri16) * brightdepth) / 65536;
+    bri8 += (255 - brightdepth);
+
+    CRGB newcolor = CHSV( hue8, sat8, bri8);
+
+    for(uint16_t p = 0; p < NUM_LEDS; p++) {
+      uint8_t x = coordsX[p];
+
+      if(x == i) {
+        nblend(leds[p], newcolor, 64);
+      }
+    }
+  }
+}
+
+void rainbowWavesY()
+{
+  static uint16_t sPseudotime = 0;
+  static uint16_t sLastMillis = 0;
+  static uint16_t sHue16 = 0;
+
+  uint8_t sat8 = beatsin88( 87, 220, 250);
+  uint8_t brightdepth = beatsin88( 341, 96, 224);
+  uint16_t brightnessthetainc16 = beatsin88( 203, (25 * 256), (40 * 256));
+  uint8_t msmultiplier = beatsin88(147, 23, 60);
+
+  uint16_t hue16 = sHue16;//gHue * 256;
+  uint16_t hueinc16 = beatsin88(113, 1, 3000);
+
+  uint16_t ms = millis();
+  uint16_t deltams = ms - sLastMillis ;
+  sLastMillis  = ms;
+  sPseudotime += deltams * msmultiplier;
+  sHue16 += deltams * beatsin88( 400, 5, 9);
+  uint16_t brightnesstheta16 = sPseudotime;
+
+  for ( uint8_t i = 0 ; i < 8; i++) {
+    hue16 += hueinc16;
+    uint8_t hue8 = hue16 / 256;
+
+    brightnesstheta16  += brightnessthetainc16;
+    uint16_t b16 = sin16( brightnesstheta16  ) + 32768;
+
+    uint16_t bri16 = (uint32_t)((uint32_t)b16 * (uint32_t)b16) / 65536;
+    uint8_t bri8 = (uint32_t)(((uint32_t)bri16) * brightdepth) / 65536;
+    bri8 += (255 - brightdepth);
+
+    CRGB newcolor = CHSV( hue8, sat8, bri8);
+
+    for(uint16_t p = 0; p < NUM_LEDS; p++) {
+      uint8_t y = coordsY[p];
+
+      if(y == i) {
+        nblend(leds[p], newcolor, 64);
+      }
+    }
+  }
+}
+
+void rainbowWavesZ()
+{
+  static uint16_t sPseudotime = 0;
+  static uint16_t sLastMillis = 0;
+  static uint16_t sHue16 = 0;
+
+  uint8_t sat8 = beatsin88( 87, 220, 250);
+  uint8_t brightdepth = beatsin88( 341, 96, 224);
+  uint16_t brightnessthetainc16 = beatsin88( 203, (25 * 256), (40 * 256));
+  uint8_t msmultiplier = beatsin88(147, 23, 60);
+
+  uint16_t hue16 = sHue16;//gHue * 256;
+  uint16_t hueinc16 = beatsin88(113, 1, 3000);
+
+  uint16_t ms = millis();
+  uint16_t deltams = ms - sLastMillis ;
+  sLastMillis  = ms;
+  sPseudotime += deltams * msmultiplier;
+  sHue16 += deltams * beatsin88( 400, 5, 9);
+  uint16_t brightnesstheta16 = sPseudotime;
+
+  for ( uint8_t i = 0 ; i < 8; i++) {
+    hue16 += hueinc16;
+    uint8_t hue8 = hue16 / 256;
+
+    brightnesstheta16  += brightnessthetainc16;
+    uint16_t b16 = sin16( brightnesstheta16  ) + 32768;
+
+    uint16_t bri16 = (uint32_t)((uint32_t)b16 * (uint32_t)b16) / 65536;
+    uint8_t bri8 = (uint32_t)(((uint32_t)bri16) * brightdepth) / 65536;
+    bri8 += (255 - brightdepth);
+
+    CRGB newcolor = CHSV( hue8, sat8, bri8);
+
+    for(uint16_t p = 0; p < NUM_LEDS; p++) {
+      uint8_t z = coordsZ[p];
+
+      if(z == i) {
+        nblend(leds[p], newcolor, 64);
+      }
+    }
+  }
+}
+
+void rainbowWavesFall()
+{
+  static uint16_t sPseudotime = 0;
+  static uint16_t sLastMillis = 0;
+  static uint16_t sHue16 = 0;
+
+  uint8_t sat8 = beatsin88( 87, 220, 250);
+  uint8_t brightdepth = beatsin88( 341, 96, 224);
+  uint16_t brightnessthetainc16 = beatsin88( 203, (25 * 256), (40 * 256));
+  uint8_t msmultiplier = beatsin88(147, 23, 60);
+
+  uint16_t hue16 = sHue16;//gHue * 256;
+  uint16_t hueinc16 = beatsin88(113, 1, 3000);
+
+  uint16_t ms = millis();
+  uint16_t deltams = ms - sLastMillis ;
+  sLastMillis  = ms;
+  sPseudotime += deltams * msmultiplier;
+  sHue16 += deltams * beatsin88( 400, 5, 9);
+  uint16_t brightnesstheta16 = sPseudotime;
+
+  for ( uint8_t i = 0 ; i <= maxVZ; i++) {
+    hue16 += hueinc16;
+    uint8_t hue8 = hue16 / 256;
+
+    brightnesstheta16  += brightnessthetainc16;
+    uint16_t b16 = sin16( brightnesstheta16  ) + 32768;
+
+    uint16_t bri16 = (uint32_t)((uint32_t)b16 * (uint32_t)b16) / 65536;
+    uint8_t bri8 = (uint32_t)(((uint32_t)bri16) * brightdepth) / 65536;
+    bri8 += (255 - brightdepth);
+
+    CRGB newcolor = CHSV( hue8, sat8, bri8);
+
+    for(uint16_t p = 0; p < NUM_LEDS; p++) {
+      if(i == coordsVZ[p]) {
+        nblend(leds[p], newcolor, 64);
+      }
+    }
+  }
+}
+
+void rainbowWavesRise()
+{
+  static uint16_t sPseudotime = 0;
+  static uint16_t sLastMillis = 0;
+  static uint16_t sHue16 = 0;
+
+  uint8_t sat8 = beatsin88( 87, 220, 250);
+  uint8_t brightdepth = beatsin88( 341, 96, 224);
+  uint16_t brightnessthetainc16 = beatsin88( 203, (25 * 256), (40 * 256));
+  uint8_t msmultiplier = beatsin88(147, 23, 60);
+
+  uint16_t hue16 = sHue16;//gHue * 256;
+  uint16_t hueinc16 = beatsin88(113, 1, 3000);
+
+  uint16_t ms = millis();
+  uint16_t deltams = ms - sLastMillis ;
+  sLastMillis  = ms;
+  sPseudotime += deltams * msmultiplier;
+  sHue16 += deltams * beatsin88( 400, 5, 9);
+  uint16_t brightnesstheta16 = sPseudotime;
+
+  for ( uint8_t i = 0 ; i <= maxVZ; i++) {
+    hue16 += hueinc16;
+    uint8_t hue8 = hue16 / 256;
+
+    brightnesstheta16  += brightnessthetainc16;
+    uint16_t b16 = sin16( brightnesstheta16  ) + 32768;
+
+    uint16_t bri16 = (uint32_t)((uint32_t)b16 * (uint32_t)b16) / 65536;
+    uint8_t bri8 = (uint32_t)(((uint32_t)bri16) * brightdepth) / 65536;
+    bri8 += (255 - brightdepth);
+
+    CRGB newcolor = CHSV( hue8, sat8, bri8);
+
+    for(uint16_t p = 0; p < NUM_LEDS; p++) {
+      if(i == maxVZ - coordsVZ[p]) {
+        nblend(leds[p], newcolor, 64);
+      }
+    }
+  }
+}
+
+void paletteRainXYZ() {
+  const uint8_t dropCount = 1;
+  const uint8_t maxDim = 7;
+  
+  static uint8_t rainX[dropCount];
+  static uint8_t rainY[dropCount];
+  static uint8_t rainZ[dropCount];
+
+  dimAll(220);
+
+  for(uint8_t i = 0; i < dropCount; i++) {
+    uint8_t x = rainX[i];
+    uint8_t y = rainY[i];
+    uint8_t z = rainZ[i];
+
+    if(x == 0) x = maxDim;
+    if(y == 0) y = maxDim;
+    if(z == 0) z = random8(0, maxDim + 1);
+
+    for(uint16_t p = 0; p < NUM_LEDS; p++) {
+      if(coordsX[p] == x && coordsY[p] == y && coordsZ[p] == z) {
+        CRGB newcolor = ColorFromPalette(palettes[currentPaletteIndex], i);
+        nblend(leds[p], newcolor, 64);
+      }
+    }
+
+    EVERY_N_MILLIS(30) {
+      rainX[i] = x - 1;
+      rainY[i] = y;
+      rainZ[i] = z;
+    }
+  }
+}
+

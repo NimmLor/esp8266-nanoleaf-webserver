@@ -3,7 +3,7 @@ ULTiM8x8 Cube + FastLED + ESP8266 Web Server
 
 Control an RGB LED cube with an ESP8266 via a web browser.
 
-[![ULTiM8x8 Cube + FastLED + ESP8266 Web Server](https://i.imgur.com/SCHDFGx.gif)](https://i.imgur.com/SCHDFGx.gifv)
+[![ULTiM8x8 Cube + FastLED + ESP8266 Web Server](SCHDFGx.gif)](https://i.imgur.com/SCHDFGx.gifv)
 
 Hardware
 --------

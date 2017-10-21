@@ -110,18 +110,18 @@ void drawNoise3d(CRGBPalette16 palette, uint8_t hueReduce = 0)
 }
 
 void rainbowNoise3d() {
-  noisespeedx = 0;
-  noisespeedy = 0;
-  noisespeedz = -1;
+  noisespeedx = -1;
+  noisespeedy = -1;
+  noisespeedz = 0;
   noisescale = 24;
   colorLoop = 0;
   drawNoise3d(RainbowColors_p);
 }
 
 void rainbowStripeNoise3d() {
-  noisespeedx = 0;
-  noisespeedy = 0;
-  noisespeedz = -2;
+  noisespeedx = -1;
+  noisespeedy = -1;
+  noisespeedz = -1;
   noisescale = 24;
   colorLoop = 0;
   drawNoise3d(RainbowStripeColors_p);
@@ -164,9 +164,9 @@ void fireNoise3d() {
 }
 
 void fireNoise23d() {
-  noisespeedx = 3;
-  noisespeedy = 3;
-  noisespeedz = 3;
+  noisespeedx = -3;
+  noisespeedy = -3;
+  noisespeedz = -3;
   noisescale = 32;
   colorLoop = 0;
   drawNoise3d(HeatColors_p);
