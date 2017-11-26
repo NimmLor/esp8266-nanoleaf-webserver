@@ -1,3 +1,8 @@
+// require ./jquery-3.1.1.min.js
+// require ./bootstrap.min.js
+// require ./minicolors.min.js
+// require ./r-websocket.min.js
+
 // used when hosting the site on the ESP8266
 var address = location.hostname;
 var urlBase = "";

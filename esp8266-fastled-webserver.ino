@@ -16,6 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define FASTLED_INTERRUPT_RETRY_COUNT 1
+//#define FASTLED_ALLOW_INTERRUPTS 0
+
 #include <FastLED.h>
 FASTLED_USING_NAMESPACE
 
@@ -50,12 +53,12 @@ ESP8266HTTPUpdateServer httpUpdateServer;
 
 #include "FSBrowser.h"
 
-#define DATA_PIN      D8
-#define LED_TYPE      WS2811
-#define COLOR_ORDER   GRB
-#define NUM_LEDS      24
+#define DATA_PIN      D5
+#define LED_TYPE      WS2812
+#define COLOR_ORDER   RGB
+#define NUM_LEDS      50
 
-#define MILLI_AMPS         2000     // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
+#define MILLI_AMPS         3000     // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
 #define FRAMES_PER_SECOND  120 // here you can control the speed. With the Access Point / Web Server the animations run a bit slower.
 
 CRGB leds[NUM_LEDS];
@@ -245,8 +248,6 @@ void setup() {
 
   initializeWiFi();
 
-  checkWiFi();
-
   httpUpdateServer.setup(&webServer);
 
   webServer.on("/all", HTTP_GET, []() {
@@ -415,10 +416,6 @@ void broadcastString(String name, String value)
 void loop() {
   // Add entropy to random number generator; we use a lot of it.
   random16_add_entropy(random(65535));
-
-  EVERY_N_SECONDS(10) {
-    checkWiFi();
-  }
 
 //  dnsServer.processNextRequest();
   webSocketsServer.loop();
@@ -949,7 +946,7 @@ void sinelon()
 {
   // a colored dot sweeping back and forth, with fading trails
   fadeToBlackBy( leds, NUM_LEDS, 20);
-  int pos = beatsin16(speed, 0, NUM_LEDS);
+  int pos = beatsin16(speed, 0, NUM_LEDS - 1);
   static int prevpos = 0;
   CRGB color = ColorFromPalette(palettes[currentPaletteIndex], gHue, 255);
   if( pos < prevpos ) {
