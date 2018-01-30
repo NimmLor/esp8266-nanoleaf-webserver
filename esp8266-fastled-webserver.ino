@@ -42,6 +42,8 @@ extern "C" {
 
 //#include "Commands.h"
 
+const bool apMode = false;
+
 ESP8266WebServer webServer(80);
 WebSocketsServer webSocketsServer = WebSocketsServer(81);
 ESP8266HTTPUpdateServer httpUpdateServer;
@@ -50,7 +52,7 @@ ESP8266HTTPUpdateServer httpUpdateServer;
 
 #include "FSBrowser.h"
 
-#define DATA_PIN      D8
+#define DATA_PIN      D4
 #define LED_TYPE      WS2811
 #define COLOR_ORDER   GRB
 #define NUM_LEDS      24
@@ -243,7 +245,50 @@ void setup() {
     Serial.printf("\n");
   }
 
-  initializeWiFi();
+  //disabled due to https://github.com/jasoncoon/esp8266-fastled-webserver/issues/62
+  //initializeWiFi();
+
+  if (apMode)
+  {
+    WiFi.mode(WIFI_AP);
+
+    // Do a little work to get a unique-ish name. Append the
+    // last two bytes of the MAC (HEX'd) to "Thing-":
+    uint8_t mac[WL_MAC_ADDR_LENGTH];
+    WiFi.softAPmacAddress(mac);
+    String macID = String(mac[WL_MAC_ADDR_LENGTH - 2], HEX) +
+                   String(mac[WL_MAC_ADDR_LENGTH - 1], HEX);
+    macID.toUpperCase();
+    String AP_NameString = "ESP8266 Thing " + macID;
+
+    char AP_NameChar[AP_NameString.length() + 1];
+    memset(AP_NameChar, 0, AP_NameString.length() + 1);
+
+    for (int i = 0; i < AP_NameString.length(); i++)
+      AP_NameChar[i] = AP_NameString.charAt(i);
+
+    WiFi.softAP(AP_NameChar, WiFiAPPSK);
+
+    Serial.printf("Connect to Wi-Fi access point: %s\n", AP_NameChar);
+    Serial.println("and open http://192.168.4.1 in your browser");
+  }
+  else
+  {
+    WiFi.mode(WIFI_STA);
+    Serial.printf("Connecting to %s\n", ssid);
+    if (String(WiFi.SSID()) != String(ssid)) {
+      WiFi.begin(ssid, password);
+    }
+
+    while (WiFi.status() != WL_CONNECTED) {
+      delay(500);
+      Serial.print(".");
+    }
+
+    Serial.print("Connected! Open http://");
+    Serial.print(WiFi.localIP());
+    Serial.println(" in your browser");
+  }
 
   checkWiFi();
 
