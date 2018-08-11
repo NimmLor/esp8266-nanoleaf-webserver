@@ -16,6 +16,9 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#define FASTLED_INTERRUPT_RETRY_COUNT 1
+// #define FASTLED_ALLOW_INTERRUPTS 0
+
 #include "FastLED.h"
 FASTLED_USING_NAMESPACE
 
@@ -33,7 +36,7 @@ extern "C" {
 //#define RECV_PIN 12
 //IRrecv irReceiver(RECV_PIN);
 
-//#include "Commandrs.h"
+//#include "Commands.h"
 
 const bool apMode = false;
 
@@ -106,6 +109,7 @@ void setup(void) {
   //FastLED.addLeds<LED_TYPE,DATA_PIN,CLK_PIN,COLOR_ORDER>(leds, NUM_LEDS); // for APA102 (Dotstar)
   FastLED.setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(brightness);
+  FastLED.setDither(false);
   FastLED.setMaxPowerInVoltsAndMilliamps(5, MILLI_AMPS);
   fill_solid(leds, NUM_LEDS, solidColor);
   FastLED.show();
@@ -735,7 +739,7 @@ void adjustPattern(bool up)
   if (currentPatternIndex >= patternCount)
     currentPatternIndex = 0;
 
-  if (autoplayEnabled) {
+  if (!autoplayEnabled) {
     EEPROM.write(1, currentPatternIndex);
     EEPROM.commit();
   }
@@ -751,7 +755,7 @@ void setPattern(int value)
 
   currentPatternIndex = value;
 
-  if (autoplayEnabled == 0) {
+  if (!autoplayEnabled) {
     EEPROM.write(1, currentPatternIndex);
     EEPROM.commit();
   }
