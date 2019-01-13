@@ -16,6 +16,40 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+
+//-----------------------------------------CONFIG-----------------------------------------//
+#define LEAFCOUNT 12
+#define PIXELS_PER_LEAF 12
+
+#define DATA_PIN      D4          // The pin where the data line is connected to
+#define LED_TYPE      WS2812B
+#define COLOR_ORDER   GRB         // Color order, if e.g. your Colors are swapped then change the order, (RGB, RBG, GBR, GRB, BRG, BGR)
+
+#define MILLI_AMPS         3000  // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
+#define FRAMES_PER_SECOND  120    // here you can control the speed. With the Access Point / Web Server the animations run a bit slower.
+const bool apMode = false;        // Set to true if the esp8266 should open an Access-Point
+
+
+// Animation Config:
+// ten seconds per color palette makes a good demo
+// 20-120 is better for deployment
+uint8_t secondsPerPalette = 60;
+
+// COOLING: How much does the air cool as it rises?
+// Less cooling = taller flames.  More cooling = shorter flames.
+// Default 50, suggested range 20-100
+uint8_t cooling = 49;
+
+// SPARKING: What chance (out of 255) is there that a new spark will be lit?
+// Higher chance = more roaring fire.  Lower chance = more flickery fire.
+// Default 120, suggested range 50-200.
+uint8_t sparking = 160;
+
+uint8_t speed = 20;
+//---------------------------------------CONFIG END---------------------------------------//
+
+
+
 //#define FASTLED_ALLOW_INTERRUPTS 1
 //#define INTERRUPT_THRESHOLD 1
 #define FASTLED_INTERRUPT_RETRY_COUNT 0
@@ -52,15 +86,9 @@ ESP8266HTTPUpdateServer httpUpdateServer;
 
 #include "FSBrowser.h"
 
-#define DATA_PIN      D5
-#define LED_TYPE      WS2811
-#define COLOR_ORDER   RGB
-#define NUM_LEDS      200
 
-#define MILLI_AMPS         2000 // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
-#define FRAMES_PER_SECOND  120  // here you can control the speed. With the Access Point / Web Server the animations run a bit slower.
+#define NUM_LEDS (PIXELS_PER_LEAF * LEAFCOUNT)
 
-const bool apMode = false;
 
 #include "Secrets.h" // this file is intentionally not included in the sketch, so nobody accidentally commits their secret information.
 // create a Secrets.h file with the following:
@@ -79,21 +107,7 @@ const uint8_t brightnessCount = 5;
 uint8_t brightnessMap[brightnessCount] = { 16, 32, 64, 128, 255 };
 uint8_t brightnessIndex = 0;
 
-// ten seconds per color palette makes a good demo
-// 20-120 is better for deployment
-uint8_t secondsPerPalette = 10;
 
-// COOLING: How much does the air cool as it rises?
-// Less cooling = taller flames.  More cooling = shorter flames.
-// Default 50, suggested range 20-100
-uint8_t cooling = 49;
-
-// SPARKING: What chance (out of 255) is there that a new spark will be lit?
-// Higher chance = more roaring fire.  Lower chance = more flickery fire.
-// Default 120, suggested range 50-200.
-uint8_t sparking = 60;
-
-uint8_t speed = 30;
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -104,13 +118,16 @@ extern const TProgmemRGBGradientPalettePtr gGradientPalettes[];
 
 uint8_t gCurrentPaletteNumber = 0;
 
-CRGBPalette16 gCurrentPalette( CRGB::Black);
-CRGBPalette16 gTargetPalette( gGradientPalettes[0] );
+CRGBPalette16 gCurrentPalette(CRGB::Black);
+CRGBPalette16 gTargetPalette(gGradientPalettes[0]);
 
 CRGBPalette16 IceColors_p = CRGBPalette16(CRGB::Black, CRGB::Blue, CRGB::Aqua, CRGB::White);
 
 uint8_t currentPatternIndex = 0; // Index number of which pattern is current
 uint8_t autoplay = 0;
+
+uint8_t allLeafs = 1;    // Sets if all leafs should get the same color
+uint8_t selectedLeaf = 1;    // Sets position of leaf to color
 
 uint8_t autoplayDuration = 10;
 unsigned long autoPlayTimeout = 0;
@@ -129,7 +146,7 @@ void dimAll(byte value)
   }
 }
 
-typedef void (*Pattern)();
+typedef void(*Pattern)();
 typedef Pattern PatternList[];
 typedef struct {
   Pattern pattern;
@@ -223,7 +240,6 @@ void setup() {
   Serial.setDebugOutput(true);
 
   FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS);         // for WS2812 (Neopixel)
-  //FastLED.addLeds<LED_TYPE,DATA_PIN,CLK_PIN,COLOR_ORDER>(leds, NUM_LEDS); // for APA102 (Dotstar)
   FastLED.setDither(false);
   FastLED.setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(brightness);
@@ -239,14 +255,14 @@ void setup() {
   //  irReceiver.enableIRIn(); // Start the receiver
 
   Serial.println();
-  Serial.print( F("Heap: ") ); Serial.println(system_get_free_heap_size());
-  Serial.print( F("Boot Vers: ") ); Serial.println(system_get_boot_version());
-  Serial.print( F("CPU: ") ); Serial.println(system_get_cpu_freq());
-  Serial.print( F("SDK: ") ); Serial.println(system_get_sdk_version());
-  Serial.print( F("Chip ID: ") ); Serial.println(system_get_chip_id());
-  Serial.print( F("Flash ID: ") ); Serial.println(spi_flash_get_id());
-  Serial.print( F("Flash Size: ") ); Serial.println(ESP.getFlashChipRealSize());
-  Serial.print( F("Vcc: ") ); Serial.println(ESP.getVcc());
+  Serial.print(F("Heap: ")); Serial.println(system_get_free_heap_size());
+  Serial.print(F("Boot Vers: ")); Serial.println(system_get_boot_version());
+  Serial.print(F("CPU: ")); Serial.println(system_get_cpu_freq());
+  Serial.print(F("SDK: ")); Serial.println(system_get_sdk_version());
+  Serial.print(F("Chip ID: ")); Serial.println(system_get_chip_id());
+  Serial.print(F("Flash ID: ")); Serial.println(spi_flash_get_id());
+  Serial.print(F("Flash Size: ")); Serial.println(ESP.getFlashChipRealSize());
+  Serial.print(F("Vcc: ")); Serial.println(ESP.getVcc());
   Serial.println();
 
   SPIFFS.begin();
@@ -274,7 +290,7 @@ void setup() {
     uint8_t mac[WL_MAC_ADDR_LENGTH];
     WiFi.softAPmacAddress(mac);
     String macID = String(mac[WL_MAC_ADDR_LENGTH - 2], HEX) +
-                   String(mac[WL_MAC_ADDR_LENGTH - 1], HEX);
+      String(mac[WL_MAC_ADDR_LENGTH - 1], HEX);
     macID.toUpperCase();
     String AP_NameString = "ESP8266 Thing " + macID;
 
@@ -413,6 +429,18 @@ void setup() {
     sendInt(autoplayDuration);
   });
 
+  webServer.on("/allLeafs", HTTP_POST, []() {
+    String value = webServer.arg("value");
+    setAllLeafs(value.toInt());
+    sendInt(allLeafs);
+  });
+
+  webServer.on("/selectedLeaf", HTTP_POST, []() {
+    String value = webServer.arg("value");
+    setSelectedLeaf(value.toInt());
+    sendInt(selectedLeaf);
+  });
+
   //list directory
   webServer.on("/list", HTTP_GET, handleFileList);
   //load editor
@@ -499,14 +527,14 @@ void loop() {
   // }
 
   // change to a new cpt-city gradient palette
-  EVERY_N_SECONDS( secondsPerPalette ) {
-    gCurrentPaletteNumber = addmod8( gCurrentPaletteNumber, 1, gGradientPaletteCount);
-    gTargetPalette = gGradientPalettes[ gCurrentPaletteNumber ];
+  EVERY_N_SECONDS(secondsPerPalette) {
+    gCurrentPaletteNumber = addmod8(gCurrentPaletteNumber, 1, gGradientPaletteCount);
+    gTargetPalette = gGradientPalettes[gCurrentPaletteNumber];
   }
 
-  EVERY_N_MILLISECONDS(40) {
+  EVERY_N_MILLISECONDS(80) {
     // slowly blend the current palette to the next
-    nblendPaletteTowardPalette( gCurrentPalette, gTargetPalette, 8);
+    nblendPaletteTowardPalette(gCurrentPalette, gTargetPalette, 8);
     gHue++;  // slowly cycle the "base color" through the rainbow
   }
 
@@ -561,212 +589,7 @@ void loop() {
 //  }
 //}
 
-//void handleIrInput()
-//{
-//  InputCommand command = readCommand();
-//
-//  if (command != InputCommand::None) {
-//    Serial.print("command: ");
-//    Serial.println((int) command);
-//  }
-//
-//  switch (command) {
-//    case InputCommand::Up: {
-//        adjustPattern(true);
-//        break;
-//      }
-//    case InputCommand::Down: {
-//        adjustPattern(false);
-//        break;
-//      }
-//    case InputCommand::Power: {
-//        setPower(power == 0 ? 1 : 0);
-//        break;
-//      }
-//    case InputCommand::BrightnessUp: {
-//        adjustBrightness(true);
-//        break;
-//      }
-//    case InputCommand::BrightnessDown: {
-//        adjustBrightness(false);
-//        break;
-//      }
-//    case InputCommand::PlayMode: { // toggle pause/play
-//        setAutoplay(!autoplay);
-//        break;
-//      }
-//
-//    // pattern buttons
-//
-//    case InputCommand::Pattern1: {
-//        setPattern(0);
-//        break;
-//      }
-//    case InputCommand::Pattern2: {
-//        setPattern(1);
-//        break;
-//      }
-//    case InputCommand::Pattern3: {
-//        setPattern(2);
-//        break;
-//      }
-//    case InputCommand::Pattern4: {
-//        setPattern(3);
-//        break;
-//      }
-//    case InputCommand::Pattern5: {
-//        setPattern(4);
-//        break;
-//      }
-//    case InputCommand::Pattern6: {
-//        setPattern(5);
-//        break;
-//      }
-//    case InputCommand::Pattern7: {
-//        setPattern(6);
-//        break;
-//      }
-//    case InputCommand::Pattern8: {
-//        setPattern(7);
-//        break;
-//      }
-//    case InputCommand::Pattern9: {
-//        setPattern(8);
-//        break;
-//      }
-//    case InputCommand::Pattern10: {
-//        setPattern(9);
-//        break;
-//      }
-//    case InputCommand::Pattern11: {
-//        setPattern(10);
-//        break;
-//      }
-//    case InputCommand::Pattern12: {
-//        setPattern(11);
-//        break;
-//      }
-//
-//    // custom color adjustment buttons
-//
-//    case InputCommand::RedUp: {
-//        solidColor.red += 8;
-//        setSolidColor(solidColor);
-//        break;
-//      }
-//    case InputCommand::RedDown: {
-//        solidColor.red -= 8;
-//        setSolidColor(solidColor);
-//        break;
-//      }
-//    case InputCommand::GreenUp: {
-//        solidColor.green += 8;
-//        setSolidColor(solidColor);
-//        break;
-//      }
-//    case InputCommand::GreenDown: {
-//        solidColor.green -= 8;
-//        setSolidColor(solidColor);
-//        break;
-//      }
-//    case InputCommand::BlueUp: {
-//        solidColor.blue += 8;
-//        setSolidColor(solidColor);
-//        break;
-//      }
-//    case InputCommand::BlueDown: {
-//        solidColor.blue -= 8;
-//        setSolidColor(solidColor);
-//        break;
-//      }
-//
-//    // color buttons
-//
-//    case InputCommand::Red: {
-//        setSolidColor(CRGB::Red);
-//        break;
-//      }
-//    case InputCommand::RedOrange: {
-//        setSolidColor(CRGB::OrangeRed);
-//        break;
-//      }
-//    case InputCommand::Orange: {
-//        setSolidColor(CRGB::Orange);
-//        break;
-//      }
-//    case InputCommand::YellowOrange: {
-//        setSolidColor(CRGB::Goldenrod);
-//        break;
-//      }
-//    case InputCommand::Yellow: {
-//        setSolidColor(CRGB::Yellow);
-//        break;
-//      }
-//
-//    case InputCommand::Green: {
-//        setSolidColor(CRGB::Green);
-//        break;
-//      }
-//    case InputCommand::Lime: {
-//        setSolidColor(CRGB::Lime);
-//        break;
-//      }
-//    case InputCommand::Aqua: {
-//        setSolidColor(CRGB::Aqua);
-//        break;
-//      }
-//    case InputCommand::Teal: {
-//        setSolidColor(CRGB::Teal);
-//        break;
-//      }
-//    case InputCommand::Navy: {
-//        setSolidColor(CRGB::Navy);
-//        break;
-//      }
-//
-//    case InputCommand::Blue: {
-//        setSolidColor(CRGB::Blue);
-//        break;
-//      }
-//    case InputCommand::RoyalBlue: {
-//        setSolidColor(CRGB::RoyalBlue);
-//        break;
-//      }
-//    case InputCommand::Purple: {
-//        setSolidColor(CRGB::Purple);
-//        break;
-//      }
-//    case InputCommand::Indigo: {
-//        setSolidColor(CRGB::Indigo);
-//        break;
-//      }
-//    case InputCommand::Magenta: {
-//        setSolidColor(CRGB::Magenta);
-//        break;
-//      }
-//
-//    case InputCommand::White: {
-//        setSolidColor(CRGB::White);
-//        break;
-//      }
-//    case InputCommand::Pink: {
-//        setSolidColor(CRGB::Pink);
-//        break;
-//      }
-//    case InputCommand::LightPink: {
-//        setSolidColor(CRGB::LightPink);
-//        break;
-//      }
-//    case InputCommand::BabyBlue: {
-//        setSolidColor(CRGB::CornflowerBlue);
-//        break;
-//      }
-//    case InputCommand::LightBlue: {
-//        setSolidColor(CRGB::LightBlue);
-//        break;
-//      }
-//  }
-//}
+
 
 void loadSettings()
 {
@@ -832,6 +655,26 @@ void setAutoplayDuration(uint8_t value)
   autoPlayTimeout = millis() + (autoplayDuration * 1000);
 
   broadcastInt("autoplayDuration", autoplayDuration);
+}
+
+void setAllLeafs(uint8_t value)
+{
+  allLeafs = value == 0 ? 0 : 1;
+
+  EEPROM.write(8, allLeafs);
+  EEPROM.commit();
+
+  broadcastInt("allLeafs", allLeafs);
+}
+
+void setSelectedLeaf(uint8_t value)
+{
+  selectedLeaf = value;
+
+  EEPROM.write(9, selectedLeaf);
+  EEPROM.commit();
+
+  broadcastInt("selectedLeaf", selectedLeaf);
 }
 
 void setSolidColor(CRGB color)
@@ -974,7 +817,8 @@ void strandTest()
 
 void showSolidColor()
 {
-  fill_solid(leds, NUM_LEDS, solidColor);
+  if (allLeafs == 0 && selectedLeaf > 0 && selectedLeaf <= LEAFCOUNT)fill_solid(leds + PIXELS_PER_LEAF * (selectedLeaf - 1), PIXELS_PER_LEAF, solidColor);
+  else fill_solid(leds, NUM_LEDS, solidColor);
 }
 
 // Patterns from FastLED example DemoReel100: https://github.com/FastLED/FastLED/blob/master/examples/DemoReel100/DemoReel100.ino
@@ -982,7 +826,13 @@ void showSolidColor()
 void rainbow()
 {
   // FastLED's built-in rainbow generator
-  fill_rainbow( leds, NUM_LEDS, gHue, 255 / NUM_LEDS);
+  for (int i = 0; i < LEAFCOUNT; i++)
+  {
+    uint8_t myHue = (gHue + i * (255 / LEAFCOUNT));
+    gHue = gHue > 255 ? gHue - 255 : gHue;
+    //Serial.printf("I:%d \tH:%d\n", i*PIXELS_PER_LEAF, myHue);
+    fill_solid(leds + i * PIXELS_PER_LEAF, PIXELS_PER_LEAF, CHSV(myHue, 255, 255));
+  }
 }
 
 void rainbowWithGlitter()
@@ -1000,23 +850,30 @@ void rainbowSolid()
 void confetti()
 {
   // random colored speckles that blink in and fade smoothly
-  fadeToBlackBy( leds, NUM_LEDS, 10);
-  int pos = random16(NUM_LEDS);
+  fadeToBlackBy(leds, NUM_LEDS, 3);
+  int pos = random16(LEAFCOUNT * 3);
   // leds[pos] += CHSV( gHue + random8(64), 200, 255);
-  leds[pos] += ColorFromPalette(palettes[currentPaletteIndex], gHue + random8(64));
+  int val = gHue + random8(64);
+  for (int i = 0; i < (PIXELS_PER_LEAF / 3); i++)
+  {
+
+    leds[i + pos * (PIXELS_PER_LEAF / 3)] += ColorFromPalette(palettes[currentPaletteIndex], val);
+    //Serial.printf("POS:%d\n", i + pos);
+  }
 }
 
 void sinelon()
 {
   // a colored dot sweeping back and forth, with fading trails
-  fadeToBlackBy( leds, NUM_LEDS, 20);
+  fadeToBlackBy(leds, NUM_LEDS, 20);
   int pos = beatsin16(speed, 0, NUM_LEDS);
   static int prevpos = 0;
   CRGB color = ColorFromPalette(palettes[currentPaletteIndex], gHue, 255);
-  if ( pos < prevpos ) {
-    fill_solid( leds + pos, (prevpos - pos) + 1, color);
-  } else {
-    fill_solid( leds + prevpos, (pos - prevpos) + 1, color);
+  if (pos < prevpos) {
+    fill_solid(leds + pos, (prevpos - pos) + 1, color);
+  }
+  else {
+    fill_solid(leds + prevpos, (pos - prevpos) + 1, color);
   }
   prevpos = pos;
 }
@@ -1024,41 +881,54 @@ void sinelon()
 void bpm()
 {
   // colored stripes pulsing at a defined Beats-Per-Minute (BPM)
-  uint8_t beat = beatsin8( speed, 64, 255);
+  uint8_t beat = beatsin8(speed, 64, 255);
   CRGBPalette16 palette = palettes[currentPaletteIndex];
-  for ( int i = 0; i < NUM_LEDS; i++) {
-    leds[i] = ColorFromPalette(palette, gHue + (i * 2), beat - gHue + (i * 10));
+  for (int i = 0; i < LEAFCOUNT; i++) {
+    for (int i2 = 0; i2 < PIXELS_PER_LEAF; i2++)leds[i*PIXELS_PER_LEAF + i2] = ColorFromPalette(palette, gHue + (i * 2), beat - gHue + (i * 10));
   }
 }
 
+// BACKUP
+/*
+void bpm()
+{
+  // colored stripes pulsing at a defined Beats-Per-Minute (BPM)
+  uint8_t beat = beatsin8(speed, 64, 255);
+  CRGBPalette16 palette = palettes[currentPaletteIndex];
+  for (int i = 0; i < NUM_LEDS; i++) {
+    leds[i] = ColorFromPalette(palette, gHue + (i * 2), beat - gHue + (i * 10));
+  }
+}
+*/
+
 void juggle()
 {
-  static uint8_t    numdots =   4; // Number of dots in use.
-  static uint8_t   faderate =   2; // How long should the trails be. Very low value = longer trails.
-  static uint8_t     hueinc =  255 / numdots - 1; // Incremental change in hue between each dot.
-  static uint8_t    thishue =   0; // Starting hue.
-  static uint8_t     curhue =   0; // The current hue
+  static uint8_t    numdots = 4; // Number of dots in use.
+  static uint8_t   faderate = 2; // How long should the trails be. Very low value = longer trails.
+  static uint8_t     hueinc = 255 / numdots - 1; // Incremental change in hue between each dot.
+  static uint8_t    thishue = 0; // Starting hue.
+  static uint8_t     curhue = 0; // The current hue
   static uint8_t    thissat = 255; // Saturation of the colour.
   static uint8_t thisbright = 255; // How bright should the LED/display be.
-  static uint8_t   basebeat =   5; // Higher = faster movement.
+  static uint8_t   basebeat = 5; // Higher = faster movement.
 
-  static uint8_t lastSecond =  99;  // Static variable, means it's only defined once. This is our 'debounce' variable.
+  static uint8_t lastSecond = 99;  // Static variable, means it's only defined once. This is our 'debounce' variable.
   uint8_t secondHand = (millis() / 1000) % 30; // IMPORTANT!!! Change '30' to a different value to change duration of the loop.
 
   if (lastSecond != secondHand) { // Debounce to make sure we're not repeating an assignment.
     lastSecond = secondHand;
     switch (secondHand) {
-      case  0: numdots = 1; basebeat = 20; hueinc = 16; faderate = 2; thishue = 0; break; // You can change values here, one at a time , or altogether.
-      case 10: numdots = 4; basebeat = 10; hueinc = 16; faderate = 8; thishue = 128; break;
-      case 20: numdots = 8; basebeat =  3; hueinc =  0; faderate = 8; thishue = random8(); break; // Only gets called once, and not continuously for the next several seconds. Therefore, no rainbows.
-      case 30: break;
+    case  0: numdots = 1; basebeat = 20; hueinc = 16; faderate = 2; thishue = 0; break; // You can change values here, one at a time , or altogether.
+    case 10: numdots = 4; basebeat = 10; hueinc = 16; faderate = 8; thishue = 128; break;
+    case 20: numdots = 8; basebeat = 3; hueinc = 0; faderate = 8; thishue = random8(); break; // Only gets called once, and not continuously for the next several seconds. Therefore, no rainbows.
+    case 30: break;
     }
   }
 
   // Several colored dots, weaving in and out of sync with each other
   curhue = thishue; // Reset the hue values.
   fadeToBlackBy(leds, NUM_LEDS, faderate);
-  for ( int i = 0; i < numdots; i++) {
+  for (int i = 0; i < numdots; i++) {
     //beat16 is a FastLED 3.1 function
     leds[beatsin16(basebeat + i + numdots, 0, NUM_LEDS)] += CHSV(gHue + curhue, thissat, thisbright);
     curhue += hueinc;
@@ -1084,6 +954,55 @@ void pride()
   static uint16_t sLastMillis = 0;
   static uint16_t sHue16 = 0;
 
+  uint8_t sat8 = beatsin88(87, 220, 250);
+  uint8_t brightdepth = beatsin88(341, 96, 224);
+  uint16_t brightnessthetainc16 = beatsin88(203, (25 * 256), (40 * 256));
+  uint8_t msmultiplier = beatsin88(147, 23, 60);
+
+  uint16_t hue16 = sHue16;//gHue * 256;
+  uint16_t hueinc16 = beatsin88(113, 1, 3000);
+
+  uint16_t ms = millis();
+  uint16_t deltams = ms - sLastMillis;
+  sLastMillis = ms;
+  sPseudotime += deltams * msmultiplier;
+  sHue16 += deltams * beatsin88(400, 5, 9);
+  uint16_t brightnesstheta16 = sPseudotime;
+
+  for (uint16_t i = 0; i < (LEAFCOUNT * 3); i++) {
+    hue16 += hueinc16;
+    uint8_t hue8 = hue16 / 256;
+
+    brightnesstheta16 += brightnessthetainc16;
+    uint16_t b16 = sin16(brightnesstheta16) + 32768;
+
+    uint16_t bri16 = (uint32_t)((uint32_t)b16 * (uint32_t)b16) / 65536;
+    uint8_t bri8 = (uint32_t)(((uint32_t)bri16) * brightdepth) / 65536;
+    bri8 += (255 - brightdepth);
+
+    CRGB newcolor = CHSV(hue8, sat8, bri8);
+
+    uint16_t pixelnumber = i;
+    pixelnumber = ((LEAFCOUNT * 3) - 1) - pixelnumber;
+
+    for (int i2 = 0; i2 < (PIXELS_PER_LEAF / 3); i2++)
+    {
+      nblend(leds[pixelnumber*(PIXELS_PER_LEAF / 3) + i2], newcolor, 64);
+    }
+  }
+}
+
+//#############BACKUP########################
+/*
+// Pride2015 by Mark Kriegsman: https://gist.github.com/kriegsman/964de772d64c502760e5
+// This function draws rainbows with an ever-changing,
+// widely-varying set of parameters.
+void pride()
+{
+  static uint16_t sPseudotime = 0;
+  static uint16_t sLastMillis = 0;
+  static uint16_t sHue16 = 0;
+
   uint8_t sat8 = beatsin88( 87, 220, 250);
   uint8_t brightdepth = beatsin88( 341, 96, 224);
   uint16_t brightnessthetainc16 = beatsin88( 203, (25 * 256), (40 * 256));
@@ -1100,24 +1019,26 @@ void pride()
   uint16_t brightnesstheta16 = sPseudotime;
 
   for ( uint16_t i = 0 ; i < NUM_LEDS; i++) {
-    hue16 += hueinc16;
-    uint8_t hue8 = hue16 / 256;
+  hue16 += hueinc16;
+  uint8_t hue8 = hue16 / 256;
 
-    brightnesstheta16  += brightnessthetainc16;
-    uint16_t b16 = sin16( brightnesstheta16  ) + 32768;
+  brightnesstheta16  += brightnessthetainc16;
+  uint16_t b16 = sin16( brightnesstheta16  ) + 32768;
 
-    uint16_t bri16 = (uint32_t)((uint32_t)b16 * (uint32_t)b16) / 65536;
-    uint8_t bri8 = (uint32_t)(((uint32_t)bri16) * brightdepth) / 65536;
-    bri8 += (255 - brightdepth);
+  uint16_t bri16 = (uint32_t)((uint32_t)b16 * (uint32_t)b16) / 65536;
+  uint8_t bri8 = (uint32_t)(((uint32_t)bri16) * brightdepth) / 65536;
+  bri8 += (255 - brightdepth);
 
-    CRGB newcolor = CHSV( hue8, sat8, bri8);
+  CRGB newcolor = CHSV( hue8, sat8, bri8);
 
-    uint16_t pixelnumber = i;
-    pixelnumber = (NUM_LEDS - 1) - pixelnumber;
+  uint16_t pixelnumber = i;
+  pixelnumber = (NUM_LEDS - 1) - pixelnumber;
 
-    nblend( leds[pixelnumber], newcolor, 64);
+  nblend( leds[pixelnumber], newcolor, 64);
   }
 }
+
+*/
 
 void radialPaletteShift()
 {
@@ -1141,23 +1062,23 @@ void heatMap(CRGBPalette16 palette, bool up)
   byte colorindex;
 
   // Step 1.  Cool down every cell a little
-  for ( uint16_t i = 0; i < NUM_LEDS; i++) {
-    heat[i] = qsub8( heat[i],  random8(0, ((cooling * 10) / NUM_LEDS) + 2));
+  for (uint16_t i = 0; i < NUM_LEDS; i++) {
+    heat[i] = qsub8(heat[i], random8(0, ((cooling * 10) / NUM_LEDS) + 2));
   }
 
   // Step 2.  Heat from each cell drifts 'up' and diffuses a little
-  for ( uint16_t k = NUM_LEDS - 1; k >= 2; k--) {
-    heat[k] = (heat[k - 1] + heat[k - 2] + heat[k - 2] ) / 3;
+  for (uint16_t k = NUM_LEDS - 1; k >= 2; k--) {
+    heat[k] = (heat[k - 1] + heat[k - 2] + heat[k - 2]) / 3;
   }
 
   // Step 3.  Randomly ignite new 'sparks' of heat near the bottom
-  if ( random8() < sparking ) {
+  if (random8() < sparking) {
     int y = random8(7);
-    heat[y] = qadd8( heat[y], random8(160, 255) );
+    heat[y] = qadd8(heat[y], random8(160, 255));
   }
 
   // Step 4.  Map from heat cells to LED colors
-  for ( uint16_t j = 0; j < NUM_LEDS; j++) {
+  for (uint16_t j = 0; j < NUM_LEDS; j++) {
     // Scale the heat value from 0-255 down to 0-240
     // for best results with color palettes.
     colorindex = scale8(heat[j], 190);
@@ -1173,10 +1094,10 @@ void heatMap(CRGBPalette16 palette, bool up)
   }
 }
 
-void addGlitter( uint8_t chanceOfGlitter)
+void addGlitter(uint8_t chanceOfGlitter)
 {
-  if ( random8() < chanceOfGlitter) {
-    leds[ random16(NUM_LEDS) ] += CRGB::White;
+  if (random8() < chanceOfGlitter) {
+    leds[random16(NUM_LEDS)] += CRGB::White;
   }
 }
 
@@ -1188,58 +1109,59 @@ void addGlitter( uint8_t chanceOfGlitter)
 extern const TProgmemRGBGradientPalettePtr gGradientPalettes[];
 extern const uint8_t gGradientPaletteCount;
 
-uint8_t beatsaw8( accum88 beats_per_minute, uint8_t lowest = 0, uint8_t highest = 255,
-                  uint32_t timebase = 0, uint8_t phase_offset = 0)
+uint8_t beatsaw8(accum88 beats_per_minute, uint8_t lowest = 0, uint8_t highest = 255,
+  uint32_t timebase = 0, uint8_t phase_offset = 0)
 {
-  uint8_t beat = beat8( beats_per_minute, timebase);
+  uint8_t beat = beat8(beats_per_minute, timebase);
   uint8_t beatsaw = beat + phase_offset;
   uint8_t rangewidth = highest - lowest;
-  uint8_t scaledbeat = scale8( beatsaw, rangewidth);
+  uint8_t scaledbeat = scale8(beatsaw, rangewidth);
   uint8_t result = lowest + scaledbeat;
   return result;
 }
 
 void colorWaves()
 {
-  colorwaves( leds, NUM_LEDS, gCurrentPalette);
+  colorwaves(leds, LEAFCOUNT * 3, gCurrentPalette);
 }
 
 // ColorWavesWithPalettes by Mark Kriegsman: https://gist.github.com/kriegsman/8281905786e8b2632aeb
 // This function draws color waves with an ever-changing,
 // widely-varying set of parameters, using a color palette.
-void colorwaves( CRGB* ledarray, uint16_t numleds, CRGBPalette16& palette)
+void colorwaves(CRGB* ledarray, uint16_t numleds, CRGBPalette16& palette)
 {
   static uint16_t sPseudotime = 0;
   static uint16_t sLastMillis = 0;
   static uint16_t sHue16 = 0;
 
   // uint8_t sat8 = beatsin88( 87, 220, 250);
-  uint8_t brightdepth = beatsin88( 341, 96, 224);
-  uint16_t brightnessthetainc16 = beatsin88( 203, (25 * 256), (40 * 256));
+  uint8_t brightdepth = beatsin88(341, 96, 224);
+  uint16_t brightnessthetainc16 = beatsin88(203, (25 * 256), (40 * 256));
   uint8_t msmultiplier = beatsin88(147, 23, 60);
 
   uint16_t hue16 = sHue16;//gHue * 256;
   uint16_t hueinc16 = beatsin88(113, 300, 1500);
 
   uint16_t ms = millis();
-  uint16_t deltams = ms - sLastMillis ;
-  sLastMillis  = ms;
+  uint16_t deltams = ms - sLastMillis;
+  sLastMillis = ms;
   sPseudotime += deltams * msmultiplier;
-  sHue16 += deltams * beatsin88( 400, 5, 9);
+  sHue16 += deltams * beatsin88(400, 5, 9);
   uint16_t brightnesstheta16 = sPseudotime;
 
-  for ( uint16_t i = 0 ; i < numleds; i++) {
+  for (uint16_t i = 0; i < numleds; i++) {
     hue16 += hueinc16;
     uint8_t hue8 = hue16 / 256;
     uint16_t h16_128 = hue16 >> 7;
-    if ( h16_128 & 0x100) {
+    if (h16_128 & 0x100) {
       hue8 = 255 - (h16_128 >> 1);
-    } else {
+    }
+    else {
       hue8 = h16_128 >> 1;
     }
 
-    brightnesstheta16  += brightnessthetainc16;
-    uint16_t b16 = sin16( brightnesstheta16  ) + 32768;
+    brightnesstheta16 += brightnessthetainc16;
+    uint16_t b16 = sin16(brightnesstheta16) + 32768;
 
     uint16_t bri16 = (uint32_t)((uint32_t)b16 * (uint32_t)b16) / 65536;
     uint8_t bri8 = (uint32_t)(((uint32_t)bri16) * brightdepth) / 65536;
@@ -1247,22 +1169,27 @@ void colorwaves( CRGB* ledarray, uint16_t numleds, CRGBPalette16& palette)
 
     uint8_t index = hue8;
     //index = triwave8( index);
-    index = scale8( index, 240);
+    index = scale8(index, 240);
 
-    CRGB newcolor = ColorFromPalette( palette, index, bri8);
+    CRGB newcolor = ColorFromPalette(palette, index, bri8);
 
     uint16_t pixelnumber = i;
-    pixelnumber = (numleds - 1) - pixelnumber;
+    //pixelnumber = (numleds - 1) - pixelnumber;
+    //nblend(ledarray[pixelnumber], newcolor, 128);
 
-    nblend( ledarray[pixelnumber], newcolor, 128);
+    pixelnumber = ((LEAFCOUNT * 3) - 1) - pixelnumber;
+    for (int i2 = 0; i2 < (PIXELS_PER_LEAF / 3); i2++)
+    {
+      nblend(leds[pixelnumber*(PIXELS_PER_LEAF / 3) + i2], newcolor, 128);
+    }
   }
 }
 
 // Alternate rendering function just scrolls the current palette
 // across the defined LED strip.
-void palettetest( CRGB* ledarray, uint16_t numleds, const CRGBPalette16& gCurrentPalette)
+void palettetest(CRGB* ledarray, uint16_t numleds, const CRGBPalette16& gCurrentPalette)
 {
   static uint8_t startindex = 0;
   startindex--;
-  fill_palette( ledarray, numleds, startindex, (256 / NUM_LEDS) + 1, gCurrentPalette, 255, LINEARBLEND);
+  fill_palette(ledarray, numleds, startindex, (256 / NUM_LEDS) + 1, gCurrentPalette, 255, LINEARBLEND);
 }

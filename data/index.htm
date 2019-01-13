@@ -1,27 +1,20 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ESP8266 + FastLED by Evil Genius Labs</title>
-
   <!-- request CSS from internet CDN -->
   <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> -->
   <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-minicolors/2.2.4/jquery.minicolors.min.css" integrity="sha256-4wnSkPYU5B4yngAlx/rEb8LdfMah4teUth4AfhGEuaY=" crossorigin="anonymous" /> -->
-
   <!-- request CSS from the ESP8266 web server -->
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <link rel="stylesheet" href="css/minicolors.min.css">
-
   <link rel="stylesheet" href="css/styles.css">
-
   <link rel="icon" href="images/atom196.png">
 </head>
-
 <body>
-
   <nav class="navbar navbar-default navbar-static-top" id="top" role="banner">
     <div class="container">
       <div class="navbar-header">
@@ -36,7 +29,7 @@
       </div>
       <div class="collapse navbar-collapse" id="navbar-collapse-1">
         <ul class="nav navbar-nav">
-          <li class="active"><a href="/">ESP8266 + FastLED <span class="sr-only">(current)</span></a></li>
+          <li class="active"><a href="/">DIY Nanoleaf control <span class="sr-only">(current)</span></a></li>
           <li><a href="/simple.htm" target="_blank" title="Simple Mode">Simple</a></li>
           <li><a href="/edit.htm" target="_blank" title="Edit Files">Files</a></li>
           <li><a href="/update" target="_blank" title="Update Firmware">Firmware</a></li>
@@ -52,22 +45,15 @@
       </div>
     </div>
   </nav>
-
   <div id="container" class="container">
-
-    <form class="form-horizontal" id="form">
-    </form>
-
+    <form class="form-horizontal" id="form"></form>
   </div>
-
   <div id="templates" style="display: none">
-
     <div id="sectionTemplate" class="form-group">
       <div class="col-sm-12">
         <hr style="margin-bottom: 5px;margin-top: 5px;" />
       </div>
     </div>
-
     <div id="numberTemplate" class="form-group">
       <label class="col-sm-2 control-label"></label>
       <div class="col-sm-2">
@@ -77,7 +63,6 @@
         <input class="form-control slider" type="range" step="1" min="0" max="255" />
       </div>
     </div>
-
     <div id="booleanTemplate" class="form-group">
       <label class="col-sm-2 control-label"></label>
       <div class="col-sm-10">
@@ -87,7 +72,6 @@
         </div>
       </div>
     </div>
-
     <div id="selectTemplate" class="form-group">
       <label class="col-sm-2 control-label"></label>
       <div class="col-sm-8">
@@ -107,8 +91,36 @@
       </div>
     </div>
 
+    <div id="booleanTemplate" class="form-group">
+      <label class="col-sm-2 control-label"></label>
+      <div class="col-sm-10">
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-default" id="btnOn">On</button>
+          <button type="button" class="btn btn-default" id="btnOff">Off</button>
+        </div>
+      </div>
+    </div>
+    <div id="selectTemplate" class="form-group">
+      <label class="col-sm-2 control-label"></label>
+      <div class="col-sm-8">
+        <select class="form-control"><select>
+      </div>
+      <div class="col-sm-2">
+        <div class="btn-group" role="group" aria-label="...">
+          <button type="button" class="btn btn-default btn-previous"
+                  aria-label="Previous" title="Previous">
+            <span class="glyphicon glyphicon-chevron-left"></span>
+          </button>
+          <button type="button" class="btn btn-default btn-next"
+                  aria-label="Next" title="Next">
+            <span class="glyphicon glyphicon-chevron-right"></span>
+          </button>
+        </div>
+      </div>
+    </div>
     <div id="colorPaletteTemplate" class="form-group">
       <label class="col-sm-2 control-label color-label"></label>
+
       <div class="col-sm-10">
         <div class="btn-group btn-group-justified" role="group">
           <div class="btn-group" role="group">
@@ -153,7 +165,6 @@
         </div>
       </div>
     </div>
-
     <div id="colorTemplate">
       <div class="form-group">
         <!-- <label class="col-sm-2 control-label color-label"></label> -->
@@ -189,9 +200,7 @@
         </div>
       </div>
     </div>
-
   </div>
-
   <nav class="navbar navbar-default navbar-fixed-bottom">
     <div class="container">
       <div class="navbar-header">
@@ -214,21 +223,16 @@
       </div>
     </div>
   </nav>
-
   <!-- request js from internet CDN -->
   <!-- <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script> -->
   <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script> -->
   <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-minicolors/2.2.4/jquery.minicolors.min.js" integrity="sha256-XAFQ9dZ6hy8p/GRhU8h/8pMvM1etymiJLZW1CiHV3bQ=" crossorigin="anonymous"></script> -->
   <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.min.js" integrity="sha256-A4JwlcDvqO4JXpvEtvWY1RH8JAEMu5W21wP8GUXLUNs=" crossorigin="anonymous"></script> -->
-
   <!-- request js from the ESP8266 web server -->
   <script src="js/jquery-3.1.1.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
   <script src="js/minicolors.min.js"></script>
   <script src="js/r-websocket.min.js"></script>
-
   <script src="js/app.js"></script>
-
 </body>
-
 </html>

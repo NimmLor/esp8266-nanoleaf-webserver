@@ -81,6 +81,14 @@ String getAutoplayDuration() {
   return String(autoplayDuration);
 }
 
+String getAllLeafs() {
+  return String(allLeafs);
+}
+
+String getSelectedLeaf() {
+  return String(selectedLeaf);
+}
+
 String getSolidColor() {
   return String(solidColor.r) + "," + String(solidColor.g) + "," + String(solidColor.b);
 }
@@ -114,6 +122,9 @@ FieldList fields = {
   { "autoplay", "Autoplay", SectionFieldType },
   { "autoplay", "Autoplay", BooleanFieldType, 0, 1, getAutoplay },
   { "autoplayDuration", "Autoplay Duration", NumberFieldType, 0, 255, getAutoplayDuration },
+  { "allLeafs", "Color Leafs", SectionFieldType },
+  { "allLeafs", "Color All Leafs", BooleanFieldType, 0, 1, getAllLeafs },
+  { "selectedLeaf", "Select Leaf to Color", NumberFieldType, 1, LEAFCOUNT, getSelectedLeaf },
   { "solidColor", "Solid Color", SectionFieldType },
   { "solidColor", "Color", ColorFieldType, 0, 255, getSolidColor },
   { "fire", "Fire & Water", SectionFieldType },
