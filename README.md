@@ -46,12 +46,12 @@ Features
 ### Upcoming Features
 
 - **Node-RED** integration
-  - Custom-Alexa skill
+  - Simple Amazon **Alexa** integration
   - Nanoleaf voice control
   - Custom color pattern designer
   - **Node-RED** webinterface to store special patterns persistant
   - Controlling multiple nanoleafs at once
-
+- Advanced Amazon **Alexa** integration with custom skill (AWS account required, free)
 >  these features will be optional and require additional hardware (any linux/windows device that is in the same network)
 
 Webinterface
