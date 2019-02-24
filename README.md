@@ -3,7 +3,7 @@ Nanoleaf Web Server
 
 This is a fork of [jasoncoon's esp8266 fastled webserver](https://github.com/jasoncoon/esp8266-fastled-webserver) that was adapted to control the colors of my  [DIY-Nanoleaf Replica](https://www.thingiverse.com/thing:3354082).
 
-[![Nanoleafs](https://github.com/NimmLor/esp8266-fastled-webserver/blob/master/gallery/rgb_preview2.gif?raw=true)](https://www.thingiverse.com/thing:3354082)
+[![Nanoleafs](https://github.com/NimmLor/esp8266-nanoleaf-webserver/blob/master/gallery/rgb_preview2.gif?raw=true)](https://www.thingiverse.com/thing:3354082)
 
 Hardware
 --------
@@ -46,18 +46,18 @@ Features
 ### Upcoming Features
 
 - **Node-RED** integration
-  - Custom-Alexa skill
+  - Simple Amazon **Alexa** integration
   - Nanoleaf voice control
   - Custom color pattern designer
   - **Node-RED** webinterface to store special patterns persistant
   - Controlling multiple nanoleafs at once
-
+- Advanced Amazon **Alexa** integration with custom skill (AWS account required, free)
 >  these features will be optional and require additional hardware (any linux/windows device that is in the same network)
 
 Webinterface
 --------
 
-![Webinterface](https://github.com/NimmLor/esp8266-fastled-webserver/blob/master/gallery/interface.jpg?raw=true)
+![Webinterface](https://github.com/NimmLor/esp8266-nanoleaf-webserver/blob/master/gallery/interface.jpg?raw=true)
 
 The web app is stored in SPIFFS (on-board flash memory).
 
@@ -70,7 +70,7 @@ The app depends on the following libraries. They must either be downloaded from 
 * [FastLED](https://github.com/FastLED/FastLED)
 * [Arduino WebSockets](https://github.com/Links2004/arduinoWebSockets)
 
-Download the app code from GitHub using the green Clone or Download button from [GitHub](https://github.com/NimmLor/esp8266-fastled-webserver) and click Download ZIP. Decompress the ZIP file in your Arduino sketch folder.
+Download the app code from GitHub using the green Clone or Download button from [GitHub](https://github.com/NimmLor/esp8266-nanoleaf-webserver) and click Download ZIP. Decompress the ZIP file in your Arduino sketch folder. Rename the folder from *esp8266-nanoleaf-webserver-master* to *esp8266-nanoleaf-webserver*
 
 The web app needs to be uploaded to the ESP8266's SPIFFS.  You can do this within the Arduino IDE after installing the [Arduino ESP8266FS tool](http://esp8266.github.io/Arduino/versions/2.3.0/doc/filesystem.html#uploading-files-to-file-system). An alternative would be to install the [Visual Micro](https://www.visualmicro.com/) plugin for Visual Studio.
 
@@ -114,13 +114,13 @@ You should also set the milli-amps of your power supply to prevent power overloa
 
 ### Without Logic-Level Converter
 
-![circuit without Logic level converter](https://github.com/NimmLor/esp8266-fastled-webserver/blob/master/gallery/circuit.jpg?raw=true)
+![circuit without Logic level converter](https://github.com/NimmLor/esp8266-nanoleaf-webserver/blob/master/gallery/circuit.jpg?raw=true)
 
 
 
 ### With Logic-Level-Converter (required if leds 'glitch')
 
-![circuit with logic level converter](https://github.com/NimmLor/esp8266-fastled-webserver/blob/master/gallery/circuit_logic_level_Steckplatine.jpg?raw=true)
+![circuit with logic level converter](https://github.com/NimmLor/esp8266-nanoleaf-webserver/blob/master/gallery/circuit_logic_level_Steckplatine.jpg?raw=true)
 
 
 
