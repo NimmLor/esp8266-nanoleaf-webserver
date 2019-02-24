@@ -107,7 +107,7 @@ const uint8_t brightnessCount = 5;
 uint8_t brightnessMap[brightnessCount] = { 16, 32, 64, 128, 255 };
 uint8_t brightnessIndex = 0;
 
-
+char vals[4 + LEAFCOUNT * 5][4] = {""};
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -135,6 +135,10 @@ unsigned long autoPlayTimeout = 0;
 uint8_t currentPaletteIndex = 0;
 
 uint8_t gHue = 0; // rotating "base color" used by many of the patterns
+
+uint8_t breathe = 0;  // value for starting custom pattern
+uint8_t breathe_dir = 1;  // 1== rising
+char cpattern[500] = "";
 
 CRGB solidColor = CRGB::Blue;
 
@@ -195,7 +199,9 @@ PatternAndNameList patterns = {
   { fire,                   "Fire" },
   { water,                  "Water" },
 
-  { showSolidColor,         "Solid Color" }
+  { showSolidColor,         "Solid Color" },
+
+  { SetCustomPattern,       "Custom Pattern"}
 };
 
 const uint8_t patternCount = ARRAY_SIZE(patterns);
@@ -290,7 +296,7 @@ void setup() {
     uint8_t mac[WL_MAC_ADDR_LENGTH];
     WiFi.softAPmacAddress(mac);
     String macID = String(mac[WL_MAC_ADDR_LENGTH - 2], HEX) +
-      String(mac[WL_MAC_ADDR_LENGTH - 1], HEX);
+                   String(mac[WL_MAC_ADDR_LENGTH - 1], HEX);
     macID.toUpperCase();
     String AP_NameString = "ESP8266 Thing " + macID;
 
@@ -385,12 +391,16 @@ void setup() {
     String b = webServer.arg("b");
     setSolidColor(r.toInt(), g.toInt(), b.toInt());
     sendString(String(solidColor.r) + "," + String(solidColor.g) + "," + String(solidColor.b));
+    Serial.println(String(solidColor.r) + "," + String(solidColor.g) + "," + String(solidColor.b));
   });
 
   webServer.on("/pattern", HTTP_POST, []() {
     String value = webServer.arg("value");
-    setPattern(value.toInt());
-    sendInt(currentPatternIndex);
+    if (value.toInt() <= 29)
+    {
+      setPattern(value.toInt());
+      sendInt(currentPatternIndex);
+    }
   });
 
   webServer.on("/patternName", HTTP_POST, []() {
@@ -440,6 +450,17 @@ void setup() {
     setSelectedLeaf(value.toInt());
     sendInt(selectedLeaf);
   });
+
+
+  webServer.on("/custom", HTTP_POST, []() {
+    String value = webServer.arg("value");
+    Serial.println(value);
+    value.toCharArray(cpattern, 500);
+    Serial.println(value);
+    sendString(value);
+    setPattern(30);
+  });
+
 
   //list directory
   webServer.on("/list", HTTP_GET, handleFileList);
@@ -537,6 +558,14 @@ void loop() {
     nblendPaletteTowardPalette(gCurrentPalette, gTargetPalette, 8);
     gHue++;  // slowly cycle the "base color" through the rainbow
   }
+
+  EVERY_N_MILLIS_I(thistimer, 128-(speed/2)) {
+    if (breathe_dir == 1)breathe++; else breathe--;
+    if (breathe >= 255)breathe_dir = 0;
+    else if (breathe <= 0) breathe_dir = 1;
+    //Serial.println(breathe);
+  }
+  thistimer.setPeriod(64-(speed/4));
 
   if (autoplay && (millis() > autoPlayTimeout)) {
     adjustPattern(true);
@@ -691,9 +720,10 @@ void setSolidColor(uint8_t r, uint8_t g, uint8_t b)
   EEPROM.write(4, b);
   EEPROM.commit();
 
-  setPattern(patternCount - 1);
+  setPattern(29);
 
   broadcastString("color", String(solidColor.r) + "," + String(solidColor.g) + "," + String(solidColor.b));
+  FastLED.show();
 }
 
 // increase or decrease the current pattern number, and wrap around at the ends
@@ -884,21 +914,21 @@ void bpm()
   uint8_t beat = beatsin8(speed, 64, 255);
   CRGBPalette16 palette = palettes[currentPaletteIndex];
   for (int i = 0; i < LEAFCOUNT; i++) {
-    for (int i2 = 0; i2 < PIXELS_PER_LEAF; i2++)leds[i*PIXELS_PER_LEAF + i2] = ColorFromPalette(palette, gHue + (i * 2), beat - gHue + (i * 10));
+    for (int i2 = 0; i2 < PIXELS_PER_LEAF; i2++)leds[i * PIXELS_PER_LEAF + i2] = ColorFromPalette(palette, gHue + (i * 2), beat - gHue + (i * 10));
   }
 }
 
 // BACKUP
 /*
-void bpm()
-{
+  void bpm()
+  {
   // colored stripes pulsing at a defined Beats-Per-Minute (BPM)
   uint8_t beat = beatsin8(speed, 64, 255);
   CRGBPalette16 palette = palettes[currentPaletteIndex];
   for (int i = 0; i < NUM_LEDS; i++) {
     leds[i] = ColorFromPalette(palette, gHue + (i * 2), beat - gHue + (i * 10));
   }
-}
+  }
 */
 
 void juggle()
@@ -918,10 +948,10 @@ void juggle()
   if (lastSecond != secondHand) { // Debounce to make sure we're not repeating an assignment.
     lastSecond = secondHand;
     switch (secondHand) {
-    case  0: numdots = 1; basebeat = 20; hueinc = 16; faderate = 2; thishue = 0; break; // You can change values here, one at a time , or altogether.
-    case 10: numdots = 4; basebeat = 10; hueinc = 16; faderate = 8; thishue = 128; break;
-    case 20: numdots = 8; basebeat = 3; hueinc = 0; faderate = 8; thishue = random8(); break; // Only gets called once, and not continuously for the next several seconds. Therefore, no rainbows.
-    case 30: break;
+      case  0: numdots = 1; basebeat = 20; hueinc = 16; faderate = 2; thishue = 0; break; // You can change values here, one at a time , or altogether.
+      case 10: numdots = 4; basebeat = 10; hueinc = 16; faderate = 8; thishue = 128; break;
+      case 20: numdots = 8; basebeat = 3; hueinc = 0; faderate = 8; thishue = random8(); break; // Only gets called once, and not continuously for the next several seconds. Therefore, no rainbows.
+      case 30: break;
     }
   }
 
@@ -987,18 +1017,18 @@ void pride()
 
     for (int i2 = 0; i2 < (PIXELS_PER_LEAF / 3); i2++)
     {
-      nblend(leds[pixelnumber*(PIXELS_PER_LEAF / 3) + i2], newcolor, 64);
+      nblend(leds[pixelnumber * (PIXELS_PER_LEAF / 3) + i2], newcolor, 64);
     }
   }
 }
 
 //#############BACKUP########################
 /*
-// Pride2015 by Mark Kriegsman: https://gist.github.com/kriegsman/964de772d64c502760e5
-// This function draws rainbows with an ever-changing,
-// widely-varying set of parameters.
-void pride()
-{
+  // Pride2015 by Mark Kriegsman: https://gist.github.com/kriegsman/964de772d64c502760e5
+  // This function draws rainbows with an ever-changing,
+  // widely-varying set of parameters.
+  void pride()
+  {
   static uint16_t sPseudotime = 0;
   static uint16_t sLastMillis = 0;
   static uint16_t sHue16 = 0;
@@ -1036,7 +1066,7 @@ void pride()
 
   nblend( leds[pixelnumber], newcolor, 64);
   }
-}
+  }
 
 */
 
@@ -1110,7 +1140,7 @@ extern const TProgmemRGBGradientPalettePtr gGradientPalettes[];
 extern const uint8_t gGradientPaletteCount;
 
 uint8_t beatsaw8(accum88 beats_per_minute, uint8_t lowest = 0, uint8_t highest = 255,
-  uint32_t timebase = 0, uint8_t phase_offset = 0)
+                 uint32_t timebase = 0, uint8_t phase_offset = 0)
 {
   uint8_t beat = beat8(beats_per_minute, timebase);
   uint8_t beatsaw = beat + phase_offset;
@@ -1180,7 +1210,7 @@ void colorwaves(CRGB* ledarray, uint16_t numleds, CRGBPalette16& palette)
     pixelnumber = ((LEAFCOUNT * 3) - 1) - pixelnumber;
     for (int i2 = 0; i2 < (PIXELS_PER_LEAF / 3); i2++)
     {
-      nblend(leds[pixelnumber*(PIXELS_PER_LEAF / 3) + i2], newcolor, 128);
+      nblend(leds[pixelnumber * (PIXELS_PER_LEAF / 3) + i2], newcolor, 128);
     }
   }
 }
@@ -1192,4 +1222,97 @@ void palettetest(CRGB* ledarray, uint16_t numleds, const CRGBPalette16& gCurrent
   static uint8_t startindex = 0;
   startindex--;
   fill_palette(ledarray, numleds, startindex, (256 / NUM_LEDS) + 1, gCurrentPalette, 255, LINEARBLEND);
+}
+
+
+/*
+   Function: ExtractValues
+   Used to extract a given amount of values from the message with a start index
+   Parameters:
+   - startindex: position in the string where to start
+   - valuecount: amount of values to capture
+*/
+void ExtractValues(char receivedChars[], int startindex, int valuecount)
+{
+  int pos = startindex;
+  for (int c = 0; c < valuecount; c++)
+  {
+    int i = 0;
+    while (receivedChars[pos] != ';' && receivedChars[pos] != '\0') {
+      vals[c][i] = receivedChars[pos];
+      pos++;
+      i++;
+    }
+    vals[c][i] = '\0';
+    pos++;
+  }
+#ifdef DEBUG_SERIAL
+  for (int p = 0; p < valuecount; p++)
+  {
+    Serial.print("Extracting: "); Serial.println(vals[p]);
+  }
+#endif // DEBUG_SERIAL
+}
+void cycle(CRGB endclr, CRGB midclr, uint8_t start) {
+  fill_gradient_RGB(leds, start, endclr, PIXELS_PER_LEAF/ 2, midclr);
+  fill_gradient_RGB(leds, PIXELS_PER_LEAF/ 2 + 1, midclr, PIXELS_PER_LEAF, endclr);
+}
+// Set Custom Pattern for the node red part
+void SetCustomPattern()
+{
+  uint8_t cnt = 0;
+  uint8_t isflow = 0;
+
+  ExtractValues(cpattern, 0, 2);
+  cnt = atoi(vals[0]);
+  isflow = atoi(vals[1]);
+  ExtractValues(cpattern, 0, 2 + 5 * cnt);
+  if (isflow == 0)
+  {
+    for (uint8_t i = 0; i < cnt; i++)
+    {
+      int8_t cmode = atoi(vals[2 + i * 5]);
+      uint8_t phase = atoi(vals[2 + i * 5 + 1]);
+      int mul = breathe;
+      if (breathe_dir == 1)
+      {
+        if ((mul + phase) > 255)mul = 255 + (255 - mul - phase);
+        else mul += phase;
+      }
+      else
+      {
+        if ((mul - phase) < 0)mul = -mul + phase;
+        else mul -= phase;
+      }
+      if (cmode == 0)mul = 255;
+      double fac = (mul * 100) / 255.00;
+      //if(cmode==1)Serial.printf("%d ", mul);
+      for (uint8_t x = 0; x < PIXELS_PER_LEAF; x++)
+      {
+        //Serial.printf("Setting %d to %d, %d, %d\n", cnt*PIXELS_PER_LEAF+x,atoi(vals[2+i*5+2]), atoi(vals[2+i*5+3]), atoi(vals[2+i*5+4]));
+        leds[i * PIXELS_PER_LEAF + x] = CRGB((atoi(vals[2 + i * 5 + 2]) * fac) / 100.00, (atoi(vals[2 + i * 5 + 3]) * fac) / 100.00, (atoi(vals[2 + i * 5 + 4]) * fac) / 100.00);
+      }
+    }
+  }
+  else
+  {
+    for (int i = 0; i < cnt; i++)
+    {
+      if (i != (cnt - 1))
+      {
+        //uint8_t speed = beatsin8(6,0,255);
+        CRGB endclr = blend(CRGB(atoi(vals[2 + i * 5 + 2]), atoi(vals[2 + i * 5 + 3]), atoi(vals[2 + i * 5 + 4])), CRGB(atoi(vals[2 + (i + 1) * 5 + 2]), atoi(vals[2 + (i + 1) * 5 + 3]), atoi(vals[2 + (i + 1) * 5 + 4])), breathe);
+        CRGB midclr = blend(CRGB(atoi(vals[2 + (i + 1) * 5 + 2]), atoi(vals[2 + (i + 1) * 5 + 3]), atoi(vals[2 + (i + 1) * 5 + 4])), CRGB(atoi(vals[2 + i * 5 + 2]), atoi(vals[2 + i * 5 + 3]), atoi(vals[2 + i * 5 + 4])), breathe);
+        cycle(endclr, midclr, i*PIXELS_PER_LEAF);
+      }
+      else
+      {
+        //uint8_t speed = beatsin8(6,0,255);
+        CRGB endclr = blend(CRGB(atoi(vals[2 + 2]), atoi(vals[2 + 3]), atoi(vals[2 + 4])), CRGB(atoi(vals[2 + (i + 1) * 5 + 2]), atoi(vals[2 + (i + 1) * 5 + 3]), atoi(vals[2 + (i + 1) * 5 + 4])), breathe);
+        CRGB midclr = blend(CRGB(atoi(vals[2 + (i + 1) * 5 + 2]), atoi(vals[2 + (i + 1) * 5 + 3]), atoi(vals[2 + (i + 1) * 5 + 4])), CRGB(atoi(vals[2 + 2]), atoi(vals[2 + 3]), atoi(vals[2 + 4])), breathe);
+        cycle(endclr, midclr, i*PIXELS_PER_LEAF);
+      }
+    }
+  }
+  //Serial.println("");
 }

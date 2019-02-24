@@ -1,0 +1,5319 @@
+[
+    {
+        "id": "cddf6c26.6a9e3",
+        "type": "tab",
+        "label": "Thingiverse_Nanoleafs",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "3355ce77.b69822",
+        "type": "alexa-home",
+        "z": "cddf6c26.6a9e3",
+        "conf": "",
+        "device": "47327",
+        "acknoledge": true,
+        "name": "",
+        "topic": "",
+        "x": 250,
+        "y": 480,
+        "wires": [
+            [
+                "6246299.00fe1d8"
+            ]
+        ]
+    },
+    {
+        "id": "54b40e3a.f5b86",
+        "type": "alexa-home",
+        "z": "cddf6c26.6a9e3",
+        "conf": "",
+        "device": "47326",
+        "acknoledge": true,
+        "name": "",
+        "topic": "",
+        "x": 250,
+        "y": 520,
+        "wires": [
+            [
+                "6246299.00fe1d8"
+            ]
+        ]
+    },
+    {
+        "id": "1e93d8f3.c5c2d7",
+        "type": "alexa-home",
+        "z": "cddf6c26.6a9e3",
+        "conf": "",
+        "device": "47333",
+        "acknoledge": true,
+        "name": "Nano",
+        "topic": "",
+        "x": 230,
+        "y": 560,
+        "wires": [
+            [
+                "6246299.00fe1d8"
+            ]
+        ]
+    },
+    {
+        "id": "6246299.00fe1d8",
+        "type": "switch",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "property": "command",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "TurnOnRequest",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "TurnOffRequest",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "SetPercentageRequest",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "IncrementPercentageRequest",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "DecrementPercentageRequest",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "SetColorRequest",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 7,
+        "x": 370,
+        "y": 520,
+        "wires": [
+            [
+                "6baf4eee.6319f"
+            ],
+            [
+                "5d3092e4.3d031c"
+            ],
+            [
+                "c875ae09.6722d"
+            ],
+            [
+                "b23ba25.3cbc56"
+            ],
+            [
+                "89038755.678578"
+            ],
+            [
+                "33963681.81e95a"
+            ],
+            [
+                "4752d3b3.11e1bc"
+            ]
+        ]
+    },
+    {
+        "id": "30f24c51.5b0274",
+        "type": "config",
+        "z": "cddf6c26.6a9e3",
+        "name": "Nanoleaf-Config",
+        "properties": [
+            {
+                "p": "Nanoleaf",
+                "pt": "global",
+                "to": "192.168.0.105",
+                "tot": "str"
+            },
+            {
+                "p": "NanoleafBrightness",
+                "pt": "global",
+                "to": "150",
+                "tot": "str"
+            },
+            {
+                "p": "NanoleafSpeed",
+                "pt": "global",
+                "to": "30",
+                "tot": "str"
+            }
+        ],
+        "active": true,
+        "x": 260,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "433efcec.8e5384",
+        "type": "comment",
+        "z": "cddf6c26.6a9e3",
+        "name": "Enter the IP of the Nanoleafs and the amount of Leafs below, click the latch afterwards",
+        "info": "",
+        "x": 480,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "33963681.81e95a",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Multiply Values",
+        "func": "//var h = msg.payload.hue;\ntypeof query !== 'undefined'\nmsg.payload.hue = msg.payload.hue;\nmsg.payload.saturation = msg.payload.saturation * 100;\nmsg.payload.brightness = msg.payload.brightness * 100;\n\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 580,
+        "y": 680,
+        "wires": [
+            [
+                "3adf0e95.b51a32"
+            ]
+        ]
+    },
+    {
+        "id": "3adf0e95.b51a32",
+        "type": "color-convert",
+        "z": "cddf6c26.6a9e3",
+        "input": "hsv",
+        "output": "rgb",
+        "outputType": "array",
+        "x": 750,
+        "y": 680,
+        "wires": [
+            [
+                "c464f19a.97355"
+            ]
+        ]
+    },
+    {
+        "id": "c464f19a.97355",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Color, Normal Mode",
+        "func": "var input = [];\ninput = msg.payload;\nvar r = input[0];\nvar g = input[1];\nvar b = input[2];\nmsg.payload = \"solidColor?r=\" + r+\"&g=\"+g+\"&b=\"+b;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 950,
+        "y": 680,
+        "wires": [
+            [
+                "5a1af749.e8d358"
+            ]
+        ]
+    },
+    {
+        "id": "5a1af749.e8d358",
+        "type": "link out",
+        "z": "cddf6c26.6a9e3",
+        "name": "NanoleafOUT",
+        "links": [
+            "b80cf79b.b95778"
+        ],
+        "x": 1115,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "4752d3b3.11e1bc",
+        "type": "debug",
+        "z": "cddf6c26.6a9e3",
+        "name": "ALEXA ERROR",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 580,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "6baf4eee.6319f",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "Turn on",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "power?value=1",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 560,
+        "y": 480,
+        "wires": [
+            [
+                "5a1af749.e8d358"
+            ]
+        ]
+    },
+    {
+        "id": "5d3092e4.3d031c",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "Turn off",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "power?value=0",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 560,
+        "y": 520,
+        "wires": [
+            [
+                "13bd35c3.f532da"
+            ]
+        ]
+    },
+    {
+        "id": "c875ae09.6722d",
+        "type": "range",
+        "z": "cddf6c26.6a9e3",
+        "minin": "0",
+        "maxin": "100",
+        "minout": "0",
+        "maxout": "255",
+        "action": "scale",
+        "round": true,
+        "property": "payload",
+        "name": "",
+        "x": 560,
+        "y": 560,
+        "wires": [
+            [
+                "d175e893.179f78"
+            ]
+        ]
+    },
+    {
+        "id": "d175e893.179f78",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Brightness",
+        "func": "global.set(\"NanoleafBrightness\", msg.payload);\nmsg.payload = \"brightness?value=\" + msg.payload;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 720,
+        "y": 560,
+        "wires": [
+            [
+                "5a1af749.e8d358"
+            ]
+        ]
+    },
+    {
+        "id": "b23ba25.3cbc56",
+        "type": "range",
+        "z": "cddf6c26.6a9e3",
+        "minin": "0",
+        "maxin": "100",
+        "minout": "0",
+        "maxout": "255",
+        "action": "scale",
+        "round": true,
+        "property": "payload",
+        "name": "",
+        "x": 560,
+        "y": 600,
+        "wires": [
+            [
+                "62615b9.da2e2a4"
+            ]
+        ]
+    },
+    {
+        "id": "62615b9.da2e2a4",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Brightness",
+        "func": "var x = global.get(\"NanoleafBrightness\");\nif(x==null)x=100;\nx+=msg.payload;\nglobal.set(\"NanoleafBrightness\", x);\nmsg.payload = \"brightness?value=\" + x;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 720,
+        "y": 600,
+        "wires": [
+            [
+                "5a1af749.e8d358"
+            ]
+        ]
+    },
+    {
+        "id": "3011767a.f9ad4a",
+        "type": "comment",
+        "z": "cddf6c26.6a9e3",
+        "name": "Edit the alexa nodes below and choose the ones from the list that should control brightness, color, on/off, you might as well add others or delete some",
+        "info": "",
+        "x": 670,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "3433d604.d529ca",
+        "type": "alexa-home",
+        "z": "cddf6c26.6a9e3",
+        "conf": "",
+        "device": "50354",
+        "acknoledge": true,
+        "name": "Triangles",
+        "topic": "",
+        "x": 240,
+        "y": 600,
+        "wires": [
+            [
+                "6246299.00fe1d8"
+            ]
+        ]
+    },
+    {
+        "id": "c0adb189.5d7a2",
+        "type": "alexa-home",
+        "z": "cddf6c26.6a9e3",
+        "conf": "",
+        "device": "50355",
+        "acknoledge": true,
+        "name": "Nanoleaf Rainbow",
+        "topic": "",
+        "x": 270,
+        "y": 840,
+        "wires": [
+            [
+                "ce46aa75.e32858"
+            ]
+        ]
+    },
+    {
+        "id": "ce46aa75.e32858",
+        "type": "switch",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "property": "command",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "TurnOnRequest",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "TurnOffRequest",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 430,
+        "y": 860,
+        "wires": [
+            [
+                "72201452.60808c"
+            ],
+            [
+                "931ae2eb.d772a"
+            ],
+            [
+                "948fc335.352f5"
+            ]
+        ]
+    },
+    {
+        "id": "948fc335.352f5",
+        "type": "debug",
+        "z": "cddf6c26.6a9e3",
+        "name": "ALEXA ERROR",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 600,
+        "y": 920,
+        "wires": []
+    },
+    {
+        "id": "72201452.60808c",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Pattern 20 (Rainbow)",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "pattern?value=20",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 630,
+        "y": 840,
+        "wires": [
+            [
+                "e3a04c05.51f3b"
+            ]
+        ]
+    },
+    {
+        "id": "931ae2eb.d772a",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Pattern 29 (Solid Color)",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "pattern?value=29",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 640,
+        "y": 880,
+        "wires": [
+            [
+                "e3a04c05.51f3b"
+            ]
+        ]
+    },
+    {
+        "id": "e3a04c05.51f3b",
+        "type": "link out",
+        "z": "cddf6c26.6a9e3",
+        "name": "NanoleafRainbow",
+        "links": [
+            "b80cf79b.b95778"
+        ],
+        "x": 817,
+        "y": 858,
+        "wires": []
+    },
+    {
+        "id": "eb0ff137.7fbf8",
+        "type": "comment",
+        "z": "cddf6c26.6a9e3",
+        "name": "Edit the alexa node below and choose the one that should control the rainbow mode",
+        "info": "",
+        "x": 470,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "81377d13.b0511",
+        "type": "alexa-home",
+        "z": "cddf6c26.6a9e3",
+        "conf": "",
+        "device": "50356",
+        "acknoledge": true,
+        "name": "Nanoleaf Speed",
+        "topic": "",
+        "x": 260,
+        "y": 1040,
+        "wires": [
+            [
+                "5f786fd4.724fe"
+            ]
+        ]
+    },
+    {
+        "id": "c61fb358.87f4d",
+        "type": "debug",
+        "z": "cddf6c26.6a9e3",
+        "name": "ALEXA ERROR",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 600,
+        "y": 1160,
+        "wires": []
+    },
+    {
+        "id": "52016e2b.01061",
+        "type": "comment",
+        "z": "cddf6c26.6a9e3",
+        "name": "Edit the alexa node below and choose the one that should control the speed of the patterns",
+        "info": "",
+        "x": 490,
+        "y": 1000,
+        "wires": []
+    },
+    {
+        "id": "3ae3a95e.bf98b6",
+        "type": "range",
+        "z": "cddf6c26.6a9e3",
+        "minin": "0",
+        "maxin": "100",
+        "minout": "0",
+        "maxout": "255",
+        "action": "scale",
+        "round": true,
+        "property": "payload",
+        "name": "",
+        "x": 580,
+        "y": 1080,
+        "wires": [
+            [
+                "8c7379c9.96a208"
+            ]
+        ]
+    },
+    {
+        "id": "8c7379c9.96a208",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Speed",
+        "func": "var x = global.get(\"NanoleafSpeed\");\nif(x==null)x=30;\nx+=msg.payload;\nglobal.set(\"NanoleafSpeed\", x);\nmsg.payload = \"speed?value=\" + x;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 730,
+        "y": 1080,
+        "wires": [
+            [
+                "ef8d9ea8.22369"
+            ]
+        ]
+    },
+    {
+        "id": "5f786fd4.724fe",
+        "type": "switch",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "property": "command",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "SetPercentageRequest",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "IncrementPercentageRequest",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "DecrementPercentageRequest",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 4,
+        "x": 410,
+        "y": 1060,
+        "wires": [
+            [
+                "8e92febb.a46f6"
+            ],
+            [
+                "3ae3a95e.bf98b6"
+            ],
+            [
+                "3286a62d.a5b8fa"
+            ],
+            [
+                "c61fb358.87f4d"
+            ]
+        ]
+    },
+    {
+        "id": "8e92febb.a46f6",
+        "type": "range",
+        "z": "cddf6c26.6a9e3",
+        "minin": "0",
+        "maxin": "100",
+        "minout": "0",
+        "maxout": "255",
+        "action": "scale",
+        "round": true,
+        "property": "payload",
+        "name": "",
+        "x": 580,
+        "y": 1040,
+        "wires": [
+            [
+                "ade92cf8.59c15"
+            ]
+        ]
+    },
+    {
+        "id": "ade92cf8.59c15",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Speed",
+        "func": "global.set(\"NanoleafSpeed\", msg.payload);\nmsg.payload = \"speed?value=\" + msg.payload;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 730,
+        "y": 1040,
+        "wires": [
+            [
+                "ef8d9ea8.22369"
+            ]
+        ]
+    },
+    {
+        "id": "89038755.678578",
+        "type": "range",
+        "z": "cddf6c26.6a9e3",
+        "minin": "0",
+        "maxin": "-100",
+        "minout": "0",
+        "maxout": "-255",
+        "action": "scale",
+        "round": true,
+        "property": "payload",
+        "name": "",
+        "x": 560,
+        "y": 640,
+        "wires": [
+            [
+                "62615b9.da2e2a4"
+            ]
+        ]
+    },
+    {
+        "id": "3286a62d.a5b8fa",
+        "type": "range",
+        "z": "cddf6c26.6a9e3",
+        "minin": "0",
+        "maxin": "-100",
+        "minout": "0",
+        "maxout": "-255",
+        "action": "scale",
+        "round": true,
+        "property": "payload",
+        "name": "",
+        "x": 580,
+        "y": 1120,
+        "wires": [
+            [
+                "8c7379c9.96a208"
+            ]
+        ]
+    },
+    {
+        "id": "ef8d9ea8.22369",
+        "type": "link out",
+        "z": "cddf6c26.6a9e3",
+        "name": "NanoleafSpeed",
+        "links": [
+            "b80cf79b.b95778"
+        ],
+        "x": 855,
+        "y": 1060,
+        "wires": []
+    },
+    {
+        "id": "9e705687.579118",
+        "type": "alexa-home",
+        "z": "cddf6c26.6a9e3",
+        "conf": "",
+        "device": "50362",
+        "acknoledge": true,
+        "name": "Nanoleaf Autoplay",
+        "topic": "",
+        "x": 270,
+        "y": 1280,
+        "wires": [
+            [
+                "249ebab4.f55636"
+            ]
+        ]
+    },
+    {
+        "id": "c30ea566.239c78",
+        "type": "debug",
+        "z": "cddf6c26.6a9e3",
+        "name": "ALEXA ERROR",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 620,
+        "y": 1480,
+        "wires": []
+    },
+    {
+        "id": "bdc187c1.c0f3c8",
+        "type": "comment",
+        "z": "cddf6c26.6a9e3",
+        "name": "Edit the alexa node below and choose the one that should control the Autoplay functionality",
+        "info": "",
+        "x": 490,
+        "y": 1240,
+        "wires": []
+    },
+    {
+        "id": "e7e99932.652018",
+        "type": "range",
+        "z": "cddf6c26.6a9e3",
+        "minin": "0",
+        "maxin": "100",
+        "minout": "0",
+        "maxout": "255",
+        "action": "scale",
+        "round": true,
+        "property": "payload",
+        "name": "",
+        "x": 600,
+        "y": 1400,
+        "wires": [
+            [
+                "c596293f.b69f98"
+            ]
+        ]
+    },
+    {
+        "id": "c596293f.b69f98",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Duration",
+        "func": "var x = global.get(\"NanoleafAutoplayDuration\");\nif(x==null)x=30;\nx+=msg.payload;\nglobal.set(\"NanoleafAutoplayDuration\", x);\nmsg.payload = \"autoplayDuration?value=\" + x;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 750,
+        "y": 1400,
+        "wires": [
+            [
+                "8c55dea5.89b95"
+            ]
+        ]
+    },
+    {
+        "id": "5f0f7afb.82a874",
+        "type": "range",
+        "z": "cddf6c26.6a9e3",
+        "minin": "0",
+        "maxin": "100",
+        "minout": "0",
+        "maxout": "255",
+        "action": "scale",
+        "round": true,
+        "property": "payload",
+        "name": "",
+        "x": 600,
+        "y": 1360,
+        "wires": [
+            [
+                "2c19176d.d3fac8"
+            ]
+        ]
+    },
+    {
+        "id": "2c19176d.d3fac8",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Duration",
+        "func": "global.set(\"NanoleafAutoplayDuration\", msg.payload);\nmsg.payload = \"autoplayDuration?value=\" + msg.payload;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 750,
+        "y": 1360,
+        "wires": [
+            [
+                "8c55dea5.89b95"
+            ]
+        ]
+    },
+    {
+        "id": "f2c7a103.b1228",
+        "type": "range",
+        "z": "cddf6c26.6a9e3",
+        "minin": "0",
+        "maxin": "-100",
+        "minout": "0",
+        "maxout": "-255",
+        "action": "scale",
+        "round": true,
+        "property": "payload",
+        "name": "",
+        "x": 600,
+        "y": 1440,
+        "wires": [
+            [
+                "c596293f.b69f98"
+            ]
+        ]
+    },
+    {
+        "id": "8c55dea5.89b95",
+        "type": "link out",
+        "z": "cddf6c26.6a9e3",
+        "name": "NanoleafAutoplay",
+        "links": [
+            "b80cf79b.b95778"
+        ],
+        "x": 875,
+        "y": 1300,
+        "wires": []
+    },
+    {
+        "id": "249ebab4.f55636",
+        "type": "switch",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "property": "command",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "TurnOnRequest",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "TurnOffRequest",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "SetPercentageRequest",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "IncrementPercentageRequest",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "DecrementPercentageRequest",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 6,
+        "x": 430,
+        "y": 1320,
+        "wires": [
+            [
+                "7b2705a8.5d44ac"
+            ],
+            [
+                "845a4bb8.435c78"
+            ],
+            [
+                "5f0f7afb.82a874"
+            ],
+            [
+                "e7e99932.652018"
+            ],
+            [
+                "f2c7a103.b1228"
+            ],
+            [
+                "c30ea566.239c78"
+            ]
+        ]
+    },
+    {
+        "id": "7b2705a8.5d44ac",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "Autoplay on",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "autoplay?value=1",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 610,
+        "y": 1280,
+        "wires": [
+            [
+                "8c55dea5.89b95"
+            ]
+        ]
+    },
+    {
+        "id": "845a4bb8.435c78",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "Autoplay off",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "autoplay?value=0",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 610,
+        "y": 1320,
+        "wires": [
+            [
+                "8c55dea5.89b95"
+            ]
+        ]
+    },
+    {
+        "id": "2fcf75a2.34b8da",
+        "type": "alexa-home",
+        "z": "cddf6c26.6a9e3",
+        "conf": "",
+        "device": "50367",
+        "acknoledge": true,
+        "name": "Nanoleaf standard",
+        "topic": "",
+        "x": 270,
+        "y": 1600,
+        "wires": [
+            [
+                "42a9efd3.365e1"
+            ]
+        ]
+    },
+    {
+        "id": "42a9efd3.365e1",
+        "type": "switch",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "property": "command",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "TurnOnRequest",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "TurnOffRequest",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 430,
+        "y": 1620,
+        "wires": [
+            [
+                "a55b2c2c.e623b",
+                "39a5a0a1.b9669"
+            ],
+            [
+                "3068a2c9.d89a5e"
+            ],
+            [
+                "f1b72539.b15ca8"
+            ]
+        ]
+    },
+    {
+        "id": "f1b72539.b15ca8",
+        "type": "debug",
+        "z": "cddf6c26.6a9e3",
+        "name": "ALEXA ERROR",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 600,
+        "y": 1720,
+        "wires": []
+    },
+    {
+        "id": "a55b2c2c.e623b",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Pattern 0 (Pride)",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "pattern?value=0",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 620,
+        "y": 1600,
+        "wires": [
+            [
+                "f55a72c0.de12f"
+            ]
+        ]
+    },
+    {
+        "id": "3068a2c9.d89a5e",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Pattern 29 (Solid Color)",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "pattern?value=29",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 640,
+        "y": 1680,
+        "wires": [
+            [
+                "f55a72c0.de12f"
+            ]
+        ]
+    },
+    {
+        "id": "f55a72c0.de12f",
+        "type": "link out",
+        "z": "cddf6c26.6a9e3",
+        "name": "NanoleafDefault",
+        "links": [
+            "b80cf79b.b95778"
+        ],
+        "x": 817,
+        "y": 1618,
+        "wires": []
+    },
+    {
+        "id": "9c8660b3.cd1dd",
+        "type": "comment",
+        "z": "cddf6c26.6a9e3",
+        "name": "Edit the alexa node below and choose the one that should control the default mode",
+        "info": "",
+        "x": 470,
+        "y": 1560,
+        "wires": []
+    },
+    {
+        "id": "39a5a0a1.b9669",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Brightness 120",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "brightness?value=120",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 610,
+        "y": 1640,
+        "wires": [
+            [
+                "f55a72c0.de12f"
+            ]
+        ]
+    },
+    {
+        "id": "6c029192.d603a",
+        "type": "alexa-home",
+        "z": "cddf6c26.6a9e3",
+        "conf": "",
+        "device": "50371",
+        "acknoledge": true,
+        "name": "Nanoleaf 1",
+        "topic": "",
+        "x": 240,
+        "y": 1840,
+        "wires": [
+            [
+                "7416b243.ef3cbc"
+            ]
+        ]
+    },
+    {
+        "id": "7416b243.ef3cbc",
+        "type": "switch",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "property": "command",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "TurnOnRequest",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "TurnOffRequest",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 430,
+        "y": 1860,
+        "wires": [
+            [
+                "e1b2e9be.fd1958",
+                "6808d5b5.c183cc",
+                "e2690dbd.3d556"
+            ],
+            [
+                "24ec4f20.06b6b"
+            ],
+            [
+                "4acb22a6.734f9c"
+            ]
+        ]
+    },
+    {
+        "id": "4acb22a6.734f9c",
+        "type": "debug",
+        "z": "cddf6c26.6a9e3",
+        "name": "ALEXA ERROR",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 600,
+        "y": 2000,
+        "wires": []
+    },
+    {
+        "id": "e1b2e9be.fd1958",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Pattern 24 (Sinelon)",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "pattern?value=24",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 630,
+        "y": 1840,
+        "wires": [
+            [
+                "10babbac.b84494"
+            ]
+        ]
+    },
+    {
+        "id": "24ec4f20.06b6b",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Pattern 29 (Solid Color)",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "pattern?value=29",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 640,
+        "y": 1960,
+        "wires": [
+            [
+                "10babbac.b84494"
+            ]
+        ]
+    },
+    {
+        "id": "10babbac.b84494",
+        "type": "link out",
+        "z": "cddf6c26.6a9e3",
+        "name": "NanoleafDefault",
+        "links": [
+            "b80cf79b.b95778"
+        ],
+        "x": 817,
+        "y": 1858,
+        "wires": []
+    },
+    {
+        "id": "a226f12d.3e187",
+        "type": "comment",
+        "z": "cddf6c26.6a9e3",
+        "name": "Edit the alexa node below and choose the one that should control the theme Nr.1",
+        "info": "",
+        "x": 460,
+        "y": 1800,
+        "wires": []
+    },
+    {
+        "id": "6808d5b5.c183cc",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Brightness 255",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "brightness?value=255",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 610,
+        "y": 1880,
+        "wires": [
+            [
+                "10babbac.b84494"
+            ]
+        ]
+    },
+    {
+        "id": "378d27fc.0f3fa8",
+        "type": "alexa-home",
+        "z": "cddf6c26.6a9e3",
+        "conf": "",
+        "device": "50372",
+        "acknoledge": true,
+        "name": "Nanoleaf 2",
+        "topic": "",
+        "x": 240,
+        "y": 2120,
+        "wires": [
+            [
+                "d14fb91d.c37978"
+            ]
+        ]
+    },
+    {
+        "id": "d14fb91d.c37978",
+        "type": "switch",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "property": "command",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "TurnOnRequest",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "TurnOffRequest",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 430,
+        "y": 2140,
+        "wires": [
+            [
+                "62f58c34.c08644",
+                "12a642b7.f74f5d",
+                "2e408e4e.94e8c2"
+            ],
+            [
+                "4bf08f02.11b3a"
+            ],
+            [
+                "a9abb49f.290698"
+            ]
+        ]
+    },
+    {
+        "id": "a9abb49f.290698",
+        "type": "debug",
+        "z": "cddf6c26.6a9e3",
+        "name": "ALEXA ERROR",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 600,
+        "y": 2280,
+        "wires": []
+    },
+    {
+        "id": "62f58c34.c08644",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Pattern 25 (Beat)",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "pattern?value=25",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 620,
+        "y": 2120,
+        "wires": [
+            [
+                "5325c0f4.ee88e"
+            ]
+        ]
+    },
+    {
+        "id": "4bf08f02.11b3a",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Pattern 29 (Solid Color)",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "pattern?value=29",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 640,
+        "y": 2240,
+        "wires": [
+            [
+                "5325c0f4.ee88e"
+            ]
+        ]
+    },
+    {
+        "id": "5325c0f4.ee88e",
+        "type": "link out",
+        "z": "cddf6c26.6a9e3",
+        "name": "NanoleafDefault",
+        "links": [
+            "b80cf79b.b95778"
+        ],
+        "x": 817,
+        "y": 2138,
+        "wires": []
+    },
+    {
+        "id": "1a075c06.8a37b4",
+        "type": "comment",
+        "z": "cddf6c26.6a9e3",
+        "name": "Edit the alexa node below and choose the one that should control the theme Nr.2",
+        "info": "",
+        "x": 460,
+        "y": 2080,
+        "wires": []
+    },
+    {
+        "id": "12a642b7.f74f5d",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Brightness 255",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "brightness?value=255",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 610,
+        "y": 2160,
+        "wires": [
+            [
+                "5325c0f4.ee88e"
+            ]
+        ]
+    },
+    {
+        "id": "2e408e4e.94e8c2",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Palette 4 (Ocean)",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "palette?value=4",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 620,
+        "y": 2200,
+        "wires": [
+            [
+                "5325c0f4.ee88e"
+            ]
+        ]
+    },
+    {
+        "id": "e2690dbd.3d556",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Palette 6 (Party)",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "palette?value=6",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 620,
+        "y": 1920,
+        "wires": [
+            [
+                "10babbac.b84494"
+            ]
+        ]
+    },
+    {
+        "id": "a51678d2.da2398",
+        "type": "alexa-home",
+        "z": "cddf6c26.6a9e3",
+        "conf": "",
+        "device": "50373",
+        "acknoledge": true,
+        "name": "Nanoleaf 3",
+        "topic": "",
+        "x": 240,
+        "y": 2400,
+        "wires": [
+            [
+                "9fa0e5b2.1fc5a8"
+            ]
+        ]
+    },
+    {
+        "id": "9fa0e5b2.1fc5a8",
+        "type": "switch",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "property": "command",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "TurnOnRequest",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "TurnOffRequest",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 430,
+        "y": 2420,
+        "wires": [
+            [
+                "ba8a24c9.a2bb08"
+            ],
+            [
+                "4104d0bc.8e13c"
+            ],
+            [
+                "a6697664.1444e8"
+            ]
+        ]
+    },
+    {
+        "id": "a6697664.1444e8",
+        "type": "debug",
+        "z": "cddf6c26.6a9e3",
+        "name": "ALEXA ERROR",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 600,
+        "y": 2480,
+        "wires": []
+    },
+    {
+        "id": "ba8a24c9.a2bb08",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set custom rgb (0;102;255)",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "solidColor?r=0&g=102&b=255",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 640,
+        "y": 2400,
+        "wires": [
+            [
+                "f880d406.243a68"
+            ]
+        ]
+    },
+    {
+        "id": "4104d0bc.8e13c",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Pattern 29 (Solid Color)",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "pattern?value=29",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 640,
+        "y": 2440,
+        "wires": [
+            [
+                "f880d406.243a68"
+            ]
+        ]
+    },
+    {
+        "id": "f880d406.243a68",
+        "type": "link out",
+        "z": "cddf6c26.6a9e3",
+        "name": "NanoleafDefault",
+        "links": [
+            "b80cf79b.b95778"
+        ],
+        "x": 817,
+        "y": 2418,
+        "wires": []
+    },
+    {
+        "id": "142b035c.4a8b2d",
+        "type": "comment",
+        "z": "cddf6c26.6a9e3",
+        "name": "Edit the alexa node below and choose the one that should control the theme Nr.2",
+        "info": "",
+        "x": 460,
+        "y": 2360,
+        "wires": []
+    },
+    {
+        "id": "b05e04ba.3aed58",
+        "type": "ui_switch",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "label": "Power",
+        "group": "9f40378b.457ad8",
+        "order": 2,
+        "width": "5",
+        "height": "1",
+        "passthru": true,
+        "decouple": "false",
+        "topic": "",
+        "style": "",
+        "onvalue": "true",
+        "onvalueType": "bool",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "false",
+        "offvalueType": "bool",
+        "officon": "",
+        "offcolor": "",
+        "x": 1710,
+        "y": 140,
+        "wires": [
+            [
+                "d6a5ed4b.2467d"
+            ]
+        ]
+    },
+    {
+        "id": "c38656d0.228018",
+        "type": "link out",
+        "z": "cddf6c26.6a9e3",
+        "name": "NanoleafDMain",
+        "links": [
+            "dc5348cd.f5ba28"
+        ],
+        "x": 2135,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "d6a5ed4b.2467d",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "On/Off",
+        "func": "if(msg.payload)msg.payload=\"power?value=1\";\nelse msg.payload = \"power?value=0\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1950,
+        "y": 140,
+        "wires": [
+            [
+                "c38656d0.228018"
+            ]
+        ]
+    },
+    {
+        "id": "91400109.36205",
+        "type": "ui_slider",
+        "z": "cddf6c26.6a9e3",
+        "name": "Speed-Slider",
+        "label": "Animation Speed",
+        "group": "7f1ff9b6.485398",
+        "order": 1,
+        "width": "7",
+        "height": "1",
+        "passthru": true,
+        "topic": "",
+        "min": 0,
+        "max": "255",
+        "step": 1,
+        "x": 1690,
+        "y": 400,
+        "wires": [
+            [
+                "b537b63a.fba748"
+            ]
+        ]
+    },
+    {
+        "id": "689c5c5f.8a8b34",
+        "type": "ui_switch",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "label": "Autoplay",
+        "group": "ba6866b4.b54908",
+        "order": 1,
+        "width": "5",
+        "height": "1",
+        "passthru": true,
+        "decouple": "false",
+        "topic": "",
+        "style": "",
+        "onvalue": "true",
+        "onvalueType": "bool",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "false",
+        "offvalueType": "bool",
+        "officon": "",
+        "offcolor": "",
+        "x": 1700,
+        "y": 440,
+        "wires": [
+            [
+                "5cab614b.91d67"
+            ]
+        ]
+    },
+    {
+        "id": "5cab614b.91d67",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "On/Off",
+        "func": "if(msg.payload)msg.payload=\"autoplay?value=1\";\nelse msg.payload = \"autoplay?value=0\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1950,
+        "y": 440,
+        "wires": [
+            [
+                "c319d1e6.638de"
+            ]
+        ]
+    },
+    {
+        "id": "291f1e3b.275322",
+        "type": "ui_slider",
+        "z": "cddf6c26.6a9e3",
+        "name": "Autoplay Duration Slider",
+        "label": "",
+        "group": "ba6866b4.b54908",
+        "order": 3,
+        "width": "4",
+        "height": "1",
+        "passthru": true,
+        "topic": "",
+        "min": "1",
+        "max": "255",
+        "step": 1,
+        "x": 1650,
+        "y": 480,
+        "wires": [
+            [
+                "97dcd4fb.b834e8",
+                "c2f996f5.dff9b8"
+            ]
+        ]
+    },
+    {
+        "id": "b80cf79b.b95778",
+        "type": "link in",
+        "z": "cddf6c26.6a9e3",
+        "name": "NanoleafWithPowerON",
+        "links": [
+            "5325c0f4.ee88e",
+            "f880d406.243a68",
+            "f55a72c0.de12f",
+            "e3a04c05.51f3b",
+            "10babbac.b84494",
+            "5a1af749.e8d358",
+            "ef8d9ea8.22369",
+            "8c55dea5.89b95",
+            "c319d1e6.638de",
+            "5dead56c.a6149c",
+            "5eacdb79.95d744",
+            "6d04adb.58c2754"
+        ],
+        "x": 175,
+        "y": 2560,
+        "wires": [
+            [
+                "3927f551.2f80aa"
+            ]
+        ]
+    },
+    {
+        "id": "3927f551.2f80aa",
+        "type": "delay",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "10",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 320,
+        "y": 2540,
+        "wires": [
+            [
+                "a5ffbed4.7d487"
+            ]
+        ]
+    },
+    {
+        "id": "d4ee0eab.b5abe",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Request URL",
+        "func": "var url = global.get(\"Nanoleaf\")+\"/\";\nmsg.payload = url+msg.payload2;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 510,
+        "y": 2600,
+        "wires": [
+            [
+                "876a9ed5.bebd5"
+            ]
+        ]
+    },
+    {
+        "id": "876a9ed5.bebd5",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "url",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 690,
+        "y": 2600,
+        "wires": [
+            [
+                "a90726ea.fe80f8",
+                "3a874fed.29db6"
+            ]
+        ]
+    },
+    {
+        "id": "5b3e1212.1a18fc",
+        "type": "debug",
+        "z": "cddf6c26.6a9e3",
+        "name": "Nanoleaf Response",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1030,
+        "y": 2600,
+        "wires": []
+    },
+    {
+        "id": "a90726ea.fe80f8",
+        "type": "debug",
+        "z": "cddf6c26.6a9e3",
+        "name": "Nanoleaf Request",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "url",
+        "x": 1030,
+        "y": 2560,
+        "wires": []
+    },
+    {
+        "id": "13bd35c3.f532da",
+        "type": "link out",
+        "z": "cddf6c26.6a9e3",
+        "name": "NanoleafPowerOFF",
+        "links": [
+            "dc5348cd.f5ba28"
+        ],
+        "x": 1115,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "dc5348cd.f5ba28",
+        "type": "link in",
+        "z": "cddf6c26.6a9e3",
+        "name": "NanoleafWithoutPowerON",
+        "links": [
+            "13bd35c3.f532da",
+            "c38656d0.228018"
+        ],
+        "x": 375,
+        "y": 2640,
+        "wires": [
+            [
+                "cdf0fd3c.ac893"
+            ]
+        ]
+    },
+    {
+        "id": "a5ffbed4.7d487",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "power on",
+        "func": "var url = global.get(\"Nanoleaf\")+\"/\";\nvar on = url+\"power?value=1\";\nvar msg2 = \n{\n    payload2: msg.payload, \n    url: on\n};\nreturn msg2;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 480,
+        "y": 2540,
+        "wires": [
+            [
+                "694aa622.638ed8"
+            ]
+        ]
+    },
+    {
+        "id": "694aa622.638ed8",
+        "type": "http request",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "url": "",
+        "tls": "",
+        "x": 630,
+        "y": 2540,
+        "wires": [
+            [
+                "d4ee0eab.b5abe"
+            ]
+        ]
+    },
+    {
+        "id": "3a874fed.29db6",
+        "type": "http request",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "url": "",
+        "tls": "",
+        "x": 850,
+        "y": 2600,
+        "wires": [
+            [
+                "5b3e1212.1a18fc"
+            ]
+        ]
+    },
+    {
+        "id": "cdf0fd3c.ac893",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Request URL",
+        "func": "var url = global.get(\"Nanoleaf\")+\"/\";\nmsg.payload = url+msg.payload;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 510,
+        "y": 2640,
+        "wires": [
+            [
+                "876a9ed5.bebd5"
+            ]
+        ]
+    },
+    {
+        "id": "b858cc9e.a5b2b",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Reposition ",
+        "func": "var leafs =[];\nvar o = global.get(\"CanvasOffset\");\nif(global.get(\"NanoleafCfg\")!=null)leafs = global.get(\"NanoleafCfg\");\nvar leafs_old = leafs;\n\nvar offsetX = 0;\nvar offsetY = 0;\nvar maxX = 0;\nvar maxY=0;\n\nvar w = global.get(\"CanvasWidth\");\nvar h = global.get(\"CanvasHeight\");\n\nfor(var i = 0;i<leafs.length;i++)\n{\n    if(leafs[i].p1x<(offsetX+5))offsetX=leafs[i].p1x-o;\n    if(leafs[i].p2x<(offsetX+5))offsetX=leafs[i].p2x-o;\n    if(leafs[i].p3x<(offsetX+5))offsetX=leafs[i].p3x-o;\n    \n    if(leafs[i].p1y<(offsetY+5))offsetY=leafs[i].p1y-o;\n    if(leafs[i].p2y<(offsetY+5))offsetY=leafs[i].p2y-o;\n    if(leafs[i].p3y<(offsetY+5))offsetY=leafs[i].p3y-o;\n}\n\nfor(var i = 0;i<leafs.length;i++)\n{\n    leafs[i].p1x -= offsetX;\n    leafs[i].p2x -= offsetX;\n    leafs[i].p3x -= offsetX;\n    \n    leafs[i].p1y -= offsetY;\n    leafs[i].p2y -= offsetY;\n    leafs[i].p3y -= offsetY;\n    \n    if(leafs[i].p1x>(maxX))maxX=leafs[i].p1x;\n    if(leafs[i].p2x>(maxX))maxX=leafs[i].p2x;\n    if(leafs[i].p3x>(maxX))maxX=leafs[i].p3x;\n    \n    if(leafs[i].p1y>(maxY))maxY=leafs[i].p1y;\n    if(leafs[i].p2y>(maxY))maxY=leafs[i].p2y;\n    if(leafs[i].p3y>(maxY))maxY=leafs[i].p3y;\n}\nvar scale = 1;\nif((maxX+40)>w)\n{\n    scale = w/(maxX+40);\n}\nif((maxY+40)>h)\n{\n    if((h/(maxY+40))<scale)\n    scale = h/(maxY+40);\n}\n\nmsg.topic= scale;\nglobal.set(\"NanoleafCfg\", leafs_old);\n\nmsg.payload = leafs;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 2010,
+        "y": 2400,
+        "wires": [
+            [
+                "192169b1.d6d196",
+                "e84d7734.1c9bc8"
+            ]
+        ]
+    },
+    {
+        "id": "790e3c19.d36044",
+        "type": "ui_ui_control",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "x": 1500,
+        "y": 2720,
+        "wires": [
+            [
+                "5175d9cb.8e51b8"
+            ]
+        ]
+    },
+    {
+        "id": "192169b1.d6d196",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Build_Template",
+        "func": "var finalstring = \"\";\nvar html = \"\";\nvar js = \"\";\nvar scale = \"\";\nvar leafs = msg.payload;\nvar s = global.get(\"TriangleStroke\");\nvar side = global.get(\"TriangleSide\");\nvar fs = global.get(\"DesignerFontSize\");\nvar w = global.get(\"CanvasWidth\");\nvar h = global.get(\"CanvasHeight\");\nvar selected = global.get(\"DesignerSelected\");\nvar o = global.get(\"TriangleOffset\");\nvar p = selected;\nif(p==null)\n{\n    p = leafs.length-1;\n    if(p<=0)p=0;\n    selected = p;\n}\n\nhtml = `\n<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css\">`;\nhtml+='<canvas id=\"canvas\" width=\"'+w+'\" height=\"'+h+'\"></canvas>';\n\njs+=`\nvar canvas = document.getElementById(\"canvas\");\nvar ctx = canvas.getContext(\"2d\");\nvar BB = canvas.getBoundingClientRect();\nvar offsetX = BB.left;\nvar offsetY = BB.top;\nvar WIDTH = canvas.width;\nvar HEIGHT = canvas.height;\n`\njs+='ctx.scale('+parseFloat(msg.topic)+', '+parseFloat(msg.topic)+');';\nfor (var i = 0; i < leafs.length; i++) {  \n    js+='ctx.beginPath();\\n';\n    js+='ctx.moveTo('+leafs[i].p1x+', '+leafs[i].p1y+');\\n';\n    js+='ctx.lineTo('+leafs[i].p2x+', '+leafs[i].p2y+');\\n';\n    js+='ctx.lineTo('+leafs[i].p3x+', '+leafs[i].p3y+');\\n';\n    js+='ctx.closePath();\\n';\n    js+='ctx.lineWidth ='+s+';';\n    js+='ctx.lineCap = \"round\";';\n    js+=\"ctx.strokeStyle = '#111111';\";\n    if(i==selected)js+=\"ctx.strokeStyle = '#FF0000';\";\n    js+=\"ctx.stroke();\";\n    js+='ctx.fillStyle = \"'+ leafs[i].fill+'\";\\n';\n    js+='ctx.fill();'\n    \n    js+=\"ctx.fillStyle = '#000000';\";\n    js+='ctx.font = \"'+fs+ 'px Arial\";';\n    var ox = (leafs[i].p1x+leafs[i].p3x)/2-fs/2;\n    var oy = (leafs[i].p1y+leafs[i].p2y)/2;\n    js+=\"ctx.fillText(\"+leafs[i].pos.toString()+\", \"+ox+\", \"+oy+\");\";\n    if(leafs[i].pos == selected)\n    {\n        var a = true;\n        var b = true;\n        var c = true;\n        \nfor(var i2 = 0;i2<leafs.length;i2++)\n    {\n        if(leafs[p].type==true)\n        {\n            if((leafs[p].p2x-o)==leafs[i2].p3x&&leafs[p].p2y==leafs[i2].p3y)\n            {\n                if((leafs[p].p1x-o)==leafs[i2].p2x&&leafs[p].p2y==leafs[i2].p1y)\n                {\n                    a=false;\n                }\n            }\n            \n            if((leafs[p].p2x+o)==leafs[i2].p1x&&leafs[p].p2y==leafs[i2].p1y)\n            {\n                if((leafs[p].p3x+o)==leafs[i2].p2x&&leafs[p].p3y==leafs[i2].p2y)\n                {\n                    b=false;\n                }\n            }\n            if((leafs[p].p1x)==leafs[i2].p1x&&(leafs[p].p1y+o)==leafs[i2].p1y)\n            {\n                if((leafs[p].p3x)==leafs[i2].p3x&&(leafs[p].p3y+o)==leafs[i2].p3y)\n                {\n                    c=false;\n                }\n            }\n            \n        }\n        else\n        {\n            if((leafs[p].p1x-o)==leafs[i2].p2x&&leafs[p].p1y==leafs[i2].p2y)\n            {\n                if((leafs[p].p2x-o)==leafs[i2].p3x)\n                {\n                    if(leafs[p].p2y==leafs[i2].p3y)\n                    {\n                        a=false;\n                    }\n                }\n            }\n            \n            if((leafs[p].p1x)==leafs[i2].p1x&&(leafs[p].p1y-o)==leafs[i2].p1y)\n            {\n                if((leafs[p].p3x)==leafs[i2].p3x&&(leafs[p].p3y-o)==leafs[i2].p3y)\n                {\n                    b=false;\n                }\n            }\n            if((leafs[p].p3x+o)==leafs[i2].p2x&&leafs[p].p3y==leafs[i2].p2y)\n            {\n                if((leafs[p].p2x+o)==leafs[i2].p1x&&leafs[p].p2y==leafs[i2].p1y)\n                {\n                    c=false;\n                }\n            }\n            \n        }\n    }\n        \n        \n        var d = leafs[i].add;\n        if(leafs[i].type==true)\n        {\n            if((d==111||d==110||d==100||d==101)&&a)\n            {\n                var ox = leafs[i].p1x;\n                var oy = (leafs[i].p1y+leafs[i].p2y)/2;\n                js+=\"ctx.fillText('A', \"+ox+\", \"+oy+\");\";\n            }\n            if((d==111||d==110||d==10||d==11)&&b)\n            {\n                var ox = leafs[i].p3x;\n                var oy = (leafs[i].p1y+leafs[i].p2y)/2;\n                js+=\"ctx.fillText('B', \"+ox+\", \"+oy+\");\";\n            }\n            if((d==111||d==101||d==1||d==11)&&c)\n            {\n                var ox = leafs[i].p2x-fs*0.5;\n                var oy = leafs[i].p2y+fs*1.5+side*(Math.sqrt(3)/2);\n                js+=\"ctx.fillText('C', \"+ox+\", \"+oy+\");\";\n            }\n        }\n        else\n        {\n            if((d==111||d==110||d==100||d==101)&&a)\n            {\n                var ox = leafs[i].p1x;\n                var oy = (leafs[i].p1y+leafs[i].p2y)/2;\n                js+=\"ctx.fillText('A', \"+ox+\", \"+oy+\");\";\n            }\n            if((d==111||d==110||d==10||d==11)&&b)\n            {\n                var ox = leafs[i].p2x-fs/2;\n                var oy = leafs[i].p1y-fs*0.5;\n                js+=\"ctx.fillText('B', \"+ox+\", \"+oy+\");\";\n\n            }\n            if((d==111||d==101||d==1||d==11)&&c)\n            {\n                var ox = leafs[i].p3x;\n                var oy = (leafs[i].p1y+leafs[i].p2y)/2;\n                js+=\"ctx.fillText('C', \"+ox+\", \"+oy+\");\";\n            }\n        }\n    }\n}\nvar mul = parseFloat(msg.topic);\n//scale += '\\ncanvas.width = \"'+mul*w+'\";\\n';\n//scale += 'canvas.height = \"'+mul*h+'\";';\n\nvar finalstring = html+\"<script>\"+js+scale+\"</script>\";\nvar msg = {template: finalstring};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 2200,
+        "y": 2400,
+        "wires": [
+            [
+                "4de8a85c.41b318"
+            ]
+        ]
+    },
+    {
+        "id": "4de8a85c.41b318",
+        "type": "ui_template",
+        "z": "cddf6c26.6a9e3",
+        "group": "44fbf503.d3152c",
+        "name": "",
+        "order": 1,
+        "width": "12",
+        "height": "10",
+        "format": "",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "templateScope": "local",
+        "x": 2360,
+        "y": 2400,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b2672dcd.ab257",
+        "type": "ui_button",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "group": "44fbf503.d3152c",
+        "order": 2,
+        "width": "4",
+        "height": "1",
+        "passthru": false,
+        "label": "Add Position <b>A</b>",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 1730,
+        "y": 2520,
+        "wires": [
+            [
+                "ecef9ed1.80696"
+            ]
+        ]
+    },
+    {
+        "id": "726f4b1c.4ef374",
+        "type": "ui_button",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "group": "44fbf503.d3152c",
+        "order": 3,
+        "width": "4",
+        "height": "1",
+        "passthru": false,
+        "label": "Add Position <b>B</b>",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 1730,
+        "y": 2560,
+        "wires": [
+            [
+                "2d1c7b5c.a228b4"
+            ]
+        ]
+    },
+    {
+        "id": "4ddfab1c.617bf4",
+        "type": "ui_button",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "group": "44fbf503.d3152c",
+        "order": 8,
+        "width": "4",
+        "height": "1",
+        "passthru": false,
+        "label": "Reset",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 1530,
+        "y": 2440,
+        "wires": [
+            [
+                "5e91a4c2.e4246c"
+            ]
+        ]
+    },
+    {
+        "id": "5e91a4c2.e4246c",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Reset",
+        "func": "var leafs = [];\n\nglobal.set(\"NanoleafCfg\", leafs);\nglobal.set(\"DesignerSelected\",0);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1670,
+        "y": 2440,
+        "wires": [
+            [
+                "b858cc9e.a5b2b",
+                "e84d7734.1c9bc8"
+            ]
+        ]
+    },
+    {
+        "id": "2cde9e7f.f45182",
+        "type": "config",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "properties": [
+            {
+                "p": "CanvasHeight",
+                "pt": "global",
+                "to": "500",
+                "tot": "str"
+            },
+            {
+                "p": "CanvasWidth",
+                "pt": "global",
+                "to": "800",
+                "tot": "str"
+            },
+            {
+                "p": "TriangleSide",
+                "pt": "global",
+                "to": "100",
+                "tot": "num"
+            },
+            {
+                "p": "TriangleOffset",
+                "pt": "global",
+                "to": "12",
+                "tot": "num"
+            },
+            {
+                "p": "TriangleStroke",
+                "pt": "global",
+                "to": "8",
+                "tot": "num"
+            },
+            {
+                "p": "DesignerFontSize",
+                "pt": "global",
+                "to": "20",
+                "tot": "num"
+            },
+            {
+                "p": "DesignerOffset",
+                "pt": "global",
+                "to": "20",
+                "tot": "num"
+            },
+            {
+                "p": "CanvasOffset",
+                "pt": "global",
+                "to": "30",
+                "tot": "str"
+            },
+            {
+                "p": "CanvasHeightMini",
+                "pt": "global",
+                "to": "190",
+                "tot": "str"
+            },
+            {
+                "p": "CanvasWidthMini",
+                "pt": "global",
+                "to": "350",
+                "tot": "str"
+            }
+        ],
+        "active": true,
+        "x": 1510,
+        "y": 2380,
+        "wires": []
+    },
+    {
+        "id": "e84d7734.1c9bc8",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Button-Control",
+        "func": "var p = global.get(\"DesignerSelected\");\nvar leafs = global.get(\"NanoleafCfg\");\nvar o = global.get(\"TriangleOffset\");\nvar s = global.get(\"TriangleSide\");\nif(p==null)\n{\n    p = leafs.length-1;\n}\n\nvar a = false;\nvar b = false;\nvar c = false;\n\nif(p==-1 || p==0)\n{\n    a=true;\n    b=true;\n    c=true;\n}\nelse\n{\n    var d = leafs[p].add;\n    if(d==111||d==110||d==100||d==101)\n    {\n        a=true;\n    }\n    if(d==111||d==110||d==10||d==11)\n    {\n        b=true;\n    }\n    if(d==111||d==101||d==1||d==11)\n    {\n        c=true;\n    }\n    for(var i = 0;i<leafs.length;i++)\n    {\n        if(leafs[p].type==true)\n        {\n            if((leafs[p].p2x-o)==leafs[i].p3x&&leafs[p].p2y==leafs[i].p3y)\n            {\n                if((leafs[p].p1x-o)==leafs[i].p2x&&leafs[p].p2y==leafs[i].p1y)\n                {\n                    a=false;\n                }\n            }\n            \n            if((leafs[p].p2x+o)==leafs[i].p1x&&leafs[p].p2y==leafs[i].p1y)\n            {\n                if((leafs[p].p3x+o)==leafs[i].p2x&&leafs[p].p3y==leafs[i].p2y)\n                {\n                    b=false;\n                }\n            }\n            if((leafs[p].p1x)==leafs[i].p1x&&(leafs[p].p1y+o)==leafs[i].p1y)\n            {\n                if((leafs[p].p3x)==leafs[i].p3x&&(leafs[p].p3y+o)==leafs[i].p3y)\n                {\n                    c=false;\n                }\n            }\n            \n        }\n        else\n        {\n            if((leafs[p].p1x-o)==leafs[i].p2x&&leafs[p].p1y==leafs[i].p2y)\n            {\n                if((leafs[p].p2x-o)==leafs[i].p3x)\n                {\n                    if(leafs[p].p2y==leafs[i].p3y)\n                    {\n                        a=false;\n                    }\n                }\n            }\n            \n            if((leafs[p].p1x)==leafs[i].p1x&&(leafs[p].p1y-o)==leafs[i].p1y)\n            {\n                if((leafs[p].p3x)==leafs[i].p3x&&(leafs[p].p3y-o)==leafs[i].p3y)\n                {\n                    b=false;\n                }\n            }\n            if((leafs[p].p3x+o)==leafs[i].p2x&&leafs[p].p3y==leafs[i].p2y)\n            {\n                if((leafs[p].p2x+o)==leafs[i].p1x&&leafs[p].p2y==leafs[i].p1y)\n                {\n                    c=false;\n                }\n            }\n            \n        }\n    }\n}\n    if(a)var msg1={enabled: true};\n    else var msg1={enabled: false};\n    if(b)var msg2={enabled: true};\n    else var msg2={enabled: false};\n    if(c)var msg3={enabled: true};\n    else var msg3={enabled: false};\n\nreturn [msg1, msg2, msg3, msg];",
+        "outputs": 4,
+        "noerr": 0,
+        "x": 1500,
+        "y": 2560,
+        "wires": [
+            [
+                "b2672dcd.ab257"
+            ],
+            [
+                "726f4b1c.4ef374"
+            ],
+            [
+                "6c140751.a304c8"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "6c140751.a304c8",
+        "type": "ui_button",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "group": "44fbf503.d3152c",
+        "order": 4,
+        "width": "4",
+        "height": "1",
+        "passthru": false,
+        "label": "Add Position <b>C</b>",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 1730,
+        "y": 2600,
+        "wires": [
+            [
+                "c3eb1a04.6d53d8"
+            ]
+        ]
+    },
+    {
+        "id": "ecef9ed1.80696",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Add Pos A",
+        "func": "var leafs = [];\nvar s = global.get(\"TriangleSide\");\nvar o = global.get(\"TriangleOffset\");\nvar p = global.get(\"DesignerSelected\");\n\n\n\nif(global.get(\"NanoleafCfg\")!=null)leafs = global.get(\"NanoleafCfg\");\nif(p==null)\n{\n    if(leafs==null)p=0;else\n    p = leafs.length-1;\n}\nvar cnt = 0;\nif(leafs.length !=null)cnt=leafs.length;\nif(cnt == 0)\n{\n    leafs.push({\n    pos: 0,\n    p1x: 0,\n    p1y: parseInt(s*(Math.sqrt(3)/2)),\n    p2x: s/2,\n    p2y: 0,\n    p3x: s,\n    p3y: parseInt(s*(Math.sqrt(3)/2)),\n    fill: \"#dddddd\",\n    type: true,\n    add: 111\n});\n}\nelse\n{\n    if(leafs[p].type==true)\n    {\n        leafs.push({\n        pos: leafs.length,\n        p1x: leafs[p].p2x-o-s,\n        p1y: leafs[p].p2y,\n        p2x: leafs[p].p1x-o,\n        p2y: leafs[p].p1y,\n        p3x: leafs[p].p2x-o,\n        p3y: leafs[p].p2y,\n        fill: \"#41f45c\",\n        type: false,\n        add: 110\n});\n    }\n    else\n    {\n        leafs.push({\n        pos: leafs.length,\n        p1x: leafs[p].p2x-o-s,\n        p1y: leafs[p].p2y,\n        p2x: leafs[p].p1x-o,\n        p2y: leafs[p].p1y,\n        p3x: leafs[p].p2x-o,\n        p3y: leafs[p].p2y,\n        fill: \"#41f45c\",\n        type: true,\n        add: 101\n});\n    }\n}\nglobal.set(\"NanoleafCfg\", leafs);\nglobal.set(\"DesignerSelected\",cnt);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1970,
+        "y": 2520,
+        "wires": [
+            [
+                "b858cc9e.a5b2b"
+            ]
+        ]
+    },
+    {
+        "id": "2d1c7b5c.a228b4",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Add Pos B",
+        "func": "var leafs = [];\nvar s = global.get(\"TriangleSide\");\nvar o = global.get(\"TriangleOffset\");\nvar p = global.get(\"DesignerSelected\");\n\n\n\nif(global.get(\"NanoleafCfg\")!=null)leafs = global.get(\"NanoleafCfg\");\nif(p==null)\n{\n    if(leafs==null)p=0;else\n    p = leafs.length-1;\n}\nvar cnt = 0;\nif(leafs.length !=null)cnt=leafs.length;\nif(cnt == 0)\n{\n    leafs.push({\n    pos: 0,\n    p1x: 0,\n    p1y: 0,\n    p2x: s/2,\n    p2y: parseInt(s*(Math.sqrt(3)/2)),\n    p3x: s,\n    p3y: 0,\n    fill: \"#aaaaaa\",\n    type: false,\n    add: 111\n});\n}\nelse\n{\n    if(leafs[p].type==true)\n    {\n        leafs.push({\n        pos: leafs.length,\n        p1x: leafs[p].p2x+o,\n        p1y: leafs[p].p2y,\n        p2x: leafs[p].p3x+o,\n        p2y: leafs[p].p3y,\n        p3x: leafs[p].p2x+s+o,\n        p3y: leafs[p].p2y,\n        fill: \"#42f1f4\",\n        type: false,\n        add: 11\n});\n    }\n    else\n    {\n        leafs.push({\n        pos: leafs.length,\n        p1x: leafs[p].p1x,\n        p1y: leafs[p].p1y-o,\n        p2x: leafs[p].p2x,\n        p2y: leafs[p].p1y-o-parseInt((Math.sqrt(3)/2)*s),\n        p3x: leafs[p].p3x,\n        p3y: leafs[p].p3y-o,\n        fill: \"#42f1f4\",\n        type: true,\n        add: 110\n});\n    }\n}\n\nglobal.set(\"NanoleafCfg\", leafs);\nglobal.set(\"DesignerSelected\", cnt);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1970,
+        "y": 2560,
+        "wires": [
+            [
+                "b858cc9e.a5b2b"
+            ]
+        ]
+    },
+    {
+        "id": "c3eb1a04.6d53d8",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Add Pos C",
+        "func": "var leafs = [];\nvar s = global.get(\"TriangleSide\");\nvar o = global.get(\"TriangleOffset\");\nvar p = global.get(\"DesignerSelected\");\n\n\n\nif(global.get(\"NanoleafCfg\")!=null)leafs = global.get(\"NanoleafCfg\");\nif(p==null)\n{\n    if(leafs==null)p=0;else\n    p = leafs.length-1;\n}\nvar cnt = 0;\nif(leafs.length !=null)cnt=leafs.length;\nif(cnt == 0)\n{\n    leafs.push({\n    pos: 0,\n    p1x: 0,\n    p1y: 0,\n    p2x: s/2,\n    p2y: parseInt(s*(Math.sqrt(3)/2)),\n    p3x: s,\n    p3y: 0,\n    fill: \"#aaaaaa\",\n    type: false,\n    add: 111\n});\n}\nelse\n{\n    if(leafs[p].type==true)\n    {\n        leafs.push({\n        pos: leafs.length,\n        p1x: leafs[p].p1x,\n        p1y: leafs[p].p1y+o,\n        p2x: leafs[p].p2x,\n        p2y: leafs[p].p2y+o+2*parseInt((Math.sqrt(3)/2)*s),\n        p3x: leafs[p].p3x,\n        p3y: leafs[p].p3y+o,\n        fill: \"#f7ff21\",\n        type: false,\n        add: 101\n});\n    }\n    else\n    {\n                leafs.push({\n        pos: leafs.length,\n        p1x: leafs[p].p2x+o,\n        p1y: leafs[p].p2y,\n        p2x: leafs[p].p3x+o,\n        p2y: leafs[p].p3y,\n        p3x: leafs[p].p2x+o+s,\n        p3y: leafs[p].p2y,\n        fill: \"#f7ff21\",\n        type: true,\n        add: 11\n});\n    }\n\n}\nglobal.set(\"NanoleafCfg\", leafs);\nglobal.set(\"DesignerSelected\",cnt);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1970,
+        "y": 2600,
+        "wires": [
+            [
+                "b858cc9e.a5b2b"
+            ]
+        ]
+    },
+    {
+        "id": "25b34d97.6303b2",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Seleted",
+        "func": "var x = msg.payload;\nvar leafs = global.get(\"NanoleafCfg\");\nvar c = global.get(\"DesignerSelected\");\nvar y = 0;\ny=c+x;\nif(y>=leafs.length)y=0;\nif(y<0)y=leafs.length-1;\nglobal.set(\"DesignerSelected\",y);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 2320,
+        "y": 2480,
+        "wires": [
+            [
+                "b858cc9e.a5b2b"
+            ]
+        ]
+    },
+    {
+        "id": "e33be40a.e44588",
+        "type": "ui_button",
+        "z": "cddf6c26.6a9e3",
+        "name": "Right",
+        "group": "44fbf503.d3152c",
+        "order": 6,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "label": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "fa-arrow-right",
+        "payload": "+1",
+        "payloadType": "num",
+        "topic": "",
+        "x": 1950,
+        "y": 2640,
+        "wires": [
+            [
+                "25b34d97.6303b2"
+            ]
+        ]
+    },
+    {
+        "id": "7542d568.1efc2c",
+        "type": "ui_button",
+        "z": "cddf6c26.6a9e3",
+        "name": "Left",
+        "group": "44fbf503.d3152c",
+        "order": 5,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "label": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "fa-arrow-left",
+        "payload": "-1",
+        "payloadType": "num",
+        "topic": "",
+        "x": 1950,
+        "y": 2680,
+        "wires": [
+            [
+                "25b34d97.6303b2"
+            ]
+        ]
+    },
+    {
+        "id": "eca2acf5.cb0ac",
+        "type": "ui_button",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "group": "44fbf503.d3152c",
+        "order": 7,
+        "width": "4",
+        "height": "1",
+        "passthru": false,
+        "label": "Remove Last",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 1970,
+        "y": 2720,
+        "wires": [
+            [
+                "473dbfbe.73d8"
+            ]
+        ]
+    },
+    {
+        "id": "473dbfbe.73d8",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Remove Last",
+        "func": "var leafs = global.get(\"NanoleafCfg\");\nif(leafs==null)return null;\nif(leafs.length>0)leafs.pop();\nglobal.set(\"NanoleafCfg\", leafs);\nglobal.set(\"DesignerSelected\",leafs.length-1);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 2130,
+        "y": 2720,
+        "wires": [
+            [
+                "b858cc9e.a5b2b"
+            ]
+        ]
+    },
+    {
+        "id": "f9b688a4.59e5d8",
+        "type": "file",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "filename": "NanoleafCfg.json",
+        "appendNewline": true,
+        "createDir": false,
+        "overwriteFile": "true",
+        "x": 2450,
+        "y": 2800,
+        "wires": [
+            [
+                "b0d8bd52.65e2d",
+                "3bb66cee.d68894"
+            ]
+        ]
+    },
+    {
+        "id": "28b9652d.3b612a",
+        "type": "file in",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "filename": "NanoleafCfg.json",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "x": 2130,
+        "y": 2760,
+        "wires": [
+            [
+                "58b4a094.24526"
+            ]
+        ]
+    },
+    {
+        "id": "47cebab.e260644",
+        "type": "json",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "property": "payload",
+        "action": "str",
+        "pretty": false,
+        "x": 2290,
+        "y": 2800,
+        "wires": [
+            [
+                "f9b688a4.59e5d8"
+            ]
+        ]
+    },
+    {
+        "id": "be469f25.47c8e",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "NanoleafCfg",
+                "tot": "global"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2120,
+        "y": 2800,
+        "wires": [
+            [
+                "47cebab.e260644"
+            ]
+        ]
+    },
+    {
+        "id": "8dd8fc70.37d2a",
+        "type": "ui_button",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "group": "44fbf503.d3152c",
+        "order": 0,
+        "width": "4",
+        "height": "1",
+        "passthru": false,
+        "label": "Save Design",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 1490,
+        "y": 2800,
+        "wires": [
+            [
+                "a318e7d9.bab5e8"
+            ]
+        ]
+    },
+    {
+        "id": "7e449e9c.3783d",
+        "type": "ui_toast",
+        "z": "cddf6c26.6a9e3",
+        "position": "dialog",
+        "displayTime": "3",
+        "highlight": "",
+        "outputs": 1,
+        "ok": "Yes",
+        "cancel": "Cancel",
+        "topic": "Are you sure?",
+        "name": "confirm",
+        "x": 1820,
+        "y": 2800,
+        "wires": [
+            [
+                "c2857062.70511"
+            ]
+        ]
+    },
+    {
+        "id": "c2857062.70511",
+        "type": "switch",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Yes",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 1970,
+        "y": 2800,
+        "wires": [
+            [
+                "be469f25.47c8e"
+            ]
+        ]
+    },
+    {
+        "id": "6caefba1.71e714",
+        "type": "ui_button",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "group": "44fbf503.d3152c",
+        "order": 0,
+        "width": "4",
+        "height": "1",
+        "passthru": false,
+        "label": "Load Design",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 1490,
+        "y": 2760,
+        "wires": [
+            [
+                "170287ff.beaf08"
+            ]
+        ]
+    },
+    {
+        "id": "d07e90fc.da19d",
+        "type": "ui_toast",
+        "z": "cddf6c26.6a9e3",
+        "position": "dialog",
+        "displayTime": "3",
+        "highlight": "",
+        "outputs": 1,
+        "ok": "Yes",
+        "cancel": "Cancel",
+        "topic": "Are you sure?",
+        "name": "confirm",
+        "x": 1820,
+        "y": 2760,
+        "wires": [
+            [
+                "a1d6a03a.6b53d"
+            ]
+        ]
+    },
+    {
+        "id": "a1d6a03a.6b53d",
+        "type": "switch",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Yes",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 1970,
+        "y": 2760,
+        "wires": [
+            [
+                "28b9652d.3b612a"
+            ]
+        ]
+    },
+    {
+        "id": "b0dc8b83.382ae8",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "NanoleafCfg",
+                "pt": "global",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2460,
+        "y": 2760,
+        "wires": [
+            [
+                "b858cc9e.a5b2b"
+            ]
+        ]
+    },
+    {
+        "id": "58b4a094.24526",
+        "type": "json",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 2290,
+        "y": 2760,
+        "wires": [
+            [
+                "b0dc8b83.382ae8"
+            ]
+        ]
+    },
+    {
+        "id": "170287ff.beaf08",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1660,
+        "y": 2760,
+        "wires": [
+            [
+                "d07e90fc.da19d"
+            ]
+        ]
+    },
+    {
+        "id": "a318e7d9.bab5e8",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1660,
+        "y": 2800,
+        "wires": [
+            [
+                "7e449e9c.3783d"
+            ]
+        ]
+    },
+    {
+        "id": "5175d9cb.8e51b8",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Check NanoleafCfg",
+        "func": "if(global.get(\"NanoleafCfg\")!=null)return null;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1790,
+        "y": 2720,
+        "wires": [
+            [
+                "a1d6a03a.6b53d"
+            ]
+        ]
+    },
+    {
+        "id": "88beb4f6.1f28c8",
+        "type": "ui_ui_control",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "x": 1820,
+        "y": 2840,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "763f3960.723208",
+        "type": "ui_button",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "group": "44fbf503.d3152c",
+        "order": 0,
+        "width": "4",
+        "height": "1",
+        "passthru": false,
+        "label": "Close Designer",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 1480,
+        "y": 2840,
+        "wires": [
+            [
+                "4635a372.226d5c"
+            ]
+        ]
+    },
+    {
+        "id": "4635a372.226d5c",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Hide Designer",
+        "func": "msg.payload= {group:{hide:[\"Nanoleafs_Nanoleaf_Designer\"], show:[\"Nanoleafs_Nanoleaf_Simulator\"], focus:true}};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1660,
+        "y": 2840,
+        "wires": [
+            [
+                "88beb4f6.1f28c8"
+            ]
+        ]
+    },
+    {
+        "id": "c319d1e6.638de",
+        "type": "link out",
+        "z": "cddf6c26.6a9e3",
+        "name": "NanoleafDMain",
+        "links": [
+            "b80cf79b.b95778"
+        ],
+        "x": 2215,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "9c968433.d8d178",
+        "type": "ui_dropdown",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "label": "Pattern",
+        "place": "Select Pattern",
+        "group": "38d8f98d.5d51c6",
+        "order": 9,
+        "width": "7",
+        "height": "1",
+        "passthru": false,
+        "options": [
+            {
+                "label": "",
+                "value": "",
+                "type": "str"
+            }
+        ],
+        "payload": "",
+        "topic": "",
+        "x": 1700,
+        "y": 280,
+        "wires": [
+            [
+                "931acf5e.287e1"
+            ]
+        ]
+    },
+    {
+        "id": "50748020.a77fd",
+        "type": "ui_ui_control",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "x": 1300,
+        "y": 320,
+        "wires": [
+            [
+                "ff7b061b.2b1228",
+                "3025f8c3.d5e318",
+                "dad4e8c2.f4b9d8"
+            ]
+        ]
+    },
+    {
+        "id": "ff7b061b.2b1228",
+        "type": "template",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "field": "options",
+        "fieldType": "msg",
+        "format": "json",
+        "syntax": "plain",
+        "template": "[\n    {\"Pride\": \"0\"},\n    {\"Color Waves\":\"1\"},\n    {\"Rainbow\":\"20\"},\n    {\"Rainbow With Glitter\":\"21\"},\n    {\"Solid Rainbow\":\"22\"},\n    {\"Confetti\":\"23\"},\n    {\"Sinelon\":\"24\"},\n    {\"Beat\":\"25\"},\n    {\"Juggle\":\"26\"},\n    {\"Fire\":\"27\"},\n    {\"Water\":\"28\"},\n    {\"Solid Color\":\"29\"}\n]",
+        "output": "str",
+        "x": 1440,
+        "y": 280,
+        "wires": [
+            [
+                "c2bc1be0.8dcae8"
+            ]
+        ]
+    },
+    {
+        "id": "c2bc1be0.8dcae8",
+        "type": "json",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "property": "options",
+        "action": "obj",
+        "pretty": false,
+        "x": 1570,
+        "y": 280,
+        "wires": [
+            [
+                "9c968433.d8d178"
+            ]
+        ]
+    },
+    {
+        "id": "931acf5e.287e1",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Command",
+        "func": "msg.payload = \"pattern?value=\"+msg.payload;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1980,
+        "y": 300,
+        "wires": [
+            [
+                "c319d1e6.638de"
+            ]
+        ]
+    },
+    {
+        "id": "3025f8c3.d5e318",
+        "type": "template",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "field": "options",
+        "fieldType": "msg",
+        "format": "json",
+        "syntax": "plain",
+        "template": "[\n    {\"Rainbow Twinkles\":\"2\"},\n    {\"Snow Twinkles\":\"3\"},\n    {\"Cloud Twinkles\":\"4\"},\n    {\"Incandescent Twinkles\":\"5\"},\n    {\"Retro C9 Twinkles\":\"6\"},\n    {\"Red & White Twinkles\":\"7\"},\n    {\"Blue & White Twinkles\":\"8\"},\n    {\"Red, Green & White Twinkles\":\"9\"},\n    {\"Fairy Light Twinkles\":\"10\"},\n    {\"Snow 2 Twinkles\":\"11\"},\n    {\"Holly Twinkles\":\"12\"},\n    {\"Ice Twinkles\":\"13\"},\n    {\"Party Twinkles\":\"14\"},\n    {\"Forest Twinkles\":\"15\"},\n    {\"Lava Twinkles\":\"16\"},\n    {\"Fire Twinkles\":\"17\"},\n    {\"Cloud 2 Twinkles\":\"18\"},\n    {\"Ocean Twinkles\":\"19\"}\n]",
+        "output": "str",
+        "x": 1440,
+        "y": 320,
+        "wires": [
+            [
+                "f72c92a8.30bcb"
+            ]
+        ]
+    },
+    {
+        "id": "f72c92a8.30bcb",
+        "type": "json",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "property": "options",
+        "action": "obj",
+        "pretty": false,
+        "x": 1570,
+        "y": 320,
+        "wires": [
+            [
+                "5f431f31.34eaa"
+            ]
+        ]
+    },
+    {
+        "id": "5f431f31.34eaa",
+        "type": "ui_dropdown",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "label": "Twinkles",
+        "place": "Select Pattern",
+        "group": "38d8f98d.5d51c6",
+        "order": 10,
+        "width": "7",
+        "height": "1",
+        "passthru": false,
+        "options": [
+            {
+                "label": "",
+                "value": "",
+                "type": "str"
+            }
+        ],
+        "payload": "",
+        "topic": "",
+        "x": 1700,
+        "y": 320,
+        "wires": [
+            [
+                "931acf5e.287e1"
+            ]
+        ]
+    },
+    {
+        "id": "b537b63a.fba748",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Speed",
+        "func": "global.set(\"NanoleafSpeed\", msg.payload);\nmsg.payload = \"speed?value=\" + msg.payload;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1970,
+        "y": 400,
+        "wires": [
+            [
+                "c319d1e6.638de"
+            ]
+        ]
+    },
+    {
+        "id": "97dcd4fb.b834e8",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Duration",
+        "func": "global.set(\"NanoleafAutoplayDuration\", msg.payload);\nmsg.payload = \"autoplayDuration?value=\" + msg.payload;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1970,
+        "y": 480,
+        "wires": [
+            [
+                "c319d1e6.638de"
+            ]
+        ]
+    },
+    {
+        "id": "227b2a01.fe37f6",
+        "type": "ui_dropdown",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "label": "Palette",
+        "place": "Select Palette",
+        "group": "38d8f98d.5d51c6",
+        "order": 11,
+        "width": "7",
+        "height": "1",
+        "passthru": false,
+        "options": [
+            {
+                "label": "",
+                "value": "",
+                "type": "str"
+            }
+        ],
+        "payload": "",
+        "topic": "",
+        "x": 1710,
+        "y": 360,
+        "wires": [
+            [
+                "99c85859.463098"
+            ]
+        ]
+    },
+    {
+        "id": "99c85859.463098",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Command",
+        "func": "msg.payload = \"palette?value=\"+msg.payload;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1980,
+        "y": 340,
+        "wires": [
+            [
+                "c319d1e6.638de"
+            ]
+        ]
+    },
+    {
+        "id": "dad4e8c2.f4b9d8",
+        "type": "template",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "field": "options",
+        "fieldType": "msg",
+        "format": "json",
+        "syntax": "plain",
+        "template": "[\n    {\"Rainbow\":\"0\"},\n    {\"Rainbow Stripe\":\"1\"},\n    {\"Cloud\":\"2\"},\n    {\"Lava\":\"3\"},\n    {\"Ocean\":\"4\"},\n    {\"Forest\":\"5\"},\n    {\"Party\":\"6\"},\n    {\"Heat\":\"7\"}\n]",
+        "output": "str",
+        "x": 1440,
+        "y": 360,
+        "wires": [
+            [
+                "8d667f9d.6876f"
+            ]
+        ]
+    },
+    {
+        "id": "8d667f9d.6876f",
+        "type": "json",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "property": "options",
+        "action": "obj",
+        "pretty": false,
+        "x": 1570,
+        "y": 360,
+        "wires": [
+            [
+                "227b2a01.fe37f6"
+            ]
+        ]
+    },
+    {
+        "id": "96b67382.72e7d",
+        "type": "ui_slider",
+        "z": "cddf6c26.6a9e3",
+        "name": "Brightness Slider",
+        "label": "",
+        "group": "9f40378b.457ad8",
+        "order": 4,
+        "width": "4",
+        "height": "1",
+        "passthru": true,
+        "topic": "",
+        "min": 0,
+        "max": "255",
+        "step": 1,
+        "x": 1670,
+        "y": 180,
+        "wires": [
+            [
+                "6c68daf0.054d94",
+                "149a4019.99fce"
+            ]
+        ]
+    },
+    {
+        "id": "6c68daf0.054d94",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Brightness",
+        "func": "global.set(\"NanoleafBrightness\", msg.payload);\nmsg.payload = \"brightness?value=\" + msg.payload;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1980,
+        "y": 180,
+        "wires": [
+            [
+                "c319d1e6.638de"
+            ]
+        ]
+    },
+    {
+        "id": "74a5dd1d.816c24",
+        "type": "ui_text",
+        "z": "cddf6c26.6a9e3",
+        "group": "9f40378b.457ad8",
+        "order": 3,
+        "width": "3",
+        "height": "1",
+        "name": "",
+        "label": "Brightness: ",
+        "format": "{{msg.payload}}%",
+        "layout": "row-spread",
+        "x": 1970,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "149a4019.99fce",
+        "type": "range",
+        "z": "cddf6c26.6a9e3",
+        "minin": "0",
+        "maxin": "255",
+        "minout": "0",
+        "maxout": "100",
+        "action": "scale",
+        "round": true,
+        "property": "payload",
+        "name": "",
+        "x": 1710,
+        "y": 220,
+        "wires": [
+            [
+                "74a5dd1d.816c24"
+            ]
+        ]
+    },
+    {
+        "id": "714fa023.6ecad",
+        "type": "ui_colour_picker",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "label": "Solid Color",
+        "group": "38d8f98d.5d51c6",
+        "format": "rgb",
+        "outformat": "string",
+        "showSwatch": false,
+        "showPicker": true,
+        "showValue": true,
+        "showHue": true,
+        "showAlpha": false,
+        "showLightness": true,
+        "dynOutput": "false",
+        "order": 0,
+        "width": "7",
+        "height": "4",
+        "passthru": true,
+        "topic": "",
+        "x": 1690,
+        "y": 560,
+        "wires": [
+            [
+                "c9671359.9c1c1"
+            ]
+        ]
+    },
+    {
+        "id": "c9671359.9c1c1",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Extract colors",
+        "func": "var str = msg.payload.substr(4, msg.payload.length-5);\nvar str = str.split(\", \");\nmsg.payload = \"solidColor?r=\"+str[0]+\"&g=\"+str[1]+\"&b=\"+str[2];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1980,
+        "y": 560,
+        "wires": [
+            [
+                "c319d1e6.638de"
+            ]
+        ]
+    },
+    {
+        "id": "c2f996f5.dff9b8",
+        "type": "ui_text",
+        "z": "cddf6c26.6a9e3",
+        "group": "ba6866b4.b54908",
+        "order": 2,
+        "width": "3",
+        "height": "1",
+        "name": "",
+        "label": "Duration:",
+        "format": "{{msg.payload}} s",
+        "layout": "row-spread",
+        "x": 1960,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "34b3de7f.260872",
+        "type": "comment",
+        "z": "cddf6c26.6a9e3",
+        "name": "Nanoleaf Designer, warning: complicated code, don't touch anything down here :D",
+        "info": "",
+        "x": 1720,
+        "y": 2340,
+        "wires": []
+    },
+    {
+        "id": "7b51471a.bb9828",
+        "type": "ui_slider",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "label": "Cooling",
+        "group": "7f1ff9b6.485398",
+        "order": 2,
+        "width": "7",
+        "height": "1",
+        "passthru": true,
+        "topic": "",
+        "min": "0",
+        "max": "255",
+        "step": 1,
+        "x": 1700,
+        "y": 600,
+        "wires": [
+            [
+                "4d165e06.9caab"
+            ]
+        ]
+    },
+    {
+        "id": "4d165e06.9caab",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Value",
+        "func": "msg.payload = \"cooling?value=\" + msg.payload;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1960,
+        "y": 600,
+        "wires": [
+            [
+                "c319d1e6.638de"
+            ]
+        ]
+    },
+    {
+        "id": "391bd61f.808c8a",
+        "type": "ui_slider",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "label": "Sparking",
+        "group": "7f1ff9b6.485398",
+        "order": 3,
+        "width": "7",
+        "height": "1",
+        "passthru": true,
+        "topic": "",
+        "min": "0",
+        "max": "255",
+        "step": 1,
+        "x": 1700,
+        "y": 640,
+        "wires": [
+            [
+                "d3dc0fae.ddf1f"
+            ]
+        ]
+    },
+    {
+        "id": "3a25389d.16efd8",
+        "type": "ui_slider",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "label": "Twinkle Speed",
+        "group": "7f1ff9b6.485398",
+        "order": 4,
+        "width": "7",
+        "height": "1",
+        "passthru": true,
+        "topic": "",
+        "min": "0",
+        "max": "8",
+        "step": 1,
+        "x": 1680,
+        "y": 680,
+        "wires": [
+            [
+                "7bf6672d.9ba278"
+            ]
+        ]
+    },
+    {
+        "id": "3ea1d27b.ffd8fe",
+        "type": "ui_slider",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "label": "Twinkle Density",
+        "group": "7f1ff9b6.485398",
+        "order": 5,
+        "width": "7",
+        "height": "1",
+        "passthru": true,
+        "topic": "",
+        "min": "0",
+        "max": "8",
+        "step": 1,
+        "x": 1680,
+        "y": 720,
+        "wires": [
+            [
+                "2d34f90b.105606"
+            ]
+        ]
+    },
+    {
+        "id": "d3dc0fae.ddf1f",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Value",
+        "func": "msg.payload = \"sparking?value=\" + msg.payload;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1960,
+        "y": 640,
+        "wires": [
+            [
+                "c319d1e6.638de"
+            ]
+        ]
+    },
+    {
+        "id": "7bf6672d.9ba278",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Value",
+        "func": "msg.payload = \"twinkleSpeed?value=\" + msg.payload;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1960,
+        "y": 680,
+        "wires": [
+            [
+                "c319d1e6.638de"
+            ]
+        ]
+    },
+    {
+        "id": "2d34f90b.105606",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Value",
+        "func": "msg.payload = \"twinkleDensity?value=\" + msg.payload;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1960,
+        "y": 720,
+        "wires": [
+            [
+                "c319d1e6.638de"
+            ]
+        ]
+    },
+    {
+        "id": "3f2fb0d4.9adb8",
+        "type": "debug",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "template",
+        "x": 2600,
+        "y": 1000,
+        "wires": []
+    },
+    {
+        "id": "d2f003f.5b52c",
+        "type": "ui_template",
+        "z": "cddf6c26.6a9e3",
+        "group": "52add45d.cb1fbc",
+        "name": "",
+        "order": 1,
+        "width": "14",
+        "height": "10",
+        "format": "",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "templateScope": "local",
+        "x": 2170,
+        "y": 1040,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ae86f739.5e36a8",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Reposition ",
+        "func": "var leafs =[];\nvar o = global.get(\"CanvasOffset\");\nif(global.get(\"PatternCfg\")!=null)leafs = global.get(\"PatternCfg\");\nvar leafs_old = leafs;\n\nvar offsetX = 0;\nvar offsetY = 0;\nvar maxX = 0;\nvar maxY=0;\n\nvar w = global.get(\"CanvasWidth\");\nvar h = global.get(\"CanvasHeight\");\n\nfor(var i = 0;i<leafs.length;i++)\n{\n    if(leafs[i].p1x<(offsetX+5))offsetX=leafs[i].p1x-o;\n    if(leafs[i].p2x<(offsetX+5))offsetX=leafs[i].p2x-o;\n    if(leafs[i].p3x<(offsetX+5))offsetX=leafs[i].p3x-o;\n    \n    if(leafs[i].p1y<(offsetY+5))offsetY=leafs[i].p1y-o;\n    if(leafs[i].p2y<(offsetY+5))offsetY=leafs[i].p2y-o;\n    if(leafs[i].p3y<(offsetY+5))offsetY=leafs[i].p3y-o;\n}\n\nfor(var i = 0;i<leafs.length;i++)\n{\n    leafs[i].p1x -= offsetX;\n    leafs[i].p2x -= offsetX;\n    leafs[i].p3x -= offsetX;\n    \n    leafs[i].p1y -= offsetY;\n    leafs[i].p2y -= offsetY;\n    leafs[i].p3y -= offsetY;\n    \n    if(leafs[i].p1x>(maxX))maxX=leafs[i].p1x;\n    if(leafs[i].p2x>(maxX))maxX=leafs[i].p2x;\n    if(leafs[i].p3x>(maxX))maxX=leafs[i].p3x;\n    \n    if(leafs[i].p1y>(maxY))maxY=leafs[i].p1y;\n    if(leafs[i].p2y>(maxY))maxY=leafs[i].p2y;\n    if(leafs[i].p3y>(maxY))maxY=leafs[i].p3y;\n}\nvar scale = 1;\nif((maxX+40)>w)\n{\n    scale = w/(maxX+40);\n}\nif((maxY+40)>h)\n{\n    if((h/(maxY+40))<scale)\n    scale = h/(maxY+40);\n}\n\nmsg.topic= scale;\n\nmsg.payload = leafs;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1840,
+        "y": 1040,
+        "wires": [
+            [
+                "b7cf5829.162e48"
+            ]
+        ]
+    },
+    {
+        "id": "b7cf5829.162e48",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Build_Template",
+        "func": "var finalstring = \"\";\nvar html = \"\";\nvar js = \"\";\nvar scale = \"\";\nvar leafs = msg.payload;\nvar s = global.get(\"TriangleStroke\");\nvar side = global.get(\"TriangleSide\");\nvar fs = global.get(\"DesignerFontSize\");\nvar w = global.get(\"CanvasWidth\");\nvar h = global.get(\"CanvasHeight\");\nvar selected = global.get(\"DesignerSelected\");\nvar o = global.get(\"TriangleOffset\");\nvar p = selected;\nif(p==null)\n{\n    p = leafs.length-1;\n    if(p<=0)p=0;\n    selected = p;\n}\n\nhtml = `\n<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css\">`;\nhtml+='<canvas id=\"canvasPattern\" width=\"'+w+'\" height=\"'+h+'\"></canvas>';\n\njs+=`\nvar canvasPattern = document.getElementById(\"canvasPattern\");\nvar ctxPattern = canvasPattern.getContext(\"2d\");\nvar BB = canvasPattern.getBoundingClientRect();\nvar offsetX = BB.left;\nvar offsetY = BB.top;\nvar WIDTH = canvasPattern.width;\nvar HEIGHT = canvasPattern.height;\n`\njs+='ctxPattern.scale('+parseFloat(msg.topic)+', '+parseFloat(msg.topic)+');';\nfor (var i = 0; i < leafs.length; i++) {  \n    js+='ctxPattern.beginPath();\\n';\n    js+='ctxPattern.moveTo('+leafs[i].p1x+', '+leafs[i].p1y+');\\n';\n    js+='ctxPattern.lineTo('+leafs[i].p2x+', '+leafs[i].p2y+');\\n';\n    js+='ctxPattern.lineTo('+leafs[i].p3x+', '+leafs[i].p3y+');\\n';\n    js+='ctxPattern.closePath();\\n';\n    js+='ctxPattern.lineWidth ='+s+';';\n    js+='ctxPattern.lineCap = \"round\";';\n    js+=\"ctxPattern.strokeStyle = '#000000';\";\n    if(i==selected)js+=\"ctxPattern.strokeStyle = '#FF0000';\";\n    js+=\"ctxPattern.stroke();\";\n    js+='ctxPattern.fillStyle = \"'+ leafs[i].fill+'\";\\n';\n    js+='ctxPattern.fill();'\n}\nvar eventjs=`\ndocument.getElementById('canvasPattern').addEventListener('click',\nfunction(ev){\n    var x = ev.clientX - canvasPattern.offsetLeft;\n    var y = ev.clientY - canvasPattern.offsetTop;\nalert(x+\", \"+y);\n},false);\n`\n\nvar finalstring = html+\"<script>\"+js+\"</script>\";\nvar msg = {template: finalstring};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 2010,
+        "y": 1040,
+        "wires": [
+            [
+                "d2f003f.5b52c"
+            ]
+        ]
+    },
+    {
+        "id": "48628ea3.0df7e",
+        "type": "ui_text",
+        "z": "cddf6c26.6a9e3",
+        "group": "52add45d.cb1fbc",
+        "order": 6,
+        "width": "2",
+        "height": "1",
+        "name": "Mode label",
+        "label": "... ",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "x": 2860,
+        "y": 1200,
+        "wires": []
+    },
+    {
+        "id": "8d6078e6.0e42d8",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Static/Breathe/Flow",
+        "func": "var leafs = global.get(\"PatternCfg\");\nvar selected = global.get(\"DesignerSelected\");\nleafs[selected].mode=msg.payload;\nglobal.set(\"PatternCfg\", leafs);\n\n\n\n\n\nvar msg2 = {payload: \"\"};\nmsg2.phase=leafs[selected].phase;\nif(msg.payload==\"Yes\")\n{\n    for(var i = 0;i<leafs.length;i++)leafs[i].mode = 2;\n    msg2.payload=\"Flowing\";\n    msg.enabled = false;\n    global.set(\"PatternCfg\", leafs);\n}\nelse if(msg.payload==1)\n{\n    for(var i = 0;i<leafs.length;i++)if(leafs[i].mode==2)leafs[i].mode = 1;\n    msg2.payload=\"Breathe\";\n    msg.enabled = true;\n}\nelse if(msg.payload==0)\n{\n    for(var i = 0;i<leafs.length;i++)if(leafs[i].mode==2)leafs[i].mode = 0;\n    msg2.payload = \"Static\";\n    msg.enabled = false;\n}\n\nreturn [msg2, msg];",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 2630,
+        "y": 1180,
+        "wires": [
+            [
+                "48628ea3.0df7e"
+            ],
+            [
+                "8ad15004.57401",
+                "970e53a9.7eaa2"
+            ]
+        ]
+    },
+    {
+        "id": "cafade20.259b1",
+        "type": "ui_button",
+        "z": "cddf6c26.6a9e3",
+        "name": "Right",
+        "group": "52add45d.cb1fbc",
+        "order": 3,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "label": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "fa-arrow-right",
+        "payload": "+1",
+        "payloadType": "num",
+        "topic": "",
+        "x": 1360,
+        "y": 1160,
+        "wires": [
+            [
+                "497aa37b.360ccc",
+                "6ef1ec67.d83194"
+            ]
+        ]
+    },
+    {
+        "id": "3ebfc4f3.0bc41c",
+        "type": "ui_button",
+        "z": "cddf6c26.6a9e3",
+        "name": "Left",
+        "group": "52add45d.cb1fbc",
+        "order": 2,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "label": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "fa-arrow-left",
+        "payload": "-1",
+        "payloadType": "num",
+        "topic": "",
+        "x": 1360,
+        "y": 1200,
+        "wires": [
+            [
+                "497aa37b.360ccc",
+                "6ef1ec67.d83194"
+            ]
+        ]
+    },
+    {
+        "id": "497aa37b.360ccc",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Seleted",
+        "func": "var x = msg.payload;\nvar leafs = global.get(\"PatternCfg\");\nvar c = global.get(\"DesignerSelected\");\nvar y = 0;\ny=c+x;\nif(y>=leafs.length)y=0;\nif(y<0)y=leafs.length-1;\nmsg.payload = leafs[y].mode;\nmsg.phase=leafs[y].phase;\nmsg.color = leafs[y].fill.substr(1,leafs[y].fill.length-1);\nglobal.set(\"DesignerSelected\",y);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1600,
+        "y": 1120,
+        "wires": [
+            [
+                "ae86f739.5e36a8",
+                "d222dd18.561d6",
+                "10b75bf2.212fb4"
+            ]
+        ]
+    },
+    {
+        "id": "4231946c.a75e8c",
+        "type": "ui_colour_picker",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "label": "Color Leaf",
+        "group": "52add45d.cb1fbc",
+        "format": "hex",
+        "outformat": "string",
+        "showSwatch": false,
+        "showPicker": true,
+        "showValue": true,
+        "showHue": true,
+        "showAlpha": false,
+        "showLightness": true,
+        "dynOutput": "false",
+        "order": 7,
+        "width": "7",
+        "height": "4",
+        "passthru": false,
+        "topic": "",
+        "x": 1460,
+        "y": 1280,
+        "wires": [
+            [
+                "5b2b22a1.64f4dc"
+            ]
+        ]
+    },
+    {
+        "id": "5b2b22a1.64f4dc",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Extract colors",
+        "func": "var selected = global.get(\"DesignerSelected\");\n\nvar leafs = [];\nif(global.get(\"PatternCfg\")!=null)leafs = global.get(\"PatternCfg\");\nfor(var i = 0;i<leafs.length;i++)\n{\n    if(i==selected)leafs[i].fill=\"#\"+msg.payload;\n}\nglobal.set(\"PatternCfg\", leafs);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1640,
+        "y": 1280,
+        "wires": [
+            [
+                "ae86f739.5e36a8"
+            ]
+        ]
+    },
+    {
+        "id": "734123d.561cbdc",
+        "type": "ui_button",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "group": "52add45d.cb1fbc",
+        "order": 12,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Reset Pattern",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 1310,
+        "y": 1040,
+        "wires": [
+            [
+                "5902c00a.e2ba7"
+            ]
+        ]
+    },
+    {
+        "id": "5902c00a.e2ba7",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Reset",
+        "func": "var leafs = global.get(\"PatternCfg\");\n\nfor(var i  = 0;i<leafs.length;i++)\n{\n    leafs[i].fill=\"#888888\";\n    leafs[i].mode=0;\n    leafs[i].phase=0;\n}\n\n\nglobal.set(\"PatternCfg\", leafs);\nglobal.set(\"DesignerSelected\",0);\nmsg.payload = 0;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1460,
+        "y": 1040,
+        "wires": [
+            [
+                "ae86f739.5e36a8",
+                "497aa37b.360ccc"
+            ]
+        ]
+    },
+    {
+        "id": "d222dd18.561d6",
+        "type": "ui_slider",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "label": "Mode:",
+        "group": "52add45d.cb1fbc",
+        "order": 5,
+        "width": "4",
+        "height": "1",
+        "passthru": true,
+        "topic": "",
+        "min": 0,
+        "max": "2",
+        "step": 1,
+        "x": 1880,
+        "y": 1160,
+        "wires": [
+            [
+                "a4c44f34.6cc98"
+            ]
+        ]
+    },
+    {
+        "id": "8ad15004.57401",
+        "type": "ui_text",
+        "z": "cddf6c26.6a9e3",
+        "group": "52add45d.cb1fbc",
+        "order": 9,
+        "width": "3",
+        "height": "1",
+        "name": "",
+        "label": "Phase-shift: ",
+        "format": "{{msg.phase}}°",
+        "layout": "row-spread",
+        "x": 2860,
+        "y": 1240,
+        "wires": []
+    },
+    {
+        "id": "a65cb3fd.b7c8c",
+        "type": "ui_slider",
+        "z": "cddf6c26.6a9e3",
+        "name": "Phase-Slider",
+        "label": "",
+        "group": "52add45d.cb1fbc",
+        "order": 8,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "topic": "",
+        "min": 0,
+        "max": "254",
+        "step": 1,
+        "x": 2300,
+        "y": 1260,
+        "wires": [
+            [
+                "e5d81d92.c5f7e"
+            ]
+        ]
+    },
+    {
+        "id": "e5d81d92.c5f7e",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Phase",
+        "func": "var leafs = global.get(\"PatternCfg\");\nvar selected = global.get(\"DesignerSelected\");\nleafs[selected].phase=msg.payload;\nglobal.set(\"PatternCfg\", leafs);\nmsg.phase=msg.payload;\nmsg.payload = 0;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 2480,
+        "y": 1260,
+        "wires": [
+            [
+                "8ad15004.57401"
+            ]
+        ]
+    },
+    {
+        "id": "970e53a9.7eaa2",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Set Phase Slider",
+        "func": "var leafs = global.get(\"PatternCfg\");\nvar selected = global.get(\"DesignerSelected\");\nmsg.payload=leafs[selected].phase;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 2100,
+        "y": 1260,
+        "wires": [
+            [
+                "a65cb3fd.b7c8c"
+            ]
+        ]
+    },
+    {
+        "id": "45791470.194d1c",
+        "type": "ui_button",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "group": "52add45d.cb1fbc",
+        "order": 10,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Save Pattern",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 1410,
+        "y": 1620,
+        "wires": [
+            [
+                "e16ec866.525e48"
+            ]
+        ]
+    },
+    {
+        "id": "e16ec866.525e48",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1580,
+        "y": 1620,
+        "wires": [
+            [
+                "a96c5c1b.4e37e"
+            ]
+        ]
+    },
+    {
+        "id": "a96c5c1b.4e37e",
+        "type": "ui_toast",
+        "z": "cddf6c26.6a9e3",
+        "position": "dialog",
+        "displayTime": "3",
+        "highlight": "",
+        "outputs": 1,
+        "ok": "Yes",
+        "cancel": "Cancel",
+        "topic": "Are you sure?",
+        "name": "confirm",
+        "x": 1740,
+        "y": 1620,
+        "wires": [
+            [
+                "fff1a90.eb56958"
+            ]
+        ]
+    },
+    {
+        "id": "fff1a90.eb56958",
+        "type": "switch",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Yes",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 1870,
+        "y": 1620,
+        "wires": [
+            [
+                "24c2f47b.5f808c"
+            ]
+        ]
+    },
+    {
+        "id": "72f679a9.57e268",
+        "type": "ui_text_input",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "label": "Pattern Name: ",
+        "group": "52add45d.cb1fbc",
+        "order": 11,
+        "width": "4",
+        "height": "1",
+        "passthru": true,
+        "mode": "text",
+        "delay": "1",
+        "topic": "",
+        "x": 1280,
+        "y": 1660,
+        "wires": [
+            [
+                "17c555de.5c10aa"
+            ]
+        ]
+    },
+    {
+        "id": "8b8abbed.7c41e8",
+        "type": "ui_ui_control",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "x": 1080,
+        "y": 1640,
+        "wires": [
+            [
+                "da8ad08e.7e0ed"
+            ]
+        ]
+    },
+    {
+        "id": "17c555de.5c10aa",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Global",
+        "func": "global.set(\"PatternName\", msg.payload);\nmsg.payload = msg.payload + \".json\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1430,
+        "y": 1660,
+        "wires": [
+            [
+                "da8ad08e.7e0ed"
+            ]
+        ]
+    },
+    {
+        "id": "2909c36b.63bd2c",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Enable",
+        "func": "var x = global.get(\"PatternName\");\nif(msg.payload != null && msg.payload[x]!=null)msg.enabled=false;\nelse if(x==null)msg.enabled =false;\nelse if(x.length < 1)\n{\n    msg.enabled=false;\n}\nelse msg.enabled = true;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1260,
+        "y": 1620,
+        "wires": [
+            [
+                "45791470.194d1c"
+            ]
+        ]
+    },
+    {
+        "id": "a4c44f34.6cc98",
+        "type": "switch",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "2",
+                "vt": "num"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 2000,
+        "y": 1180,
+        "wires": [
+            [
+                "743ed531.f97d9c",
+                "31beeb0b.118704"
+            ],
+            [
+                "8d6078e6.0e42d8"
+            ]
+        ]
+    },
+    {
+        "id": "d49282b2.e9fdc",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "Set full pattern to flow mode?",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2150,
+        "y": 1160,
+        "wires": [
+            [
+                "ef244d3e.f64cf"
+            ]
+        ]
+    },
+    {
+        "id": "ef244d3e.f64cf",
+        "type": "ui_toast",
+        "z": "cddf6c26.6a9e3",
+        "position": "dialog",
+        "displayTime": "3",
+        "highlight": "",
+        "outputs": 1,
+        "ok": "Yes",
+        "cancel": "Cancel",
+        "topic": "Are you sure?",
+        "name": "confirm",
+        "x": 2310,
+        "y": 1160,
+        "wires": [
+            [
+                "3ac3071.3217ff8"
+            ]
+        ]
+    },
+    {
+        "id": "3ac3071.3217ff8",
+        "type": "switch",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Yes",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 2430,
+        "y": 1160,
+        "wires": [
+            [
+                "8d6078e6.0e42d8",
+                "d46bdabe.363198"
+            ],
+            [
+                "743ed531.f97d9c"
+            ]
+        ]
+    },
+    {
+        "id": "743ed531.f97d9c",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2590,
+        "y": 1120,
+        "wires": [
+            [
+                "d222dd18.561d6"
+            ]
+        ]
+    },
+    {
+        "id": "dac65d5a.ce413",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Mode Static, #888888",
+        "func": "var selected = global.get(\"DesignerSelected\");\n\nvar leafs = [];\nif(global.get(\"PatternCfg\")!=null)leafs = global.get(\"PatternCfg\");\nleafs[selected].fill=\"#888888\";\nleafs[selected.mode]=0;\nglobal.set(\"PatternCfg\", leafs);\nmsg.payload=0;\nmsg.color = \"#888888\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1610,
+        "y": 1340,
+        "wires": [
+            [
+                "ae86f739.5e36a8",
+                "d222dd18.561d6",
+                "10b75bf2.212fb4"
+            ]
+        ]
+    },
+    {
+        "id": "32e98138.efd2ae",
+        "type": "ui_button",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "group": "52add45d.cb1fbc",
+        "order": 4,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Disable Leaf",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 1400,
+        "y": 1340,
+        "wires": [
+            [
+                "dac65d5a.ce413"
+            ]
+        ]
+    },
+    {
+        "id": "10b75bf2.212fb4",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "color",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1290,
+        "y": 1280,
+        "wires": [
+            [
+                "4231946c.a75e8c"
+            ]
+        ]
+    },
+    {
+        "id": "eff9f59b.5e82f8",
+        "type": "ui_button",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "group": "52add45d.cb1fbc",
+        "order": 13,
+        "width": "4",
+        "height": "1",
+        "passthru": false,
+        "label": "Test Pattern",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 1270,
+        "y": 1700,
+        "wires": [
+            [
+                "733aff03.f108"
+            ]
+        ]
+    },
+    {
+        "id": "784d9f0e.8e505",
+        "type": "comment",
+        "z": "cddf6c26.6a9e3",
+        "name": "Message format:   <leafcount>;<isflow>;<mode1>,<phase1>;<r1>;<g1>;<b1>;<mode2>,<phase2>;<r2>;<g2>;<b2>;<mode3>,<phase3>;<r3>;<g3>;<b3>.....",
+        "info": "",
+        "x": 1710,
+        "y": 1780,
+        "wires": []
+    },
+    {
+        "id": "cfe7da79.fce3f8",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Build Message string",
+        "func": "var leafs = msg.payload;\nvar isflow = 1;\nfor(var i = 0;i<leafs.length;i++)\n{\n    if(leafs[i].mode!=2)isflow=0;\n}\nfor(var i = 0;(i<leafs.length)&&isflow==true;i++)\n{\n    if(leafs[i].mode==2)leafs[i].mode=0;\n}\n\nvar finalstring = msg.cnt+\";\";\nif(isflow)finalstring+=\"1\";else finalstring+=\"0\";\n//finalstring+=\";\";\n\nfor(var i = 0;i<leafs.length;i++)\n{\n    var str = \";\";\n    str+=leafs[i].mode+\";\";\n    str+=leafs[i].phase+\";\";\n    str+=leafs[i].r+\";\"+leafs[i].g+\";\"+leafs[i].b;\n    finalstring+=str;\n}\nmsg.payload=finalstring;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1700,
+        "y": 1700,
+        "wires": [
+            [
+                "9d04b216.03443",
+                "7fd25a0c.f21a94"
+            ]
+        ]
+    },
+    {
+        "id": "733aff03.f108",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Convert HEX to RGB",
+        "func": "var leafs = global.get(\"PatternCfg\");\nvar result;\nmsg.cnt = leafs.length;\n\nfor(var i = 0;i<leafs.length;i++)\n{\n    if(leafs[i].fill==\"#888888\")\n    {\n        leafs[i].r=0;\n        leafs[i].g=0;\n        leafs[i].b=0;\n    }\n    else\n    {\n    result = /^#?([a-f\\d]{2})([a-f\\d]{2})([a-f\\d]{2})$/i.exec(leafs[i].fill);\n    leafs[i].r=parseInt(result[1],16);\n    leafs[i].g=parseInt(result[2],16);\n    leafs[i].b=parseInt(result[3],16);\n    }\n}\n\nmsg.payload=leafs;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1480,
+        "y": 1700,
+        "wires": [
+            [
+                "cfe7da79.fce3f8"
+            ]
+        ]
+    },
+    {
+        "id": "e4ee22b0.81c55",
+        "type": "inject",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 1280,
+        "y": 1740,
+        "wires": [
+            [
+                "733aff03.f108"
+            ]
+        ]
+    },
+    {
+        "id": "9d04b216.03443",
+        "type": "debug",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 1890,
+        "y": 1700,
+        "wires": []
+    },
+    {
+        "id": "7fd25a0c.f21a94",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Combine post request",
+        "func": "msg.payload=\"custom?value=\"+msg.payload;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1920,
+        "y": 1740,
+        "wires": [
+            [
+                "5eacdb79.95d744"
+            ]
+        ]
+    },
+    {
+        "id": "5eacdb79.95d744",
+        "type": "link out",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "links": [
+            "b80cf79b.b95778"
+        ],
+        "x": 2055,
+        "y": 1740,
+        "wires": []
+    },
+    {
+        "id": "c30a09c5.262628",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Add pattern to Json",
+        "func": "var patterns = msg.payload;\nif(patterns==null)patterns = {};\nvar p = global.get(\"PatternCfg\");\nvar name = global.get(\"PatternName\");\npatterns[name]=p;\nmsg.payload=patterns;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 2310,
+        "y": 1620,
+        "wires": [
+            [
+                "58af4d36.33dd94"
+            ]
+        ]
+    },
+    {
+        "id": "da8ad08e.7e0ed",
+        "type": "file in",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "filename": "Patterns.json",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": true,
+        "x": 1570,
+        "y": 1660,
+        "wires": [
+            [
+                "69188787.9ace18"
+            ]
+        ]
+    },
+    {
+        "id": "24c2f47b.5f808c",
+        "type": "file in",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "filename": "Patterns.json",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": true,
+        "x": 2010,
+        "y": 1620,
+        "wires": [
+            [
+                "e6ab9e31.e0e03"
+            ]
+        ]
+    },
+    {
+        "id": "e6ab9e31.e0e03",
+        "type": "json",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 2150,
+        "y": 1620,
+        "wires": [
+            [
+                "c30a09c5.262628"
+            ]
+        ]
+    },
+    {
+        "id": "58af4d36.33dd94",
+        "type": "json",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "property": "payload",
+        "action": "str",
+        "pretty": false,
+        "x": 2470,
+        "y": 1620,
+        "wires": [
+            [
+                "ac67a225.19f4c"
+            ]
+        ]
+    },
+    {
+        "id": "ac67a225.19f4c",
+        "type": "file",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "filename": "Patterns.json",
+        "appendNewline": true,
+        "createDir": false,
+        "overwriteFile": "true",
+        "x": 2610,
+        "y": 1620,
+        "wires": [
+            [
+                "993a9edc.4adc6"
+            ]
+        ]
+    },
+    {
+        "id": "993a9edc.4adc6",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2780,
+        "y": 1620,
+        "wires": [
+            [
+                "c468cde2.a76e5"
+            ]
+        ]
+    },
+    {
+        "id": "c468cde2.a76e5",
+        "type": "ui_toast",
+        "z": "cddf6c26.6a9e3",
+        "position": "top right",
+        "displayTime": "3",
+        "highlight": "",
+        "outputs": 0,
+        "ok": "OK",
+        "cancel": "",
+        "topic": "Pattern saved",
+        "name": "",
+        "x": 2770,
+        "y": 1660,
+        "wires": []
+    },
+    {
+        "id": "6ef1ec67.d83194",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Static/Breathe/Flow",
+        "func": "var leafs = global.get(\"PatternCfg\");\nvar selected = global.get(\"DesignerSelected\");\n\nvar msg2 = {payload: \"\"};\nif(leafs[selected].mode==0)msg2.payload=\"Static\";\nelse if(leafs[selected].mode==1)msg2.payload=\"Breathe\";\nelse if(leafs[selected].mode==2)msg2.payload=\"Flowing\";\nmsg2.phase=leafs[selected].phase;\n//msg2.payload = leafs[selected].phase;\nmsg.enabled = false;\nmsg.payload=leafs[selected].phase;\nif(leafs[selected].mode==1)msg.enabled = true;\nreturn [msg, msg2];",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 2450,
+        "y": 1320,
+        "wires": [
+            [
+                "a65cb3fd.b7c8c"
+            ],
+            [
+                "8ad15004.57401",
+                "48628ea3.0df7e"
+            ]
+        ]
+    },
+    {
+        "id": "69188787.9ace18",
+        "type": "json",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 1710,
+        "y": 1660,
+        "wires": [
+            [
+                "2909c36b.63bd2c"
+            ]
+        ]
+    },
+    {
+        "id": "e7fcd9c0.4366b8",
+        "type": "ui_ui_control",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "x": 1960,
+        "y": 800,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4237c39a.657d5c",
+        "type": "ui_button",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "group": "9f40378b.457ad8",
+        "order": 5,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Open Designer",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 1500,
+        "y": 780,
+        "wires": [
+            [
+                "f35d30ad.3992d"
+            ]
+        ]
+    },
+    {
+        "id": "f35d30ad.3992d",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Show Designer",
+        "func": "msg.payload= {group:{show:[\"Nanoleafs_Nanoleaf_Designer\"],hide:[\"Nanoleafs_Pattern_Designer\"], focus:true}};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1680,
+        "y": 780,
+        "wires": [
+            [
+                "e7fcd9c0.4366b8"
+            ]
+        ]
+    },
+    {
+        "id": "8e7cc07e.9e5ac",
+        "type": "ui_button",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "group": "9f40378b.457ad8",
+        "order": 0,
+        "width": "7",
+        "height": "1",
+        "passthru": false,
+        "label": "Create new Pattern",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 1290,
+        "y": 880,
+        "wires": [
+            [
+                "a4ad9db3.73fa"
+            ]
+        ]
+    },
+    {
+        "id": "a4ad9db3.73fa",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Create new Pattern",
+        "func": "var leafs =[];\nif(global.get(\"NanoleafCfg\")!=null)leafs = global.get(\"NanoleafCfg\");\nelse return null;\nfor(var i = 0;i<leafs.length;i++)\n{\n    leafs[i].fill=\"#888888\";\n    leafs[i].mode=0;\n    leafs[i].phase=0;\n}\nglobal.set(\"PatternCfg\", leafs);\nmsg.payload = 0;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1490,
+        "y": 880,
+        "wires": [
+            [
+                "ae86f739.5e36a8",
+                "28f5a005.20db7"
+            ]
+        ]
+    },
+    {
+        "id": "28f5a005.20db7",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Show Designer",
+        "func": "msg.payload= {group:{show:[\"Nanoleafs_Pattern_Designer\"], hide:[\"Nanoleafs_Nanoleaf_Designer\"], focus:true}};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1720,
+        "y": 860,
+        "wires": [
+            [
+                "e7fcd9c0.4366b8"
+            ]
+        ]
+    },
+    {
+        "id": "c347d09e.7c0e4",
+        "type": "ui_button",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "group": "9f40378b.457ad8",
+        "order": 5,
+        "width": "4",
+        "height": "1",
+        "passthru": false,
+        "label": "Close Designers",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 1500,
+        "y": 820,
+        "wires": [
+            [
+                "ecf4600e.9fd69"
+            ]
+        ]
+    },
+    {
+        "id": "ecf4600e.9fd69",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Hide Designers",
+        "func": "msg.payload= {group:{hide:[\"Nanoleafs_Nanoleaf_Designer\"]}};\nnode.send(msg);\nmsg.payload= {group:{hide:[\"Nanoleafs_Pattern_Designer\"]}};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1680,
+        "y": 820,
+        "wires": [
+            [
+                "e7fcd9c0.4366b8"
+            ]
+        ]
+    },
+    {
+        "id": "e4f1b996.9f4c08",
+        "type": "ui_ui_control",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "x": 1240,
+        "y": 1920,
+        "wires": [
+            [
+                "ae89697a.e43828"
+            ]
+        ]
+    },
+    {
+        "id": "f731b9fe.7196f8",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Build_Pattern_Table",
+        "func": "var patterns = msg.payload;\nvar bs = '<link rel=\"stylesheet\" href=\"https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css\" integrity=\"sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T\" crossorigin=\"anonymous\">';\nvar html = `\n<table class=\"table\">\n  <thead>\n    <tr>\n      <th scope=\"col\">Name</th>\n      <th scope=\"col\">Run</th>\n      <th scope=\"col\">Delete</th>\n      <th scope=\"col\">Load</th>\n    </tr>\n  </thead>\n`;\n\n\n\nfor(var prp in patterns)\n{\n    html+=\"<tr>\";\n    html+=\"<td>\"+prp+\"</td>\";\n    html+=\"<td><md-button ng-click='send({payload:\\\"\"+prp+\"\\\", mode: \\\"P\\\"})'><i class='fa fa-play' aria-hidden='true'></i><\\/md-button><\\/td>\";    \n    html+=\"<td><md-button ng-click='send({payload:\\\"\"+prp+\"\\\", mode: \\\"T\\\"})'><i class='fa fa-trash' aria-hidden='true'></i><\\/md-button><\\/td>\";    \n    html+=\"<td><md-button ng-click='send({payload:\\\"\"+prp+\"\\\", mode: \\\"E\\\"})'><i class='fa fa-arrow-right' aria-hidden='true'></i><\\/md-button><\\/td>\";    \n    html+=\"</tr>\";\n}\nhtml+=`\n  </tbody>\n</table>\n`;\nmsg.template = html;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1700,
+        "y": 1920,
+        "wires": [
+            [
+                "1d0ff4d4.794dfb"
+            ]
+        ]
+    },
+    {
+        "id": "ae89697a.e43828",
+        "type": "file in",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "filename": "Patterns.json",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": true,
+        "x": 1390,
+        "y": 1920,
+        "wires": [
+            [
+                "da4d8908.109d58"
+            ]
+        ]
+    },
+    {
+        "id": "da4d8908.109d58",
+        "type": "json",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 1530,
+        "y": 1920,
+        "wires": [
+            [
+                "f731b9fe.7196f8"
+            ]
+        ]
+    },
+    {
+        "id": "1d0ff4d4.794dfb",
+        "type": "ui_template",
+        "z": "cddf6c26.6a9e3",
+        "group": "72e5ee31.af07a",
+        "name": "",
+        "order": 0,
+        "width": "7",
+        "height": "6",
+        "format": "",
+        "storeOutMessages": true,
+        "fwdInMessages": false,
+        "templateScope": "local",
+        "x": 1880,
+        "y": 1920,
+        "wires": [
+            [
+                "2d8e7cfa.94fc54"
+            ]
+        ]
+    },
+    {
+        "id": "320367eb.50efc8",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Delete Pattern",
+        "func": "var patterns = msg.payload;\nvar del = msg.command;\ndelete patterns[del];\nmsg.payload=patterns;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1420,
+        "y": 2060,
+        "wires": [
+            [
+                "c3db13d9.eb53c"
+            ]
+        ]
+    },
+    {
+        "id": "c3db13d9.eb53c",
+        "type": "json",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "property": "payload",
+        "action": "str",
+        "pretty": false,
+        "x": 1570,
+        "y": 2060,
+        "wires": [
+            [
+                "39647b92.3f8a74"
+            ]
+        ]
+    },
+    {
+        "id": "39647b92.3f8a74",
+        "type": "file",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "filename": "Patterns.json",
+        "appendNewline": true,
+        "createDir": false,
+        "overwriteFile": "true",
+        "x": 1710,
+        "y": 2060,
+        "wires": [
+            [
+                "e5cebc3e.fd838"
+            ]
+        ]
+    },
+    {
+        "id": "e5cebc3e.fd838",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1880,
+        "y": 2060,
+        "wires": [
+            [
+                "a5a5d0f2.794c9",
+                "fc67e84e.fab488"
+            ]
+        ]
+    },
+    {
+        "id": "a5a5d0f2.794c9",
+        "type": "ui_toast",
+        "z": "cddf6c26.6a9e3",
+        "position": "top right",
+        "displayTime": "3",
+        "highlight": "",
+        "outputs": 0,
+        "ok": "OK",
+        "cancel": "",
+        "topic": "Pattern deleted",
+        "name": "",
+        "x": 2070,
+        "y": 2060,
+        "wires": []
+    },
+    {
+        "id": "2a26d2d5.71152e",
+        "type": "file in",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "filename": "Patterns.json",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": true,
+        "x": 2230,
+        "y": 1920,
+        "wires": [
+            [
+                "7b49c3ea.19c23c"
+            ]
+        ]
+    },
+    {
+        "id": "7b49c3ea.19c23c",
+        "type": "json",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 2370,
+        "y": 1920,
+        "wires": [
+            [
+                "e3cc6b2.e868c98"
+            ]
+        ]
+    },
+    {
+        "id": "2d8e7cfa.94fc54",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "command",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2050,
+        "y": 1920,
+        "wires": [
+            [
+                "2a26d2d5.71152e"
+            ]
+        ]
+    },
+    {
+        "id": "e3cc6b2.e868c98",
+        "type": "switch",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "property": "mode",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "P",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "T",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "E",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 1230,
+        "y": 2020,
+        "wires": [
+            [
+                "e45005c.e1128f8"
+            ],
+            [
+                "320367eb.50efc8"
+            ],
+            [
+                "d9f031ed.cb70a"
+            ]
+        ]
+    },
+    {
+        "id": "e45005c.e1128f8",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Convert HEX to RGB",
+        "func": "var leafs = msg.payload[msg.command];\nvar result;\nmsg.cnt = leafs.length;\n\nfor(var i = 0;i<leafs.length;i++)\n{\n    if(leafs[i].fill==\"#888888\")\n    {\n        leafs[i].r=0;\n        leafs[i].g=0;\n        leafs[i].b=0;\n    }\n    else\n    {\n    result = /^#?([a-f\\d]{2})([a-f\\d]{2})([a-f\\d]{2})$/i.exec(leafs[i].fill);\n    leafs[i].r=parseInt(result[1],16);\n    leafs[i].g=parseInt(result[2],16);\n    leafs[i].b=parseInt(result[3],16);\n    }\n}\n\nmsg.payload=leafs;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1440,
+        "y": 2020,
+        "wires": [
+            [
+                "420d6a85.a74b34"
+            ]
+        ]
+    },
+    {
+        "id": "420d6a85.a74b34",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Build Message string",
+        "func": "var leafs = msg.payload;\nvar isflow = 1;\nfor(var i = 0;i<leafs.length;i++)\n{\n    if(leafs[i].mode!=2)isflow=0;\n}\nfor(var i = 0;(i<leafs.length)&&isflow==true;i++)\n{\n    if(leafs[i].mode==2)leafs[i].mode=0;\n}\n\nvar finalstring = msg.cnt+\";\";\nif(isflow)finalstring+=\"1\";else finalstring+=\"0\";\n//finalstring+=\";\";\n\nfor(var i = 0;i<leafs.length;i++)\n{\n    var str = \";\";\n    str+=leafs[i].mode+\";\";\n    str+=leafs[i].phase+\";\";\n    str+=leafs[i].r+\";\"+leafs[i].g+\";\"+leafs[i].b;\n    finalstring+=str;\n}\nmsg.payload=finalstring;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1660,
+        "y": 2020,
+        "wires": [
+            [
+                "29f2dccc.4b2d64"
+            ]
+        ]
+    },
+    {
+        "id": "29f2dccc.4b2d64",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Combine post request",
+        "func": "msg.payload=\"custom?value=\"+msg.payload;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1880,
+        "y": 2020,
+        "wires": [
+            [
+                "6d04adb.58c2754"
+            ]
+        ]
+    },
+    {
+        "id": "6d04adb.58c2754",
+        "type": "link out",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "links": [
+            "b80cf79b.b95778"
+        ],
+        "x": 2015,
+        "y": 2020,
+        "wires": []
+    },
+    {
+        "id": "d9f031ed.cb70a",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Show Designer",
+        "func": "global.set(\"PatternCfg\", msg.payload[msg.command]);\nmsg.payload= {group:{show:[\"Nanoleafs_Pattern_Designer\"], hide:[\"Nanoleafs_Nanoleaf_Designer\"], focus:true}};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1420,
+        "y": 2100,
+        "wires": [
+            [
+                "3ea80fc3.d18e9"
+            ]
+        ]
+    },
+    {
+        "id": "3ea80fc3.d18e9",
+        "type": "ui_ui_control",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "x": 1580,
+        "y": 2100,
+        "wires": [
+            [
+                "ae86f739.5e36a8"
+            ]
+        ]
+    },
+    {
+        "id": "e5b40405.f2df08",
+        "type": "link in",
+        "z": "cddf6c26.6a9e3",
+        "name": "ReloadCustomPatternList",
+        "links": [
+            "fc67e84e.fab488",
+            "b0d8bd52.65e2d"
+        ],
+        "x": 1200,
+        "y": 1880,
+        "wires": [
+            [
+                "ae89697a.e43828"
+            ]
+        ]
+    },
+    {
+        "id": "fc67e84e.fab488",
+        "type": "link out",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "links": [
+            "e5b40405.f2df08"
+        ],
+        "x": 1995,
+        "y": 2100,
+        "wires": []
+    },
+    {
+        "id": "b0d8bd52.65e2d",
+        "type": "link out",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "links": [
+            "e5b40405.f2df08"
+        ],
+        "x": 2595,
+        "y": 2800,
+        "wires": []
+    },
+    {
+        "id": "3bb66cee.d68894",
+        "type": "debug",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 2620,
+        "y": 2860,
+        "wires": []
+    },
+    {
+        "id": "d46bdabe.363198",
+        "type": "debug",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 2880,
+        "y": 1140,
+        "wires": []
+    },
+    {
+        "id": "60f4c91e.f11c58",
+        "type": "ui_toast",
+        "z": "cddf6c26.6a9e3",
+        "position": "top right",
+        "displayTime": "3",
+        "highlight": "",
+        "outputs": 0,
+        "ok": "OK",
+        "cancel": "",
+        "topic": "",
+        "name": "",
+        "x": 2370,
+        "y": 1080,
+        "wires": []
+    },
+    {
+        "id": "31beeb0b.118704",
+        "type": "change",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "Flowing mode is not yet supported",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2140,
+        "y": 1080,
+        "wires": [
+            [
+                "60f4c91e.f11c58"
+            ]
+        ]
+    },
+    {
+        "id": "243c92eb.c8f40e",
+        "type": "ui_button",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "group": "52add45d.cb1fbc",
+        "order": 14,
+        "width": "7",
+        "height": "1",
+        "passthru": false,
+        "label": "Close Designer",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 1160,
+        "y": 1400,
+        "wires": [
+            [
+                "e97211f9.f7539"
+            ]
+        ]
+    },
+    {
+        "id": "e97211f9.f7539",
+        "type": "function",
+        "z": "cddf6c26.6a9e3",
+        "name": "Hide Designers",
+        "func": "msg.payload= {group:{hide:[\"Nanoleafs_Pattern_Designer\"]}};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1340,
+        "y": 1400,
+        "wires": [
+            [
+                "92c0bebf.89f5a"
+            ]
+        ]
+    },
+    {
+        "id": "92c0bebf.89f5a",
+        "type": "ui_ui_control",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "x": 1620,
+        "y": 1380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a2d14906.f5e0f8",
+        "type": "debug",
+        "z": "cddf6c26.6a9e3",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 2410,
+        "y": 2540,
+        "wires": []
+    },
+    {
+        "id": "9f40378b.457ad8",
+        "type": "ui_group",
+        "z": "",
+        "name": "Main",
+        "tab": "7ac4d2b5.9f2cec",
+        "order": 1,
+        "disp": true,
+        "width": "7",
+        "collapse": true
+    },
+    {
+        "id": "7f1ff9b6.485398",
+        "type": "ui_group",
+        "z": "",
+        "name": "Pattern Parameters",
+        "tab": "7ac4d2b5.9f2cec",
+        "order": 4,
+        "disp": true,
+        "width": "7",
+        "collapse": true
+    },
+    {
+        "id": "ba6866b4.b54908",
+        "type": "ui_group",
+        "z": "",
+        "name": "Autoplay",
+        "tab": "7ac4d2b5.9f2cec",
+        "order": 2,
+        "disp": true,
+        "width": "7",
+        "collapse": true
+    },
+    {
+        "id": "44fbf503.d3152c",
+        "type": "ui_group",
+        "z": "",
+        "name": "Nanoleaf Designer",
+        "tab": "7ac4d2b5.9f2cec",
+        "order": 5,
+        "disp": true,
+        "width": "12",
+        "collapse": true
+    },
+    {
+        "id": "38d8f98d.5d51c6",
+        "type": "ui_group",
+        "z": "",
+        "name": "Patterns and Palette",
+        "tab": "7ac4d2b5.9f2cec",
+        "order": 3,
+        "disp": true,
+        "width": "7",
+        "collapse": true
+    },
+    {
+        "id": "52add45d.cb1fbc",
+        "type": "ui_group",
+        "z": "",
+        "name": "Pattern Designer",
+        "tab": "7ac4d2b5.9f2cec",
+        "disp": true,
+        "width": "14",
+        "collapse": true
+    },
+    {
+        "id": "72e5ee31.af07a",
+        "type": "ui_group",
+        "z": "",
+        "name": "Patterns",
+        "tab": "7ac4d2b5.9f2cec",
+        "disp": true,
+        "width": "7",
+        "collapse": true
+    },
+    {
+        "id": "7ac4d2b5.9f2cec",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Nanoleafs",
+        "icon": "fa-lightbulb-o"
+    }
+]
