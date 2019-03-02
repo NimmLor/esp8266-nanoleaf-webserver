@@ -255,7 +255,7 @@ npm install node-red-contrib-config
 
 
 
-#### 6. Run Node-RED
+#### 5. Run Node-RED
 
 To start Node-RED type into the shell:
 
@@ -269,15 +269,15 @@ Connect to the GUI by typing the following line into your browser:
 
 
 
-#### 3. Import the flow
+#### 6. Import the flow
 
 - Click on the 3 dashes in the top right corner → import → clipboard
 
-![import](D:\OneDrive\3DPrinting\Thingiverse\Node-Red-Leafs\Noderedpart\images\import.png?raw=true)
+![import](https://github.com/NimmLor/esp8266-nanoleaf-webserver/blob/master/gallery/NodeRED_UI/import.png?raw=true)
 
 
 
-#### Configure the IP-Address of the Wemos D1 mini
+#### 7. Configure the IP-Address of the Wemos D1 mini
 
 Edit the Nanoleaf-Config node to set the IP-Address.
 
@@ -286,7 +286,11 @@ Edit the Nanoleaf-Config node to set the IP-Address.
 ![config_2](https://github.com/NimmLor/esp8266-nanoleaf-webserver/blob/master/gallery/NodeRED_UI/config_2.png?raw=true)
 
 
+#### 8. Connect to the Dashboard
 
+Connect to the dashboard(website) of Node-RED by typing the following line into your browser:
+
+- http://IP-ADDRESS:1880/ui
 
 
 ## Amazon Alexa setup
