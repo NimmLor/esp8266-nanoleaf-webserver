@@ -1,9 +1,8 @@
 {
   "ExpandedNodes": [
     "",
-    "\\data",
-    "\\data\\images"
+    "\\gallery",
+    "\\gallery\\NodeRED_UI"
   ],
-  "SelectedNode": "\\esp8266-fastled-webserver.ino",
   "PreviewInSolutionExplorer": false
 }
