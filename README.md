@@ -272,6 +272,7 @@ Connect to the GUI by typing the following line into your browser:
 #### 6. Import the flow
 
 - Click on the 3 dashes in the top right corner → import → clipboard
+- Copy the contents of NodeRED_flows.txt into the window and hit import
 
 ![import](https://github.com/NimmLor/esp8266-nanoleaf-webserver/blob/master/gallery/NodeRED_UI/import.png?raw=true)
 
