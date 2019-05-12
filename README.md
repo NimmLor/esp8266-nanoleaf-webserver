@@ -354,7 +354,7 @@ Open the app on your phone or head to https://alexa.amazon.de and click on **Ski
 
 Search for **Node-RED** and activate the skill. Afterwards you are prompted to login into your account that you have created the devices beforehand.
 
-![1551006980428](https://github.com/NimmLor/esp8266-nanoleaf-webserver/blob/master/gallery/NodeRED_UI/1551006980428.png?raw=true)
+![1551006980428](https://github.com/NimmLor/esp8266-nanoleaf-webserver/blob/master/gallery/NodeRED_UI/alexa_skill.png?raw=true)
 
 
 
