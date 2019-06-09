@@ -5,6 +5,16 @@ This is a fork of [jasoncoon's esp8266 fastled webserver](https://github.com/jas
 
 [![Nanoleafs](https://github.com/NimmLor/esp8266-nanoleaf-webserver/blob/master/gallery/rgb_preview2.gif?raw=true)](https://www.thingiverse.com/thing:3354082)
 
+
+## Important!
+
+**FastLED 3.2.7 & 3.2.8 DOES NOT WORK**
+
+**esp8266 2.5.0 and above causes compilation errors**
+
+**Arduino IDE 1.8.9 and above might cause Sketch-Data-Uploading Issues**
+
+
 Hardware
 --------
 
