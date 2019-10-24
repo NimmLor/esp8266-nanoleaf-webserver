@@ -96,6 +96,10 @@ Next enter the pin where the *Data* line is connected to, in my case it's pin D4
 
 `#define DATA_PIN D4`
 
+If you are using another controller such as a clone or a NodeMCU board, you may need to configure the pin assignment for FastLED (See also [this entry in the FastLED Wiki](https://github.com/FastLED/FastLED/wiki/ESP8266-notes)). Example:
+
+`#define FASTLED_ESP8266_RAW_PIN_ORDER`
+
 Another **important** step is to create the **Secrets.h** file. Create a new tab (**ctrl**+**shift**+**n**) and name it *Secrets.h*, this file contains your WIFI credentials and it's structure must look like this:
 
 ``````c++
