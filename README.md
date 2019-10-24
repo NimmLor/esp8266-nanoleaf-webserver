@@ -75,7 +75,7 @@ The app depends on the following libraries. They must either be downloaded from 
 * [FastLED](https://github.com/FastLED/FastLED) (FastLED 3.2.7 & 3.2.8 DOES NOT WORK)
 * [Arduino WebSockets](https://github.com/Links2004/arduinoWebSockets)
 
-Download the app code from GitHub using the **Releases** section on GitHub](https://github.com/NimmLor/esp8266-nanoleaf-webserver/releases) and download the ZIP file. Decompress the ZIP file in your Arduino sketch folder.
+Download the app code from GitHub using the [**Releases** section on GitHub](https://github.com/NimmLor/esp8266-nanoleaf-webserver/releases) and download the ZIP file. Decompress the ZIP file in your Arduino sketch folder.
 
 The web app needs to be uploaded to the ESP8266's SPIFFS.  You can do this within the Arduino IDE after installing the [Arduino ESP8266FS tool](http://esp8266.github.io/Arduino/versions/2.3.0/doc/filesystem.html#uploading-files-to-file-system). An alternative would be to install the [Visual Micro](https://www.visualmicro.com/) plugin for Visual Studio.
 
