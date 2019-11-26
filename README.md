@@ -6,15 +6,6 @@ This is a fork of [jasoncoon's esp8266 fastled webserver](https://github.com/jas
 [![Nanoleafs](https://github.com/NimmLor/esp8266-nanoleaf-webserver/blob/master/gallery/rgb_preview2.gif?raw=true)](https://www.thingiverse.com/thing:3354082)
 
 
-## Important!
-
-**FastLED 3.2.7 & 3.2.8 DOES NOT WORK**
-
-**esp8266 2.5.0 and above causes compilation errors**
-
-**Arduino IDE 1.8.9 and above might cause Sketch-Data-Uploading Issues**
-
-
 Hardware
 --------
 
@@ -77,14 +68,14 @@ The web app is stored in SPIFFS (on-board flash memory).
 
 Installing
 -----------
-The app is installed via the Arduino IDE which can be [downloaded here](https://www.arduino.cc/en/main/software). The ESP8266 boards will need to be added to the Arduino IDE which is achieved as follows. Click File > Preferences and copy and paste the URL "http://arduino.esp8266.com/stable/package_esp8266com_index.json" into the Additional Boards Manager URLs field. Click OK. Click Tools > Boards: ... > Boards Manager. Find and click on ESP8266 (using the Search function may expedite this). Click on Install. After installation, click on Close and then select your ESP8266 board from the Tools > Board: ... menu.
+The app is installed via the Arduino IDE which can be [downloaded here](https://www.arduino.cc/en/main/software) (Arduino IDE 1.8.9 and above might cause Sketch-Data-Uploading Issues). The ESP8266 boards will need to be added to the Arduino IDE which is achieved as follows. Click File > Preferences and copy and paste the URL "http://arduino.esp8266.com/stable/package_esp8266com_index.json" into the Additional Boards Manager URLs field. Click OK. Click Tools > Boards: ... > Boards Manager. Find and click on ESP8266 (using the Search function may expedite this). Click on Install. After installation, click on Close and then select your ESP8266 board from the Tools > Board: ... menu (esp8266 2.5.0 and above causes compilation errors).
 
 The app depends on the following libraries. They must either be downloaded from GitHub and placed in the Arduino 'libraries' folder, or installed as [described here](https://www.arduino.cc/en/Guide/Libraries) by using the Arduino library manager.
 
-* [FastLED](https://github.com/FastLED/FastLED)
+* [FastLED](https://github.com/FastLED/FastLED) (FastLED 3.2.7 & 3.2.8 DOES NOT WORK)
 * [Arduino WebSockets](https://github.com/Links2004/arduinoWebSockets)
 
-Download the app code from GitHub using the **Releases** section on [GitHub](https://github.com/NimmLor/esp8266-nanoleaf-webserver/releases) and download the ZIP file. Decompress the ZIP file in your Arduino sketch folder. Rename the folder from *esp8266-nanoleaf-webserver-master* to *esp8266-nanoleaf-webserver*
+Download the app code from GitHub using the [**Releases** section on GitHub](https://github.com/NimmLor/esp8266-nanoleaf-webserver/releases) and download the ZIP file. Decompress the ZIP file in your Arduino sketch folder.
 
 The web app needs to be uploaded to the ESP8266's SPIFFS.  You can do this within the Arduino IDE after installing the [Arduino ESP8266FS tool](http://esp8266.github.io/Arduino/versions/2.3.0/doc/filesystem.html#uploading-files-to-file-system). An alternative would be to install the [Visual Micro](https://www.visualmicro.com/) plugin for Visual Studio.
 
@@ -104,6 +95,10 @@ For instance I use 12 leafs (triangles) with a total of 12 pixels in one leaf (=
 Next enter the pin where the *Data* line is connected to, in my case it's pin D4 (you can either write D4 or 2).
 
 `#define DATA_PIN D4`
+
+If you are using another controller such as a clone or a NodeMCU board, you may need to configure the pin assignment for FastLED (See also [this entry in the FastLED Wiki](https://github.com/FastLED/FastLED/wiki/ESP8266-notes)). Example:
+
+`#define FASTLED_ESP8266_RAW_PIN_ORDER`
 
 Another **important** step is to create the **Secrets.h** file. Create a new tab (**ctrl**+**shift**+**n**) and name it *Secrets.h*, this file contains your WIFI credentials and it's structure must look like this:
 
