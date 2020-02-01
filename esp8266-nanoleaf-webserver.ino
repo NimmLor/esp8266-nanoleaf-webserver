@@ -15,84 +15,90 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-
-//-----------------------------------------CONFIG-----------------------------------------//
-#define LEAFCOUNT 12
-#define PIXELS_PER_LEAF 12
-
-#define DATA_PIN      D4          // The pin where the data line is connected to
-#define LED_TYPE      WS2812B
-#define COLOR_ORDER   GRB         // Color order, if e.g. your Colors are swapped then change the order, (RGB, RBG, GBR, GRB, BRG, BGR)
-
-#define MILLI_AMPS         3000  // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
-#define FRAMES_PER_SECOND  120    // here you can control the speed. With the Access Point / Web Server the animations run a bit slower.
-const bool apMode = false;        // Set to true if the esp8266 should open an Access-Point
-
-
-// Animation Config:
-// ten seconds per color palette makes a good demo
-// 20-120 is better for deployment
-uint8_t secondsPerPalette = 60;
-
-// COOLING: How much does the air cool as it rises?
-// Less cooling = taller flames.  More cooling = shorter flames.
-// Default 50, suggested range 20-100
-uint8_t cooling = 49;
-
-// SPARKING: What chance (out of 255) is there that a new spark will be lit?
-// Higher chance = more roaring fire.  Lower chance = more flickery fire.
-// Default 120, suggested range 50-200.
-uint8_t sparking = 160;
-
-uint8_t speed = 20;
-//---------------------------------------CONFIG END---------------------------------------//
-
-
-
-//#define FASTLED_ALLOW_INTERRUPTS 1
-//#define INTERRUPT_THRESHOLD 1
 #define FASTLED_INTERRUPT_RETRY_COUNT 0
-
 #include <FastLED.h>
 FASTLED_USING_NAMESPACE
-
 extern "C" {
 #include "user_interface.h"
 }
-
 #include <ESP8266WiFi.h>
-//#include <ESP8266mDNS.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPUpdateServer.h>
-//#include <WebSocketsServer.h>
 #include <FS.h>
 #include <EEPROM.h>
-//#include <IRremoteESP8266.h>
 #include "GradientPalettes.h"
-
-#define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
-
 #include "Field.h"
 
-//#define RECV_PIN D4
-//IRrecv irReceiver(RECV_PIN);
 
-//#include "Commands.h"
+
+/*######################## MAIN CONFIG ########################*/
+#define DATA_PIN      D4          // Should be GPIO02 on other boards like the NodeMCU
+#define LED_TYPE      WS2812B     // You might also use a WS2811 or any other strip that is fastled compatible 
+#define COLOR_ORDER   GRB         // Change this if colors are swapped (in my case, red was swapped with green)
+#define MILLI_AMPS    5000        // IMPORTANT: set the max milli-Amps of your power supply (4A = 4000mA)
+#define VOLTS         5           // Voltage of the Power Supply
+
+#define LEAFCOUNT 12              // Amount of triangles
+#define PIXELS_PER_LEAF 12        // Amount of LEDs inside 1x Tringle
+
+const bool apMode = false;        // set to true if the esp8266 should open an access point
+
+//#define SOUND_REACTIVE            // Uncomment to enable the Sound reactive mode
+#define SOUND_SENSOR_PIN A0       // An Analog sensor should be connected to an analog pin
+#define SENSOR_TYPE 1             // 0: Dumb Sensors, 1: MAX4466 Sound Sensor, 2: MAX9814 Sound Sensor
+
+#define HOSTNAME "Nanoleafs"      // Name that appears in your network
+#define CORRECTION UncorrectedColor       // If colors are weird use TypicalLEDStrip
+
+#define RANDOM_AUTOPLAY_PATTERN   // if enabled the next pattern for autoplay is choosen at random, 
+                                  // if commented out patterns will play in order
+#define ENABLE_ALEXA_SUPPORT      // Espalexa library required
+
+/*######################## MAIN CONFIG END ####################*/
+
+
+/*############ Alexa Configuration ############*/
+/* This part configures the devices that can be detected,
+ * by your Amazon Alexa device. In order to Connect the device,
+ * open http://ip_of_the_esp8266/alexa in your browser.
+ * Afterwards tell say "Alexa, discover devices" to your device,
+ * after around 30 seconds it should respond with the new devices
+ * it has detected.
+ *
+ * In order to be able to control mutliple parameters of the nanoleafs,
+ * the code creates multiple devices.
+ *
+ * To add those extra devices remove the two "//" in front of the,
+ * defines below.
+ */
+#ifdef ENABLE_ALEXA_SUPPORT
+#define ALEXA_DEVICE_NAME           "Nanoleafs"
+#define AddAutoplayDevice           "Nanoleafs Autoplay"
+#define AddStrobeDevice             "Nanoleafs Strobe"
+#define AddSpecificPatternDevice    "Nanoleafs Party"
+
+
+#ifdef AddSpecificPatternDevice
+#define SpecificPattern 1   // Parameter defines what pattern gets executed
+#endif
+#endif // ENABLE_ALEXA_SUPPORT
+ /*########## Alexa Configuration END ##########*/
+
+
 
 ESP8266WebServer webServer(80);
 //WebSocketsServer webSocketsServer = WebSocketsServer(81);
 ESP8266HTTPUpdateServer httpUpdateServer;
 
 #include "FSBrowser.h"
-
-
+#define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
 #define NUM_LEDS (PIXELS_PER_LEAF * LEAFCOUNT)
+#define FRAMES_PER_SECOND  120  // here you can control the speed. With the Access Point / Web Server the animations run a bit slower.
+#define SOUND_REACTIVE_FPS 120
 
 
 #include "Secrets.h" // this file is intentionally not included in the sketch, so nobody accidentally commits their secret information.
 // create a Secrets.h file with the following:
-
 // AP mode password
 // const char WiFiAPPSK[] = "your-password";
 
@@ -100,14 +106,44 @@ ESP8266HTTPUpdateServer httpUpdateServer;
 // char* ssid = "your-ssid";
 // char* password = "your-password";
 
+#ifdef ENABLE_ALEXA_SUPPORT
+#include <Espalexa.h>
+void mainAlexaEvent(EspalexaDevice*);
+Espalexa espalexa;
+ESP8266WebServer webServer2(80);
+EspalexaDevice* alexa_main;
+#endif // ENABLE_ALEXA_SUPPORT
 
 CRGB leds[NUM_LEDS];
 
 const uint8_t brightnessCount = 5;
-uint8_t brightnessMap[brightnessCount] = { 16, 32, 64, 128, 255 };
+uint8_t brightnessMap[brightnessCount] = { 5, 32, 64, 128, 255 };
 uint8_t brightnessIndex = 0;
 
-char vals[4 + LEAFCOUNT * 5][4] = {""};
+char vals[4 + LEAFCOUNT * 5][4] = { "" };
+
+uint8_t breathe = 0;  // value for starting custom pattern
+uint8_t breathe_dir = 1;  // 1== rising
+char cpattern[500] = "";
+
+uint8_t allLeafs = 1;    // Sets if all leafs should get the same color
+uint8_t selectedLeaf = 1;    // Sets position of leaf to color
+
+// ten seconds per color palette makes a good demo
+// 20-120 is better for deployment
+uint8_t secondsPerPalette = 10;
+
+// COOLING: How much does the air cool as it rises?
+// Less cooling = taller flames.  More cooling = shorter flames.
+// Default 50, suggested range 20-100
+uint8_t cooling = 3;
+
+// SPARKING: What chance (out of 255) is there that a new spark will be lit?
+// Higher chance = more roaring fire.  Lower chance = more flickery fire.
+// Default 120, suggested range 50-200.
+uint8_t sparking = 50;
+
+uint8_t speed = 70;
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -126,19 +162,12 @@ CRGBPalette16 IceColors_p = CRGBPalette16(CRGB::Black, CRGB::Blue, CRGB::Aqua, C
 uint8_t currentPatternIndex = 0; // Index number of which pattern is current
 uint8_t autoplay = 0;
 
-uint8_t allLeafs = 1;    // Sets if all leafs should get the same color
-uint8_t selectedLeaf = 1;    // Sets position of leaf to color
-
 uint8_t autoplayDuration = 10;
 unsigned long autoPlayTimeout = 0;
 
 uint8_t currentPaletteIndex = 0;
 
 uint8_t gHue = 0; // rotating "base color" used by many of the patterns
-
-uint8_t breathe = 0;  // value for starting custom pattern
-uint8_t breathe_dir = 1;  // 1== rising
-char cpattern[500] = "";
 
 CRGB solidColor = CRGB::Blue;
 
@@ -166,6 +195,16 @@ typedef PatternAndName PatternAndNameList[];
 PatternAndNameList patterns = {
   { pride,                  "Pride" },
   { colorWaves,             "Color Waves" },
+  { rainbow,                "Horizontal Rainbow" },
+  { rainbowSolid,           "Solid Rainbow" },
+  { confetti,               "Confetti" },
+  { sinelon,                "Sinelon" },
+  { bpm,                    "Beat" },
+  { juggle,                 "Juggle" },
+  { fire,                   "Fire" },
+  { water,                  "Water" },
+  { strobe,                 "Strobe"},
+  { rainbow_strobe,         "Rainbow Strobe"},
 
   // twinkle patterns
   { rainbowTwinkles,        "Rainbow Twinkles" },
@@ -188,16 +227,6 @@ PatternAndNameList patterns = {
   { fireTwinkles,           "Fire Twinkles" },
   { cloud2Twinkles,         "Cloud 2 Twinkles" },
   { oceanTwinkles,          "Ocean Twinkles" },
-
-  { rainbow,                "Rainbow" },
-  { rainbowWithGlitter,     "Rainbow With Glitter" },
-  { rainbowSolid,           "Solid Rainbow" },
-  { confetti,               "Confetti" },
-  { sinelon,                "Sinelon" },
-  { bpm,                    "Beat" },
-  { juggle,                 "Juggle" },
-  { fire,                   "Fire" },
-  { water,                  "Water" },
 
   { showSolidColor,         "Solid Color" },
 
@@ -240,16 +269,19 @@ const String paletteNames[paletteCount] = {
 
 void setup() {
   WiFi.setSleepMode(WIFI_NONE_SLEEP);
-
+#ifdef SOUND_REACTIVE
+  patterns[patternCount - 2] = { soundReactive,          "Sound Reactive" };
+#endif // SOUND_REACTIVE
   Serial.begin(115200);
   delay(100);
   Serial.setDebugOutput(true);
 
   FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS);         // for WS2812 (Neopixel)
+//FastLED.addLeds<LED_TYPE,DATA_PIN,CLK_PIN,COLOR_ORDER>(leds, NUM_LEDS); // for APA102 (Dotstar)
   FastLED.setDither(false);
-  FastLED.setCorrection(TypicalLEDStrip);
+  FastLED.setCorrection(CORRECTION);
   FastLED.setBrightness(brightness);
-  FastLED.setMaxPowerInVoltsAndMilliamps(5, MILLI_AMPS);
+  FastLED.setMaxPowerInVoltsAndMilliamps(VOLTS, MILLI_AMPS);
   fill_solid(leds, NUM_LEDS, CRGB::Black);
   FastLED.show();
 
@@ -271,6 +303,13 @@ void setup() {
   Serial.print(F("Vcc: ")); Serial.println(ESP.getVcc());
   Serial.println();
 
+#ifdef SOUND_REACTIVE
+#if SENSOR_TYPE == 0
+  pinMode(SOUND_SENSOR_PIN, INPUT);
+#endif
+#endif // SOUND_REACTIVE
+
+
   SPIFFS.begin();
   {
     Serial.println("SPIFFS contents:");
@@ -284,8 +323,6 @@ void setup() {
     Serial.printf("\n");
   }
 
-  //disabled due to https://github.com/jasoncoon/esp8266-fastled-webserver/issues/62
-  //initializeWiFi();
 
   if (apMode)
   {
@@ -296,7 +333,7 @@ void setup() {
     uint8_t mac[WL_MAC_ADDR_LENGTH];
     WiFi.softAPmacAddress(mac);
     String macID = String(mac[WL_MAC_ADDR_LENGTH - 2], HEX) +
-                   String(mac[WL_MAC_ADDR_LENGTH - 1], HEX);
+      String(mac[WL_MAC_ADDR_LENGTH - 1], HEX);
     macID.toUpperCase();
     String AP_NameString = "ESP8266 Thing " + macID;
 
@@ -316,10 +353,70 @@ void setup() {
     WiFi.mode(WIFI_STA);
     Serial.printf("Connecting to %s\n", ssid);
     if (String(WiFi.SSID()) != String(ssid)) {
-      WiFi.hostname("Nanoleaf");
       WiFi.begin(ssid, password);
+      WiFi.hostname(HOSTNAME);
     }
   }
+
+
+#ifdef ENABLE_ALEXA_SUPPORT
+#ifdef ALEXA_DEVICE_NAME
+  alexa_main = new EspalexaDevice(ALEXA_DEVICE_NAME, mainAlexaEvent, EspalexaDeviceType::color);
+#else
+  alexa_main = new EspalexaDevice(HOSTNAME, mainAlexaEvent, EspalexaDeviceType::color);
+#endif
+  espalexa.addDevice(alexa_main);
+#ifdef AddAutoplayDevice
+  espalexa.addDevice(AddAutoplayDevice, AlexaAutoplayEvent, EspalexaDeviceType::onoff); //non-dimmable device
+#endif
+#ifdef AddStrobeDevice
+  espalexa.addDevice(AddStrobeDevice, AlexaStrobeEvent, EspalexaDeviceType::color); //non-dimmable device
+#endif
+#ifdef AddSpecificPatternDevice
+  espalexa.addDevice(AddSpecificPatternDevice, AlexaSpecificEvent, EspalexaDeviceType::onoff); //non-dimmable device
+#endif
+
+
+  webServer.onNotFound([]() {
+    if (!espalexa.handleAlexaApiCall(webServer.uri(), webServer.arg(0))) //if you don't know the URI, ask espalexa whether it is an Alexa control request
+    {
+      //whatever you want to do with 404s
+      webServer.send(404, "text/plain", "Not found");
+    }
+  });
+
+
+
+  webServer.on("/alexa", HTTP_GET, []() {
+    String h = "<font face='arial'><h1> Alexa pairing mode</h1>";
+    h += "<h2>Procedure: </h3>";
+    h += "The webserver will reboot and the UI won't be available.<br>";
+    h += "<b>Now. Say to Alexa: 'Alexa, discover devices'.<b><br><br>";
+    h += "Alexa should tell you that it found a new device, if it did reset the esp8266 to return to the normal mode.</font>";
+    webServer.send(200, "text/html", h);
+    delay(100);
+    webServer.stop();
+    delay(500);
+    webServer.close();
+    delay(500);
+
+
+    webServer2.onNotFound([]() {
+      if (!espalexa.handleAlexaApiCall(webServer2.uri(), webServer2.arg(0))) //if you don't know the URI, ask espalexa whether it is an Alexa control request
+      {
+        //whatever you want to do with 404s
+        webServer2.send(404, "text/plain", "Not found");
+      }
+    });
+    espalexa.begin(&webServer2);
+    delay(100);
+    while (1)
+    {
+      espalexa.loop();
+      delay(1);
+    }
+  });
+#endif
 
   httpUpdateServer.setup(&webServer);
 
@@ -391,17 +488,14 @@ void setup() {
     String g = webServer.arg("g");
     String b = webServer.arg("b");
     setSolidColor(r.toInt(), g.toInt(), b.toInt());
+    alexa_main->setColor(r.toInt(), g.toInt(), b.toInt());
     sendString(String(solidColor.r) + "," + String(solidColor.g) + "," + String(solidColor.b));
-    Serial.println(String(solidColor.r) + "," + String(solidColor.g) + "," + String(solidColor.b));
   });
 
   webServer.on("/pattern", HTTP_POST, []() {
     String value = webServer.arg("value");
-    if (value.toInt() <= 29)
-    {
-      setPattern(value.toInt());
-      sendInt(currentPatternIndex);
-    }
+    setPattern(value.toInt());
+    sendInt(currentPatternIndex);
   });
 
   webServer.on("/patternName", HTTP_POST, []() {
@@ -425,6 +519,7 @@ void setup() {
   webServer.on("/brightness", HTTP_POST, []() {
     String value = webServer.arg("value");
     setBrightness(value.toInt());
+    alexa_main->setValue(brightness);
     sendInt(brightness);
   });
 
@@ -480,8 +575,13 @@ void setup() {
   }, handleFileUpload);
 
   webServer.serveStatic("/", SPIFFS, "/", "max-age=86400");
-
+#ifdef ENABLE_ALEXA_SUPPORT
+  espalexa.begin(&webServer);
+#endif
+#ifndef ENABLE_ALEXA_SUPPORT
   webServer.begin();
+#endif
+
   Serial.println("HTTP web server started");
 
   //  webSocketsServer.begin();
@@ -730,15 +830,33 @@ void setSolidColor(uint8_t r, uint8_t g, uint8_t b)
 // increase or decrease the current pattern number, and wrap around at the ends
 void adjustPattern(bool up)
 {
+#ifdef RANDOM_AUTOPLAY_PATTERN
+  if (autoplay == 1)
+  {
+    uint8_t lastpattern = currentPatternIndex;
+    while (currentPatternIndex == lastpattern)
+    {
+      uint8_t newpattern = random8(0, patternCount - 2);
+      if (newpattern != lastpattern)currentPatternIndex = newpattern;
+    }
+  }
+#else // RANDOM_AUTOPLAY_PATTERN
   if (up)
     currentPatternIndex++;
   else
     currentPatternIndex--;
-
+#endif
+  if (autoplay == 0)
+  {
+    if (up)
+      currentPatternIndex++;
+    else
+      currentPatternIndex--;
+  }
   // wrap around at the ends
   if (currentPatternIndex < 0)
     currentPatternIndex = patternCount - 1;
-  if (currentPatternIndex >= patternCount)
+  if (currentPatternIndex >= (patternCount-1))
     currentPatternIndex = 0;
 
   if (autoplay == 0) {
@@ -853,6 +971,36 @@ void showSolidColor()
 }
 
 // Patterns from FastLED example DemoReel100: https://github.com/FastLED/FastLED/blob/master/examples/DemoReel100/DemoReel100.ino
+
+
+void rainbow_strobe()
+{
+  if (autoplay == 1)adjustPattern(true);
+  static bool p = false;
+  static long lm = 0;
+  if (millis() - lm > (128 - (speed / 2)))
+  {
+    if (p) fill_solid(leds, NUM_LEDS, CRGB(0, 0, 0));
+    else fill_solid(leds, NUM_LEDS, CHSV(gHue, 255, 255));
+    lm = millis();
+    p = !p;
+  }
+}
+
+void strobe()
+{
+  if (autoplay == 1)adjustPattern(true);
+  static bool p = false;
+  static long lm = 0;
+  if (millis() - lm > (128 - (speed / 2)))
+  {
+    if (p) fill_solid(leds, NUM_LEDS, CRGB(0, 0, 0));
+    else fill_solid(leds, NUM_LEDS, solidColor);
+    lm = millis();
+    p = !p;
+  }
+}
+
 
 void rainbow()
 {
@@ -1317,3 +1465,159 @@ void SetCustomPattern()
   }
   //Serial.println("");
 }
+
+
+
+// #################### Sound Reactive and Alexa below
+
+void soundReactive()
+{
+  static int minlevel = 0;
+  static int decay = 60;
+  static double lastlevel = 2;
+  static double level = 0;
+#define arrsize 3
+  static double measure8avg[arrsize] = { 0,0,0 };
+  static int iter = 0;
+
+#if SENSOR_TYPE == 0
+  if (digitalRead(SOUND_SENSOR_PIN) > 0)level++;
+  else level--;
+  if (level < minlevel)level = minlevel;
+  if (level > LEDS_PER_LINE)level = LEDS_PER_LINE;
+  fill_solid(leds, level, CHSV(gHue, 255, 255));
+  fadeToBlackBy(leds + level, LEDS_PER_LINE - level, decay);
+#endif
+#if SENSOR_TYPE > 0
+#if SENSOR_TYPE == 2
+
+  int measure = 0;
+
+  for (int it = 0; it < 5; it++)
+  {
+    int m = analogRead(SOUND_SENSOR_PIN);
+    Serial.println(m);
+    if (m < 450 && m >350) m = 0;
+    else if (m < 350)m = (400 - m) * 2;
+    if (m > 400)m -= 400;
+    measure += m;
+  }
+  measure /= 5;
+#endif
+#if SENSOR_TYPE == 1
+  int measure = 0;
+
+  for (int it = 0; it < 5; it++)
+  {
+    int m = analogRead(SOUND_SENSOR_PIN);
+    m -= 800;
+    m *= -1;
+    if (m < 100)m = 0;
+    measure += m;
+  }
+  measure /= 5;
+  measure /= 2;  // cut the volts in half
+#endif
+  //Serial.println(measure);
+  iter++;
+  if (iter > arrsize)iter = 0;
+  measure8avg[iter] = measure;
+  double avg = 0;
+  for (int x = 0; x < arrsize; x++)
+  {
+    avg += measure8avg[x];
+  }
+  avg /= arrsize;
+
+  avg = measure;
+
+  int mlevel = map(avg, 30, 300, 1, NUM_LEDS);
+  if (mlevel < 1)mlevel = 1;
+  //if (lastlevel > mlevel) level = lastlevel  - 0.8;
+  //else if (lastlevel < mlevel) level = lastlevel+1;
+  level = mlevel;
+
+  if (level < minlevel)level = minlevel;
+  if (level > NUM_LEDS)level = NUM_LEDS;
+  fill_solid(leds, level, CHSV(gHue, 255, 255));
+  fadeToBlackBy(leds + (int)level, NUM_LEDS - (int)level, decay);
+  lastlevel = level;
+
+  //Serial.print(mlevel); Serial.print(" "); Serial.println(level);
+  //Serial.printf("%d, %d\n", mlevel, level);
+#endif
+}
+
+//############################## ALEXA Device Events ##############################
+
+#ifdef ENABLE_ALEXA_SUPPORT
+void mainAlexaEvent(EspalexaDevice* d) {
+  if (d == nullptr) return;
+
+  Serial.print("Alexa update: rgb: "); Serial.print(d->getR() + d->getG() + d->getB()); Serial.print(", b: "); Serial.println(d->getValue());
+  if (d->getValue() == 0)setPower(0); else {
+    setPower(1);
+    setBrightness(d->getValue());
+  }
+  static int lr;
+  static int lg;
+  static int lb;
+  if ((lr != NULL && lr != d->getR() && lg != d->getG() && lb != d->getB()) || currentPatternIndex == patternCount - 1)
+  {
+    setSolidColor(d->getR(), d->getG(), d->getB());
+    setPattern(patternCount - 1);
+  }
+  lr = d->getR();
+  lg = d->getG();
+  lb = d->getB();
+}
+
+#ifdef AddStrobeDevice 
+void AlexaStrobeEvent(EspalexaDevice* d) {
+  if (d == nullptr) return;
+
+  Serial.print("Alexa Strobe update: rgb: "); Serial.print(d->getR() + d->getG() + d->getB()); Serial.print(", b: "); Serial.println(d->getValue());
+  if (d->getValue() == 0)setPattern(patternCount - 1); else {
+    if (d->getValue() == 255)
+    {
+      setBrightness(255);
+      setPattern(13);
+    }
+    else speed = d->getValue();
+    d->setValue(speed);
+  }
+  static int lr;
+  static int lg;
+  static int lb;
+  if ((lr != NULL && lr != d->getR() && lg != d->getG() && lb != d->getB()) || currentPatternIndex == patternCount - 1)
+  {
+    setSolidColor(d->getR(), d->getG(), d->getB());
+    setPattern(12);
+  }
+  lr = d->getR();
+  lg = d->getG();
+  lb = d->getB();
+
+}
+#endif
+#ifdef AddAutoplayDevice
+void AlexaAutoplayEvent(EspalexaDevice* d) {
+  if (d == nullptr) return;
+  Serial.print("Alexa Autoplay update: state: "); Serial.println(d->getPercent());
+  if (d->getValue() > 0)
+  {
+    setAutoplay(1);
+    setAutoplayDuration(d->getPercent());
+  }
+  else setAutoplay(0);
+}
+#endif
+#ifdef AddSpecificPatternDevice
+void AlexaSpecificEvent(EspalexaDevice* d) {
+  if (d == nullptr) return;
+  Serial.print("Alexa Specific Pattern update: state: "); Serial.println(d->getValue());
+  if (d->getValue() != 0)setPattern(SpecificPattern);
+  else setPattern(patternCount - 1);
+}
+#endif
+#endif
