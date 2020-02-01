@@ -13,6 +13,7 @@ For beginners I would recommend watching this setup tutorial below.
 
 2. The ESP8266 boards need to be added to the Arduino IDE:
    Click on *File >> Preferences* and paste the URL  "http://arduino.esp8266.com/stable/package_esp8266com_index.json" into the **Additional Boards Manager URLs** field.
+   
    ![](software_screenshots/board_manager_urls.png?raw=true)
 
 3. Install the CH340/341 USB Driver
@@ -21,10 +22,12 @@ For beginners I would recommend watching this setup tutorial below.
 
 4. The Boards need be installed in the Arduino IDE
    Click on *Tools >> Board >> Boards Manager* and install **esp8266, version 2.6.3**
+   
    ![](software_screenshots/board_manager.png?raw=true)
 
 5. The LED Library **FastLED** is also required
    Click on *Sketch >> Include Library >> Manage Libraries* and install **FastLED, version 3.3.2**
+   
    ![](software_screenshots/FastLED.png?raw=true)
 
 6. Install the  *ESP8266FS* **Sketch Data Upload Tool**: 
@@ -41,6 +44,7 @@ For beginners I would recommend watching this setup tutorial below.
 
 7. (Optional) Install *Espalexa* for Amazon Alexa Support
    Click on *Sketch >> Include Library >> Manage Libraries* and install **Espalexa, version 2.4.4**
+   
    ![](software_screenshots/espalexa.png?raw=true)
 
 
@@ -139,7 +143,6 @@ Open http://ip_of_the_esp8266/alexa in your browser, the window should tell you 
 Just say to your echo, "Alexa, discover devices". This phrase can be spoken out in English on any echo device independent of the device's language.
 
 After around 30 seconds, Alexa should respond with the devices that were found. These should show up in the Alexa app.
-
 
 
 ![](software_screenshots/app.png?raw=true)
