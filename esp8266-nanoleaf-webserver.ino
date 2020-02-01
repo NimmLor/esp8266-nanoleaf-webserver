@@ -228,9 +228,7 @@ PatternAndNameList patterns = {
   { cloud2Twinkles,         "Cloud 2 Twinkles" },
   { oceanTwinkles,          "Ocean Twinkles" },
 
-  { showSolidColor,         "Solid Color" },
-
-  { SetCustomPattern,       "Custom Pattern"}
+  { showSolidColor,         "Solid Color" }
 };
 
 const uint8_t patternCount = ARRAY_SIZE(patterns);
