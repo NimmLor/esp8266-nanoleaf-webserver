@@ -77,7 +77,7 @@ For beginners I would recommend watching this setup tutorial below.
 
 5. Configure the parameters
    In the .ino file there are many parameters to change and tweak the essential settings are:
-- `DATA_PIN`: The pin where the LED-Strip is connected
+- `DATA_PIN`: The pin where the LED-Strip is connected (Note: If you are using another controller such as a clone or a NodeMCU board, you may need to configure the pin assignment for FastLED, See also [this entry in the FastLED Wiki](https://github.com/FastLED/FastLED/wiki/ESP8266-notes))
 
 - `LED_TYPE`: The type of LED strip that is used (WS2812B, WS2811, ...)
 
