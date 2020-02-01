@@ -53,7 +53,7 @@ For beginners I would recommend watching this setup tutorial below.
 
 ## 2. Software Configuration
 
-1. Download the Project from the [Releases at Github]( https://github.com/NimmLor/esp8266-fastled-desk-light/releases ) and extract the archive
+1. Download the Project from the [Releases at Github]( https://github.com/NimmLor/esp8266-nanoleaf-webserver/releases ) and extract the archive
 
 2. Open the **.ino** file inside the folder in the Arduino IDE
 
@@ -86,8 +86,7 @@ For beginners I would recommend watching this setup tutorial below.
 - `LEDS_PER_LINE`: Amount of LEDs inside **1x** slot of the core
 
 - `SOUND_REACTIVE`: Uncomment to enable a sound reactive pattern when using a sound sensor
-
-   - `SENSOR_TYPE`: Model of the [Sensor](http://s.click.aliexpress.com/e/_sYiUrz) used
+- `SENSOR_TYPE`: Model of the [Sensor](http://s.click.aliexpress.com/e/_sYiUrz) used
    
 - `ENABLE_ALEXA_SUPPORT`: Uncomment to disable the Amazon Alexa Support
 
