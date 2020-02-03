@@ -486,7 +486,9 @@ void setup() {
     String g = webServer.arg("g");
     String b = webServer.arg("b");
     setSolidColor(r.toInt(), g.toInt(), b.toInt());
+    #ifdef ENABLE_ALEXA_SUPPORT
     alexa_main->setColor(r.toInt(), g.toInt(), b.toInt());
+    #endif
     sendString(String(solidColor.r) + "," + String(solidColor.g) + "," + String(solidColor.b));
   });
 
@@ -517,7 +519,9 @@ void setup() {
   webServer.on("/brightness", HTTP_POST, []() {
     String value = webServer.arg("value");
     setBrightness(value.toInt());
+    #ifdef ENABLE_ALEXA_SUPPORT
     alexa_main->setValue(brightness);
+    #endif
     sendInt(brightness);
   });
 
@@ -617,8 +621,11 @@ void loop() {
 
   //  dnsServer.processNextRequest();
   //  webSocketsServer.loop();
+#ifdef ENABLE_ALEXA_SUPPORT
+  espalexa.loop();
+#else
   webServer.handleClient();
-
+#endif
   //  handleIrInput();
 
   if (power == 0) {
