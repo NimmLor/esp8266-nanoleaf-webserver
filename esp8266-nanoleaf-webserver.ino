@@ -28,7 +28,7 @@ extern "C" {
 #include <EEPROM.h>
 #include "GradientPalettes.h"
 #include "Field.h"
-
+#include <ESP8266mDNS.h>                    //Enable mDNS availability
 
 
 /*######################## MAIN CONFIG ########################*/
@@ -616,6 +616,7 @@ void broadcastString(String name, String value)
 }
 
 void loop() {
+  MDNS.update();
   // Add entropy to random number generator; we use a lot of it.
   random16_add_entropy(random(65535));
 
@@ -645,7 +646,13 @@ void loop() {
       hasConnected = true;
       Serial.print("Connected! Open http://");
       Serial.print(WiFi.localIP());
-      Serial.println(" in your browser");
+      Serial.println(" in your browser \n");
+      if (!MDNS.begin(HOSTNAME)) {
+        Serial.println("Error setting up MDNS responder! \n");
+      } else {  
+        Serial.println("mDNS responder started \n");
+        MDNS.addService("http", "tcp", 80);
+      }
     }
   }
 
