@@ -826,7 +826,7 @@ void setSolidColor(uint8_t r, uint8_t g, uint8_t b)
   EEPROM.write(4, b);
   EEPROM.commit();
 
-  setPattern(29);
+  setPatternName("Solid Color");
 
   broadcastString("color", String(solidColor.r) + "," + String(solidColor.g) + "," + String(solidColor.b));
   FastLED.show();
