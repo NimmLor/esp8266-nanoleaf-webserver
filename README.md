@@ -1,4 +1,8 @@
-# Nanoleaf Web Server
+# This repo has been merged and moved [here](https://github.com/NimmLor/esp8266-fastled-iot-webserver)
+
+https://github.com/NimmLor/esp8266-fastled-iot-webserver
+
+# LEGACY Nanoleaf Web Server
 
 <a href="https://github.com/NimmLor/esp8266-nanoleaf-webserver/graphs/contributors" alt="Contributors">
         <img src="https://img.shields.io/github/contributors/NimmLor/esp8266-nanoleaf-webserver" /></a>
